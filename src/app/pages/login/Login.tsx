@@ -1,14 +1,14 @@
 import { useState } from "react"
 
 export const Login = () => {
-    const [email, setEmail] = useState("");
-    const [senha, setSenha] = useState("");
+    const [email, setEmail] = useState('');
+    const [senha, setSenha] = useState('');
+
 
     const handleClick = () => {
         console.log(email)
         console.log(senha)
-    }
-
+    } 
 
     return (
         <div>
