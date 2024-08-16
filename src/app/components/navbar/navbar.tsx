@@ -2,6 +2,9 @@ import { faBars, faHome, faChartLine, faTachometerAlt, faBullhorn, faUsers, faMo
 import './navbar.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import foto_perfil from '../../Assets/pessoa.avif'
+
 
 export const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -23,49 +26,49 @@ export const Navbar = () => {
             <nav className={`sidebar ${isOpen ? 'open' : ''}`}>
                 <div className="sidebar-sticky">
                     <div className='nav-perfil'>
-                        <img src="../Images/pessoa.avif" alt="" />
+                        <img src={foto_perfil} alt="" />
                         <p>Guilherme Silva</p>
                     </div>
                     <ul className="nav flex-column">
                         <li className="nav-item">
-                            <a className="nav-link active" href="#">
+                            <Link className="nav-link active" to={""}>
                                 <FontAwesomeIcon icon={faHome} /> Home
-                            </a>
+                            </Link>
                         </li>
                         <li className="nav-item">
-                            <a className="nav-link" href="#">
+                            <Link className="nav-link" to={""}>
                                 <FontAwesomeIcon icon={faChartLine} /> Vendas
-                            </a>
+                            </Link>
                         </li>
                         <li className="nav-item">
-                            <a className="nav-link" href="#">
+                            <Link className="nav-link" to={""}>
                                 <FontAwesomeIcon icon={faTachometerAlt} /> Monitoria
-                            </a>
+                            </Link>
                         </li>
                         <li className="nav-item">
-                            <a className="nav-link" href="#">
+                            <Link className="nav-link" to={""}>
                                 <FontAwesomeIcon icon={faBullhorn} /> Marketing
-                            </a>
+                            </Link>
                         </li>
                         <li className="nav-item">
-                            <a className="nav-link" href="#">
+                            <Link className="nav-link" to={""}>
                                 <FontAwesomeIcon icon={faUsers} /> Gestão
-                            </a>
+                            </Link>
                         </li>
                         <li className="nav-item">
-                            <a className="nav-link" href="#">
+                            <Link className="nav-link" to={""}>
                                 <FontAwesomeIcon icon={faMoneyBillWave} /> Financeiro
-                            </a>
+                            </Link>
                         </li>
                         <li className="nav-item">
-                            <a className="nav-link" href="#">
+                            <Link className="nav-link" to={""}>
                                 <FontAwesomeIcon icon={faHandHoldingUsd} /> Cobrança
-                            </a>
+                            </Link>
                         </li>
                     </ul>
-                    <div className='nav-contato'>
-                        <button>Contato</button>
-                    </div>
+                </div>
+                <div className='nav-contato'>
+                    <button>Contato</button>
                 </div>
             </nav>
         </div>

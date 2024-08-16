@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { Navbar } from "../components/navbar/navbar";
-import { Login, Setores } from "../pages";
+import { Login, Setores, Perfil } from "../pages";
 
 const Layout = () => {
   const location = useLocation();
@@ -12,6 +12,7 @@ const Layout = () => {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/setores" element={<Setores />} />
+        <Route path="/perfil" element={<Perfil />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </>
