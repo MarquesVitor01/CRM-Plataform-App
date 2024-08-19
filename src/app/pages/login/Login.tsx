@@ -1,21 +1,58 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import '../login/components/login.css'
-import {PasswordInput} from './components/passwordInput'
+import { useState, FormEvent } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { auth } from '../../firebaseConfig';
+import { signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
+import '../login/components/login.css';
+import { PasswordInput } from './components/passwordInput';
 import { EmailInput } from './components/emailinput';
 
-
 export const Login = () => {
-
-
-    const [email, setEmail] = useState('');
-    const [senha, setSenha] = useState('');
-
-
-    const [recuperar, setRecuperar] = useState(false);
+    const [email, setEmail] = useState<string>('');
+    const [senha, setSenha] = useState<string>('');
+    const [recuperar, setRecuperar] = useState<boolean>(false);
+    const [recuperarEmail, setRecuperarEmail] = useState<string>('');
+    const [error, setError] = useState<string>('');
+    const [loading, setLoading] = useState<boolean>(false);
+    const [resetSuccess, setResetSuccess] = useState<string>('');
+    const navigate = useNavigate();
 
     const recuperador_senha = () => {
         setRecuperar(!recuperar);
+    };
+
+    const handleLogin = async (e: FormEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        setLoading(true);
+        setError('');
+
+        try {
+            await signInWithEmailAndPassword(auth, email, senha);
+            console.log("Login bem-sucedido");
+            navigate('/setores');
+        } catch (erro) {
+            console.log(erro);
+            setError('Ocorreu um erro ao fazer login.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handlePasswordReset = async () => {
+        setError('');
+        setResetSuccess('');
+
+        if (!recuperarEmail) {
+            setError('Por favor, insira o seu email.');
+            return;
+        }
+
+        try {
+            await sendPasswordResetEmail(auth, recuperarEmail);
+            setResetSuccess('Um email de recuperação foi enviado.');
+        } catch (erro) {
+            console.log(erro);
+            setError('Erro ao enviar email de recuperação.');
+        }
     };
 
     return (
@@ -56,7 +93,7 @@ export const Login = () => {
                         <h1 className="text-center mt-2">Login</h1>
                     </div>
                     <div className="text-center inputs-login">
-                    <EmailInput
+                        <EmailInput
                             id="emailField"
                             className="form-control"
                             placeholder="Digite o seu email"
@@ -74,7 +111,10 @@ export const Login = () => {
                             <input className="form-check-input" type="checkbox" value="remember-me" id="flexCheckDefault" />
                             <label className="form-check-label" htmlFor="flexCheckDefault">Lembrar</label>
                         </div>
-                        <Link to={''} className="btn btn-login mt-4">Login</Link>
+                        <button onClick={handleLogin} className="btn btn-login mt-4" disabled={loading}>
+                            {loading ? 'Carregando...' : 'Login'}
+                        </button>
+                        {error && <div className="alert alert-danger mt-3">{error}</div>}
                     </div>
                     <div className="text-center recuperar-senha">
                         <small>Esqueceu a senha?
@@ -90,8 +130,17 @@ export const Login = () => {
                 <div className="overlay">
                     <div className="recuperar-senha-content text-center">
                         <h2>Recuperar Senha</h2>
-                        <input type="email" placeholder='Digite seu email' className='form-control' />
+                        <input
+                            type="email"
+                            placeholder='Digite seu email'
+                            className='form-control'
+                            value={recuperarEmail}
+                            onChange={(e) => setRecuperarEmail(e.target.value)}
+                        />
+                        <button onClick={handlePasswordReset} className="btn btn-recuperar mt-3">Enviar Email</button>
                         <button onClick={() => setRecuperar(false)}>Fechar</button>
+                        {error && <div className="alert alert-danger mt-3">{error}</div>}
+                        {resetSuccess && <div className="alert alert-success mt-3">{resetSuccess}</div>}
                     </div>
                 </div>
             )}

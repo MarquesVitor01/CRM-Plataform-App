@@ -1,33 +1,22 @@
-import React, { useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import React from 'react';
 
-interface PasswordInputProps { 
-    id: string; 
-    className: string; 
-    placeholder: string; 
-    value: string; 
-    onChange: (e: any) => void; 
+interface PasswordInputProps {
+    id: string;
+    className?: string;
+    placeholder?: string;
+    value: string;
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export const PasswordInput: React.FC<PasswordInputProps> = ({ placeholder = 'Insira sua senha', id, className }) => {
-  const [showPassword, setShowPassword] = useState(false);
-
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
-
-  return (
-    <div className="password-container">
-      <input
-        type={showPassword ? 'text' : 'password'}
-        id={id}
-        placeholder={placeholder}
-        className={className}
-      />
-      <button type="button" onClick={togglePasswordVisibility} className="toggle-password">
-        <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
-      </button>
-    </div>
-  );
+export const PasswordInput: React.FC<PasswordInputProps> = ({ id, className, placeholder, value, onChange }) => {
+    return (
+        <input
+            type="password"
+            id={id}
+            className={className}
+            placeholder={placeholder}
+            value={value}
+            onChange={onChange}
+        />
+    );
 };
