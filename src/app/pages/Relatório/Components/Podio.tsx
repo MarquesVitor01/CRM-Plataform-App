@@ -1,6 +1,6 @@
 import React from "react";
 import operadores from "../Operador/Operadores";
-import { Ranking } from "./Ranking"; // Certifique-se de que o caminho esteja correto
+import { Ranking } from "./Ranking";
 
 const Podio: React.FC = () => {
   return (
@@ -8,7 +8,8 @@ const Podio: React.FC = () => {
       <div>
         <div className="row">
           <div className="col-md-6 col-sm-6">
-            <div className="podio">
+            <h2 className="title-relatorio">Renovação: 03</h2>
+            <div className="podio mt-md-5">
               <div className="podio-primeiro">
                 <img src={operadores.pessoa1} alt="Operador 1" />
                 <h4>Operador 1</h4>
@@ -27,7 +28,8 @@ const Podio: React.FC = () => {
           </div>
 
           <div className="col-md-6 col-sm-6">
-            <div className="podio">
+          <h2 className="title-relatorio">Base: 03</h2>
+            <div className="podio mt-md-5">
               <div className="podio-primeiro">
                 <img src={operadores.pessoa1} alt="Operador 1" />
                 <h4>Operador 1</h4>
@@ -41,7 +43,6 @@ const Podio: React.FC = () => {
                 <h4>Operador 3</h4>
               </div>
             </div>
-            {/* Adicionando o Ranking abaixo do segundo pódio */}
             <Ranking />
           </div>
         </div>

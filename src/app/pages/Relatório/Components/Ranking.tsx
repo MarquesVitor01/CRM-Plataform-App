@@ -1,5 +1,7 @@
 import React from "react";
-import images from '../Operador/Operadores'
+import images from "../Operador/Operadores";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faLeftLong, faRightLong } from "@fortawesome/free-solid-svg-icons";
 
 interface Operador {
   nome: string;
@@ -7,7 +9,7 @@ interface Operador {
 }
 
 interface Operadores {
-  [key: string]: Operador; 
+  [key: string]: Operador;
 }
 
 export const Ranking: React.FC = () => {
@@ -23,7 +25,8 @@ export const Ranking: React.FC = () => {
     pessoa3: {
       nome: "Carlos",
       venda: 6,
-    },pessoa4: {
+    },
+    pessoa4: {
       nome: "Guilherme",
       venda: 4,
     },
@@ -31,22 +34,26 @@ export const Ranking: React.FC = () => {
 
   return (
     <div>
-      <table className="table">
-        <tbody>
-          {Object.keys(operadores).map((key) => (
-            <tr key={key}>
-              <td className="img-table">
-                <img 
-                  src={images[key]} 
-                  alt={operadores[key].nome} 
-                />
-              </td>
-              <td className="table-nome">{operadores[key].nome}</td>
-              <td className="table-vendas">{operadores[key].venda}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <ul className="list-ranking">
+        {Object.keys(operadores).map((key) => (
+          <li key={key} className="list-item-ranking">
+            <div className="img-list">
+              <img src={images[key]} alt={operadores[key].nome} />
+            </div>
+            <div className="list-nome">{operadores[key].nome}</div>
+            <div className="list-vendas">{operadores[key].venda}</div>
+          </li>
+        ))}
+      </ul>
+
+      <div className="paginas-ranking">
+        <button className="btn btn-primary">
+          <FontAwesomeIcon icon={faLeftLong} />
+        </button>
+        <button className="btn btn-primary">
+          <FontAwesomeIcon icon={faRightLong} />
+        </button>
+      </div>
     </div>
   );
 };

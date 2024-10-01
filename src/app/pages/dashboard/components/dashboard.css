@@ -246,6 +246,22 @@ tbody tr:last-of-type td {
     font-size: 16px;
     color: #464e80;
 }
+.icon-spacing {
+    margin-right: 10px; 
+}
+
+.icon-spacing:last-child {
+    margin-right: 0; 
+}
+
+.icon-spacing{
+    cursor: pointer;
+}
+
+.icon-spacing:hover{
+    transform: translateY(-2px);
+    margin-left: -2px;
+}
 
 @media screen and (max-width:992px) {
     .list-dashboard{
