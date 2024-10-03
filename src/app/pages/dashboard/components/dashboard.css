@@ -168,12 +168,14 @@ tbody tr:last-of-type td {
 .selects-container select {
     padding: 10px;
     border-radius: 15px;
+    width: 100px;
     border: 1px solid #252d5e;
     background-color: #ffffff;
     color: #333;
     font-size: 16px;
     cursor: pointer;
 }
+
 
 .selects-container select:hover{
     border-radius: 15px!important;
@@ -246,12 +248,10 @@ tbody tr:last-of-type td {
     font-size: 16px;
     color: #464e80;
 }
-.icon-spacing {
-    margin-right: 10px; 
-}
 
-.icon-spacing:last-child {
-    margin-right: 0; 
+.icon-container{
+    display: flex;
+    gap: 10px;
 }
 
 .icon-spacing{

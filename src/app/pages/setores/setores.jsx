@@ -49,7 +49,7 @@ export const Setores = () => {
                         <FontAwesomeIcon icon={faLaptop} className="sector-icon" />
                         <h2>Monitoria</h2>
                         <p>Clique aqui para verificar a monitoria.</p>
-                        <Link to="/dashboard" className="btn-sector btn btn-primary">Verificar Monitoria</Link>
+                        <Link to="/fichamonitoria" className="btn-sector btn btn-primary">Verificar Monitoria</Link>
                     </div>
                 </div>
                 <div className="sector col-10 col-md-4 col-lg-3">
@@ -57,7 +57,7 @@ export const Setores = () => {
                         <FontAwesomeIcon icon={faBullhorn} className="sector-icon" />
                         <h2>Marketing</h2>
                         <p>Clique aqui para ter uma visão do marketing.</p>
-                        <Link to="/dashboard" className="btn-sector btn btn-primary">Visão do Marketing</Link>
+                        <Link to="/fichamarketing" className="btn-sector btn btn-primary">Visão do Marketing</Link>
                     </div>
                 </div>
                 <div className="sector col-10 col-md-4 col-lg-3">

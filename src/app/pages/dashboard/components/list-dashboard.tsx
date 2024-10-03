@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowLeft,
@@ -8,9 +8,18 @@ import {
   faSearch,
   faTrashAlt,
 } from "@fortawesome/free-solid-svg-icons";
+import { Link } from "react-router-dom";
 
-export const ListDashboard = () => {
-  const [clientes, setClientes] = useState([
+interface Cliente {
+  id: number;
+  cnpj: string;
+  nome: string;
+  email: string;
+  operador: string;
+}
+
+export const ListDashboard: React.FC = () => {
+  const [clientes, setClientes] = useState<Cliente[]>([
     {
       id: 1,
       cnpj: "12.345.678/0001-99",
@@ -69,11 +78,11 @@ export const ListDashboard = () => {
     },
   ]);
 
-  const [selectedItems, setSelectedItems] = useState(new Set());
-  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedItems, setSelectedItems] = useState<Set<number>>(new Set());
+  const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage = 5;
 
-  const handleCheckboxChange = (id) => {
+  const handleCheckboxChange = (id: number) => {
     setSelectedItems((prevSelectedItems) => {
       const newSelectedItems = new Set(prevSelectedItems);
       if (newSelectedItems.has(id)) {
@@ -98,7 +107,7 @@ export const ListDashboard = () => {
     currentPage * itemsPerPage
   );
 
-  const handlePageChange = (newPage) => {
+  const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages) {
       setCurrentPage(newPage);
     }
@@ -131,6 +140,13 @@ export const ListDashboard = () => {
               <option value="">Mais Recente</option>
               <option value="">Mais Antigo</option>
             </select>
+
+            <input
+              type="date"
+              name=""
+              id=""
+              className="form-control input-date"
+            />
             <button onClick={handleRemoveSelected} className="remove-btn">
               <FontAwesomeIcon icon={faTrashAlt} />
             </button>
@@ -188,8 +204,12 @@ export const ListDashboard = () => {
                 {cliente.operador}
               </td>
               <td className="icon-container">
-                <FontAwesomeIcon icon={faEye} className="icon-spacing" />
-                <FontAwesomeIcon icon={faEdit} className="icon-spacing" />
+                <Link to="/editcontrato">
+                  <FontAwesomeIcon icon={faEye} className="icon-spacing text-dark" />
+                </Link>
+                <Link to="/contrato">
+                  <FontAwesomeIcon icon={faEdit} className="icon-spacing text-dark" />
+                </Link>
               </td>
             </tr>
           ))}

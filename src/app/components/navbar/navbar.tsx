@@ -95,7 +95,7 @@ export const Navbar = () => {
             <li className="nav-item">
               <Link
                 className="nav-link icon-tooltip"
-                to="/monitoria"
+                to="/fichamonitoria"
                 data-tooltip="Monitoria"
               >
                 <FontAwesomeIcon icon={faTachometerAlt} />
@@ -105,7 +105,7 @@ export const Navbar = () => {
             <li className="nav-item">
               <Link
                 className="nav-link icon-tooltip"
-                to="/marketing"
+                to="/fichamarketing"
                 data-tooltip="Marketing"
               >
                 <FontAwesomeIcon icon={faBullhorn} />
