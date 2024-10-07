@@ -52,7 +52,7 @@ export const EditContrato = () => {
     <div>
       <div className="contrato text-center">
       <div className="container">
-        <h2 className="title-contrato">Adicionar Informações do Cliente</h2>
+        <h2 className="title-contrato">Editar Informações do Cliente</h2>
         <form onSubmit={handleSubmit}>
           {step === 0 && (
             <EditOperador form={form} handleInputChange={handleInputChange} />

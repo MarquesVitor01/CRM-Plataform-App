@@ -28,8 +28,8 @@
 
 .search-container {
     position: relative;
-    width: 50%;
-    margin: 20px auto;
+    width: 70%;
+    margin: 20px;
     display: flex;
     justify-content: end;
 }
@@ -54,7 +54,7 @@
 
 .search-icon {
     position: absolute;
-    right: 43%;
+    right: 45%;
     top: 50%;
     transform: translateY(-50%);
     color: #464E80;
@@ -165,39 +165,55 @@ tbody tr:last-of-type td {
     gap: 15px;
 }
 
-.selects-container select {
-    padding: 10px;
-    border-radius: 15px;
-    width: 100px;
-    border: 1px solid #252d5e;
-    background-color: #ffffff;
-    color: #333;
-    font-size: 16px;
-    cursor: pointer;
-}
-
-
-.selects-container select:hover{
-    border-radius: 15px!important;
-}
-
-
-.remove-btn {
-    background-color: #ff6f6f;
+.create-btn {
+    background-color: #1945d6; 
     color: white;
     border: none;
     border-radius: 15px;
     padding: 10px 15px;
-    font-size: 16px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 5px;
+}
+
+.create-btn:hover {
+    background-color: #112f92;
+}
+
+
+.remove-btn {
+    background-color: #dc3545; 
+    color: white;
+    border: none;
+    border-radius: 15px;
+    padding: 10px 15px;
 }
 
 .remove-btn:hover {
-    background-color: #e60000;
+    background-color: #9b1a26;
 }
+
+.filtros-btn {
+    background-color: #ffc107;
+    color: black; 
+    border: none;
+    border-radius: 15px;
+    padding: 10px 15px;
+}
+
+.filtros-btn:hover {
+    background-color: #e0a800; 
+}
+
+.planilha-btn {
+    background-color: #28a745; 
+    color: white;
+    border: none;
+    border-radius: 15px;
+    padding: 10px 15px;
+}
+
+.planilha-btn:hover {
+    background-color: #218838; 
+}
+
 
 .table td.selected {
     background-color: #5c5c5c;
@@ -261,6 +277,38 @@ tbody tr:last-of-type td {
 .icon-spacing:hover{
     transform: translateY(-2px);
     margin-left: -2px;
+}
+
+
+
+/* Modal Excel */
+
+
+.modal-excel{
+    height: 100vh;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.box-modal-excel{
+    background-color: #fff;
+    width: 60vh;
+    height: 75vh;
+    border-radius: 20px;
+}
+
+.btn-fechar-excel{
+    position: absolute;
+    transform: translateY(-30px);
+    left: 62%;
 }
 
 @media screen and (max-width:992px) {

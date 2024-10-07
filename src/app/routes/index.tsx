@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { Navbar } from "../components/navbar/navbar";
-import { Login, Setores, Perfil, Dashboard, Relatorio, Contrato, EditContrato, FichaMonitoria, FichaMarketing, FichaFinanceiro } from "../pages";
+import { Login, Setores, Perfil, Dashboard, Relatorio, Contrato, EditContrato, FichaMonitoria, FichaMarketing, FichaFinanceiro, FichaCobranca } from "../pages";
 
 const Layout = () => {
   const location = useLocation();
@@ -22,6 +22,7 @@ const Layout = () => {
         <Route path="/fichamonitoria" element={<FichaMonitoria />} />
         <Route path="/fichamarketing" element={<FichaMarketing />} />
         <Route path="/fichafinanceiro" element={<FichaFinanceiro />} />
+        <Route path="/fichacobranca" element={<FichaCobranca />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </>

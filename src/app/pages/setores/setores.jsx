@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import '../setores/components/Setores.css';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClose, faChartLine, faLaptop, faBullhorn, faCog, faDollarSign, faMoneyBillWave } from '@fortawesome/free-solid-svg-icons';
+import { faClose, faChartLine, faLaptop, faBullhorn, faDollarSign, faMoneyBillWave } from '@fortawesome/free-solid-svg-icons';
 
 export const Setores = () => {
     const [mostrarDetalhesVendas, setMostrarDetalhesVendas] = useState(false);
@@ -60,20 +60,13 @@ export const Setores = () => {
                         <Link to="/fichamarketing" className="btn-sector btn btn-primary">Visão do Marketing</Link>
                     </div>
                 </div>
-                <div className="sector col-10 col-md-4 col-lg-3">
-                    <div className="sector-content">
-                        <FontAwesomeIcon icon={faCog} className="sector-icon" />
-                        <h2>Gestão</h2>
-                        <p>Clique aqui para se certificar da gestão.</p>
-                        <Link to="/dashboard" className="btn-sector btn btn-primary">Certificar Gestão</Link>
-                    </div>
-                </div>
+
                 <div className="sector col-10 col-md-4 col-lg-3">
                     <div className="sector-content">
                         <FontAwesomeIcon icon={faDollarSign} className="sector-icon" />
                         <h2>Financeiro</h2>
                         <p>Clique aqui para ver a situação financeira.</p>
-                        <Link to="/dashboard" className="btn-sector btn btn-primary">Ver Situação Financeira</Link>
+                        <Link to="/fichafinanceiro" className="btn-sector btn btn-primary">Ver Situação Financeira</Link>
                     </div>
                 </div>
                 <div className="sector col-10 col-md-4 col-lg-3">
@@ -81,7 +74,7 @@ export const Setores = () => {
                         <FontAwesomeIcon icon={faMoneyBillWave} className="sector-icon" />
                         <h2>Cobrança</h2>
                         <p>Clique aqui para monitorar a cobrança.</p>
-                        <Link to="/dashboard" className="btn-sector btn btn-primary">Monitorar Cobrança</Link>
+                        <Link to="/fichacobranca" className="btn-sector btn btn-primary">Monitorar Cobrança</Link>
                     </div>
                 </div>
             </div>

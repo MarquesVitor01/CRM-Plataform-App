@@ -7,8 +7,12 @@ import {
   faEye,
   faSearch,
   faTrashAlt,
+  faFilter,
+  faDownload,
+  faPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
+import { ModalExcel } from "./modalExcel";
 
 interface Cliente {
   id: number;
@@ -80,6 +84,7 @@ export const ListDashboard: React.FC = () => {
 
   const [selectedItems, setSelectedItems] = useState<Set<number>>(new Set());
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [modalExcel, setModalExcel] = useState(false);
   const itemsPerPage = 5;
 
   const handleCheckboxChange = (id: number) => {
@@ -113,8 +118,17 @@ export const ListDashboard: React.FC = () => {
     }
   };
 
+  const openModalExcel = () => setModalExcel(true)
+  const closeModalExcel = () => setModalExcel(false)
+
+
   return (
     <div className="list-dashboard">
+
+    {modalExcel && (
+      <ModalExcel onClose={closeModalExcel} />
+    )}
+
       <div className="header-list">
         <div className="header-content">
           <h2>Lista de Clientes</h2>
@@ -127,28 +141,18 @@ export const ListDashboard: React.FC = () => {
             />
           </div>
           <div className="selects-container">
-            <select className="form-select">
-              <option value="">Marcio</option>
-              <option value="">Ricardo</option>
-              <option value="">Kaio</option>
-              <option value="">Giovanna</option>
-              <option value="">Evelly</option>
-            </select>
-            <select className="form-select">
-              <option value="">Selecione</option>
-              <option value="">Ordem Alfabética</option>
-              <option value="">Mais Recente</option>
-              <option value="">Mais Antigo</option>
-            </select>
-
-            <input
-              type="date"
-              name=""
-              id=""
-              className="form-control input-date"
-            />
+            
+          <Link to='/contrato' onClick={handleRemoveSelected} className="create-btn">
+              <FontAwesomeIcon icon={faPlus} />
+            </Link>
             <button onClick={handleRemoveSelected} className="remove-btn">
               <FontAwesomeIcon icon={faTrashAlt} />
+            </button>
+            <button className="filtros-btn" onClick={openModalExcel}>
+              <FontAwesomeIcon icon={faFilter} color="#fff" />
+            </button>
+            <button className="planilha-btn">
+              <FontAwesomeIcon icon={faDownload} color="#fff" />
             </button>
           </div>
         </div>
@@ -204,10 +208,10 @@ export const ListDashboard: React.FC = () => {
                 {cliente.operador}
               </td>
               <td className="icon-container">
-                <Link to="/editcontrato">
+                <Link to="/">
                   <FontAwesomeIcon icon={faEye} className="icon-spacing text-dark" />
                 </Link>
-                <Link to="/contrato">
+                <Link to="/editcontrato">
                   <FontAwesomeIcon icon={faEdit} className="icon-spacing text-dark" />
                 </Link>
               </td>

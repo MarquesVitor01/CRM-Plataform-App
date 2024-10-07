@@ -1,7 +1,6 @@
 import React from "react";
 import Podio from "./Components/Podio";
 import "./Components/Relatorio.css";
-import { Ranking } from "./Components/Ranking";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLeftLong } from "@fortawesome/free-solid-svg-icons";
 

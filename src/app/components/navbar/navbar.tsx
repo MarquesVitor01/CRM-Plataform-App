@@ -4,7 +4,6 @@ import {
   faChartLine,
   faTachometerAlt,
   faBullhorn,
-  faUsers,
   faMoneyBillWave,
   faHandHoldingUsd,
   faTimes,
@@ -115,17 +114,7 @@ export const Navbar = () => {
             <li className="nav-item">
               <Link
                 className="nav-link icon-tooltip"
-                to="/gestao"
-                data-tooltip="Gestão"
-              >
-                <FontAwesomeIcon icon={faUsers} />
-                <span>Gestão</span>
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Link
-                className="nav-link icon-tooltip"
-                to="/financeiro"
+                to="/fichafinanceiro"
                 data-tooltip="Financeiro"
               >
                 <FontAwesomeIcon icon={faMoneyBillWave} />
@@ -135,7 +124,7 @@ export const Navbar = () => {
             <li className="nav-item">
               <Link
                 className="nav-link icon-tooltip"
-                to="/cobranca"
+                to="/fichacobranca"
                 data-tooltip="Cobrança"
               >
                 <FontAwesomeIcon icon={faHandHoldingUsd} />
