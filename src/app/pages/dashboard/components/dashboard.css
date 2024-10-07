@@ -279,6 +279,34 @@ tbody tr:last-of-type td {
     margin-left: -2px;
 }
 
+.chat-conversa .btn-info {
+    position: absolute;
+    right: 20px;
+    bottom: 15px;
+    animation: chat 2s ease-in-out infinite;
+    padding: 10px 20px;
+    border-radius: 25px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.chat-conversa .btn-info:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes chat {
+    0% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-8px);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
 
 
 /* Modal Excel */

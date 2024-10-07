@@ -10,6 +10,7 @@ import {
   faFilter,
   faDownload,
   faPlus,
+  faComment,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { ModalExcel } from "./modalExcel";
@@ -236,6 +237,18 @@ export const ListDashboard: React.FC = () => {
         >
           <FontAwesomeIcon icon={faArrowRight} />
         </button>
+      </div>
+
+      <div className="chat-conversa">
+      <Link 
+  to={'https://chat-node-js-onvs.onrender.com'} 
+  className="btn btn-info" 
+  target="_blank" 
+  rel="noopener noreferrer"
+>
+  <FontAwesomeIcon icon={faComment} color="#fff" />
+</Link>
+
       </div>
     </div>
   );
