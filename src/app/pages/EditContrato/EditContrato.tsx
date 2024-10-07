@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { EditOperador } from "./Components/EditOperador";
 import { EditEmpresa } from "./Components/EditEmpresa";
 import { EditInfoAdicionais } from "./Components/EditInfoAdicionais";
-import "../Contrato/Components/Styles/contrato.css";
+import "../Add/Components/Styles/add.css";
 
 export const EditContrato = () => {
     const [form, setForm] = useState({

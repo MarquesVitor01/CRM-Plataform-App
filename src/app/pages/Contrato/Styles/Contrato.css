@@ -1,0 +1,63 @@
+.bg-contrato{
+    background: linear-gradient(150deg, #494ba7 50%, #25BFB2 50%); 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.bg-infos-contrato{
+    background-color: #fff;
+    padding: 20px;
+    border: 2px solid #000;
+}
+
+.dados-empresa h5{
+    background-color: #59afd6;
+    padding-block: 10px;
+    color: #fff;
+}
+.condicoes{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.condicoes p{
+    width: 900px;
+    font-size: 12px;
+}
+
+.image-container {
+    display: flex;
+    align-items: center;
+    margin-top: 20px; 
+  }
+
+  .image-container .arrow{
+    font-size: 70px;
+  }
+
+.bonus h5{
+    background-color: #59afd6;
+    padding-block: 10px;
+    color: #Fff;
+}
+
+.bonus p{
+    width: 900px;
+}
+
+@media print {
+    .dados-empresa .row {
+      display: flex; 
+      flex-wrap: nowrap; 
+    }
+    
+    .dados-empresa .col-md-6 {
+      flex: 1; 
+      margin-bottom: 0; 
+    }
+  }
+  

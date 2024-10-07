@@ -1,22 +1,42 @@
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+} from "react-router-dom";
 import { Navbar } from "../components/navbar/navbar";
-import { Login, Setores, Perfil, Dashboard, Relatorio, Contrato, EditContrato, FichaMonitoria, FichaMarketing, FichaFinanceiro, FichaCobranca } from "../pages";
+import {
+  Login,
+  Setores,
+  Perfil,
+  Dashboard,
+  Relatorio,
+  EditContrato,
+  FichaMonitoria,
+  FichaMarketing,
+  FichaFinanceiro,
+  FichaCobranca,
+  Add,
+} from "../pages";
+import Contrato from "../pages/Contrato/Contrato";
 
 const Layout = () => {
   const location = useLocation();
-  
-  const showNavbarRoutes = [ "/dashboard"];
+
+  const showNavbarRoutes = ["/dashboard"];
 
   return (
     <>
       {showNavbarRoutes.includes(location.pathname) && <Navbar />}
-      
+
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/setores" element={<Setores />} />
         <Route path="/perfil" element={<Perfil />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/relatorio" element={<Relatorio />} />
+        <Route path="/add" element={<Add />} />
         <Route path="/contrato" element={<Contrato />} />
         <Route path="/editcontrato" element={<EditContrato />} />
         <Route path="/fichamonitoria" element={<FichaMonitoria />} />
