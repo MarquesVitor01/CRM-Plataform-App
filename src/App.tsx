@@ -1,4 +1,4 @@
-import { LocalRoutes } from "./app/routes";
+import { LocalRoutes } from "./app/routes/LocalRoutes";
 
 export const App = () => {
   return (

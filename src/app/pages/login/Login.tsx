@@ -52,7 +52,6 @@ export const Login = () => {
             return;
         }
 
-        // Verifica se o email termina com o domínio específico
         if (!recuperarEmail.endsWith('@grupomapscartaodigital.com.br')) {
             setError('Apenas emails com o domínio @grupomapscartaodigital.com.br podem receber a recuperação de senha.');
             return;
@@ -103,6 +102,11 @@ export const Login = () => {
         }
     }, [recuperar]);
 
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            handleLogin(e as unknown as FormEvent<HTMLButtonElement>);
+        }
+    };
     return (
         <section>
         <div className="cx-decoration"><svg className="cx-decoration__lines cx-decoration__top-left-lines"
@@ -142,10 +146,12 @@ export const Login = () => {
                             className="form-control"
                             placeholder="Digite o seu email"
                             value={email}
+                            
                             onChange={(e) => {
                                 setEmail(e.target.value);
                                 handleInputChange();
                              }}
+                            onKeyDown={handleKeyDown}
                         />
                         <PasswordInput
                             id="passwordField"
@@ -156,6 +162,7 @@ export const Login = () => {
                                 setSenha(e.target.value);
                                 handleInputChange();
                             }}
+                            onKeyDown={handleKeyDown}
                         />
                         <button onClick={handleLogin} className="btn btn-login mt-4" disabled={loading}>
                             {loading ? 'Carregando...' : 'Login'}
@@ -189,6 +196,7 @@ export const Login = () => {
                                 setRecuperarEmail(e.target.value);
                                 setError('');
                             }}
+                            
                         />
                         <div className="btnsubmit">
                             <button onClick={handlePasswordReset} className="btn btn-recuperar btn-success mt-3">Enviar</button>

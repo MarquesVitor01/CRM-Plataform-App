@@ -1,10 +1,37 @@
-import React, { useState } from "react";
+import { doc, getDoc } from "firebase/firestore";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { db } from "../../../firebaseConfig";
 
-// Define um tipo para as opções
 type Option = "criacao" | "anuncio" | "cartaoDigital" | "logotipo";
 
 export const Bonus: React.FC = () => {
-  // Estado para acompanhar as opções selecionadas
+
+  const { id } = useParams<{ id: string }>();
+  const [clientData, setClientData] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchClientData = async () => {
+      try {
+        if (id) {
+          const docRef = doc(db, "clientes", id);
+          const docSnap = await getDoc(docRef);
+
+          if (docSnap.exists()) {
+            setClientData(docSnap.data());
+          } else {
+            console.log("Não encontrado");
+          }
+        }
+      } catch (error) {
+        console.error("Erro ao buscar os dados do cliente: ", error);
+      }
+    };
+
+    fetchClientData();
+  }, [id]);
+
+
   const [selectedOptions, setSelectedOptions] = useState({
     criacao: false,
     anuncio: false,
@@ -12,7 +39,6 @@ export const Bonus: React.FC = () => {
     logotipo: true,
   });
 
-  // Função para alternar o estado das opções
   const toggleOption = (option: Option) => {
     setSelectedOptions((prev) => ({
       ...prev,
@@ -21,6 +47,7 @@ export const Bonus: React.FC = () => {
   };
 
   return (
+    clientData && (
     <div className="bonus card text-center mt-4">
       <h5 className="text-white py-2">BÔNUS</h5>
       <div className="d-flex justify-content-center my-3">
@@ -73,7 +100,7 @@ export const Bonus: React.FC = () => {
       <div className="form-group">
         <p>
           <strong>
-            Como acordado, segue o plano no valor de <u>R$ 199,90</u>, a ser pago em <u>1 parcela(s)</u>, via <u>PIX</u>, com o vencimento para o dia <u>08/10/2024</u>.
+            Como acordado, segue o plano no valor de <u>R$ {clientData.valorVenda}</u>, a ser pago em <u>{clientData.parcelas} parcela(s)</u>, via <u>{clientData.formaPagamento}</u>, com o vencimento para o dia <u>08/10/2024</u>.
           </strong>
         </p>
       </div>
@@ -119,5 +146,6 @@ export const Bonus: React.FC = () => {
         />
       </a>
     </div>
+    )
   );
 };

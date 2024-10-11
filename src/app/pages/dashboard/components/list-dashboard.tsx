@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowLeft,
@@ -14,81 +14,57 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { ModalExcel } from "./modalExcel";
+import { db } from "../../../firebaseConfig";
+import { collection, getDocs, doc, deleteDoc } from "firebase/firestore";
+import { useAuth } from "../../../context/AuthContext";
 
 interface Cliente {
-  id: number;
+  id: string;
   cnpj: string;
-  nome: string;
+  cpf: string;
+  responsavel: string;
   email: string;
   operador: string;
 }
 
-export const ListDashboard: React.FC = () => {
-  const [clientes, setClientes] = useState<Cliente[]>([
-    {
-      id: 1,
-      cnpj: "12.345.678/0001-99",
-      nome: "Empresa XYZ",
-      email: "contato@xyz.com",
-      operador: "João Silva",
-    },
-    {
-      id: 2,
-      cnpj: "98.765.432/0001-11",
-      nome: "Empresa ABC",
-      email: "contato@abc.com",
-      operador: "Maria Oliveira",
-    },
-    {
-      id: 3,
-      cnpj: "56.789.012/0001-22",
-      nome: "Empresa DEF",
-      email: "contato@def.com",
-      operador: "Carlos Santos",
-    },
-    {
-      id: 4,
-      cnpj: "12.345.678/0001-99",
-      nome: "Empresa XYZ",
-      email: "contato@xyz.com",
-      operador: "João Silva",
-    },
-    {
-      id: 5,
-      cnpj: "98.765.432/0001-11",
-      nome: "Empresa ABC",
-      email: "contato@abc.com",
-      operador: "Maria Oliveira",
-    },
-    {
-      id: 6,
-      cnpj: "56.789.012/0001-22",
-      nome: "Empresa DEF",
-      email: "contato@def.com",
-      operador: "Carlos Santos",
-    },
-    {
-      id: 7,
-      cnpj: "12.345.678/0001-99",
-      nome: "Empresa XYZ",
-      email: "contato@xyz.com",
-      operador: "João Silva",
-    },
-    {
-      id: 8,
-      cnpj: "98.765.432/0001-11",
-      nome: "Empresa ABC",
-      email: "contato@abc.com",
-      operador: "Maria Oliveira",
-    },
-  ]);
+interface ListDashboardProps {
+  setTotalClientes: (total: number) => void;
+}
 
-  const [selectedItems, setSelectedItems] = useState<Set<number>>(new Set());
+export const ListDashboard: React.FC<ListDashboardProps> = ({ setTotalClientes }) => {
+  const [clientes, setClientes] = useState<Cliente[]>([]);
+  const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [modalExcel, setModalExcel] = useState(false);
   const itemsPerPage = 5;
+  const [loading, setLoading] = useState<boolean>(true);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const { cargo } = useAuth(); 
+  
+  useEffect(() => {
+    const fetchClientes = async () => {
+      setLoading(true);
+      try {
+        const clientesCollection = collection(db, "clientes");
+        const clientesSnapshot = await getDocs(clientesCollection);
+        const clientesList = clientesSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as Cliente[];
 
-  const handleCheckboxChange = (id: number) => {
+        setClientes(clientesList);
+        setTotalClientes(clientesList.length); 
+      } catch (error) {
+        console.error("Erro ao buscar clientes:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchClientes();
+  }, [setTotalClientes]);
+
+  const handleCheckboxChange = (id: string) => {
     setSelectedItems((prevSelectedItems) => {
       const newSelectedItems = new Set(prevSelectedItems);
       if (newSelectedItems.has(id)) {
@@ -100,15 +76,34 @@ export const ListDashboard: React.FC = () => {
     });
   };
 
-  const handleRemoveSelected = () => {
+  const handleRemoveSelected = async () => {
+    if (selectedItems.size === 0) return;
+
+    const deletePromises = Array.from(selectedItems).map(async (id) => {
+      const clienteDoc = doc(db, "clientes", id);
+      await deleteDoc(clienteDoc);
+    });
+
+    await Promise.all(deletePromises);
+
     setClientes((prevClientes) => {
       return prevClientes.filter((cliente) => !selectedItems.has(cliente.id));
     });
     setSelectedItems(new Set());
   };
 
-  const totalPages = Math.ceil(clientes.length / itemsPerPage);
-  const currentClients = clientes.slice(
+  const filteredClients = clientes.filter((cliente) => {
+    const lowerCaseTerm = searchTerm.toLowerCase();
+    return (
+      (cliente.cnpj && cliente.cnpj.toLowerCase().includes(lowerCaseTerm)) ||
+      (cliente.responsavel && cliente.responsavel.toLowerCase().includes(lowerCaseTerm)) ||
+      (cliente.email && cliente.email.toLowerCase().includes(lowerCaseTerm)) ||
+      (cliente.operador && cliente.operador.toLowerCase().includes(lowerCaseTerm))
+    );
+  });
+
+  const totalPages = Math.ceil(filteredClients.length / itemsPerPage);
+  const currentClients = filteredClients.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
@@ -119,31 +114,29 @@ export const ListDashboard: React.FC = () => {
     }
   };
 
-  const openModalExcel = () => setModalExcel(true)
-  const closeModalExcel = () => setModalExcel(false)
+  const openModalExcel = () => setModalExcel(true);
+  const closeModalExcel = () => setModalExcel(false);
 
-
+  
   return (
     <div className="list-dashboard">
-
-    {modalExcel && (
-      <ModalExcel onClose={closeModalExcel} />
-    )}
+      {modalExcel && <ModalExcel onClose={closeModalExcel} />}
 
       <div className="header-list">
         <div className="header-content">
-          <h2>Lista de Clientes</h2>
+          <h2>{cargo}</h2>
           <div className="search-container">
             <FontAwesomeIcon icon={faSearch} className="search-icon" />
             <input
               type="text"
               placeholder="Pesquisar..."
               className="search-input"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <div className="selects-container">
-            
-          <Link to='/contrato' onClick={handleRemoveSelected} className="create-btn">
+            <Link to='/add' onClick={handleRemoveSelected} className="create-btn">
               <FontAwesomeIcon icon={faPlus} />
             </Link>
             <button onClick={handleRemoveSelected} className="remove-btn">
@@ -159,95 +152,88 @@ export const ListDashboard: React.FC = () => {
         </div>
       </div>
 
-      <table className="table">
-        <thead>
-          <tr>
-            <th></th>
-            <th>CNPJ</th>
-            <th>Nome</th>
-            <th>Email</th>
-            <th>Operador</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {currentClients.map((cliente) => (
-            <tr key={cliente.id}>
-              <td
-                key={cliente.id}
-                className={selectedItems.has(cliente.id) ? "selected" : ""}
-              >
-                <input
-                  type="checkbox"
-                  checked={selectedItems.has(cliente.id)}
-                  onChange={() => handleCheckboxChange(cliente.id)}
-                  className="checkbox-table"
-                />
-              </td>
-              <td
-                key={cliente.id}
-                className={selectedItems.has(cliente.id) ? "selected" : ""}
-              >
-                {cliente.cnpj}
-              </td>
-              <td
-                key={cliente.id}
-                className={selectedItems.has(cliente.id) ? "selected" : ""}
-              >
-                {cliente.nome}
-              </td>
-              <td
-                key={cliente.id}
-                className={selectedItems.has(cliente.id) ? "selected" : ""}
-              >
-                {cliente.email}
-              </td>
-              <td
-                key={cliente.id}
-                className={selectedItems.has(cliente.id) ? "selected" : ""}
-              >
-                {cliente.operador}
-              </td>
-              <td className="icon-container">
-                <Link to="/">
-                  <FontAwesomeIcon icon={faEye} className="icon-spacing text-dark" />
-                </Link>
-                <Link to="/editcontrato">
-                  <FontAwesomeIcon icon={faEdit} className="icon-spacing text-dark" />
-                </Link>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {loading ? (
+        <div className="loading">Carregando...</div>
+      ) : filteredClients.length === 0 ? (
+        <div className="no-clients">Não existem clientes a exibir.</div>
+      ) : (
+        <>
+          <table className="table">
+            <thead>
+              <tr>
+                <th></th>
+                <th>CNPJ</th>
+                <th>Nome</th>
+                <th>Email</th>
+                <th>Operador</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentClients.map((cliente) => (
+                <tr key={cliente.id}>
+                  <td className={selectedItems.has(cliente.id) ? "selected" : ""}>
+                    <input
+                      type="checkbox"
+                      checked={selectedItems.has(cliente.id)}
+                      onChange={() => handleCheckboxChange(cliente.id)}
+                      className="checkbox-table"
+                    />
+                  </td>
+                  <td className={selectedItems.has(cliente.id) ? "selected" : ""}>
+                    {cliente.cnpj || cliente.cpf}
+                  </td>
+                  <td className={selectedItems.has(cliente.id) ? "selected" : ""}>
+                    {cliente.responsavel}
+                  </td>
+                  <td className={selectedItems.has(cliente.id) ? "selected" : ""}>
+                    {cliente.email}
+                  </td>
+                  <td className={selectedItems.has(cliente.id) ? "selected" : ""}>
+                    {cliente.operador}
+                  </td>
+                  <td className="icon-container">
+                    <Link to={`/contrato/${cliente.id}`}>
+                      <FontAwesomeIcon icon={faEye} className="icon-spacing text-dark" />
+                    </Link>
+                    <Link to={`/editcontrato/${cliente.id}`}>
+                      <FontAwesomeIcon icon={faEdit} className="icon-spacing text-dark" />
+                    </Link>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
 
-      <div className="pagination">
-        <button
-          onClick={() => handlePageChange(currentPage - 1)}
-          disabled={currentPage === 1}
-        >
-          <FontAwesomeIcon icon={faArrowLeft} />
-        </button>
-        <span>
-          Página {currentPage} de {totalPages}
-        </span>
-        <button
-          onClick={() => handlePageChange(currentPage + 1)}
-          disabled={currentPage === totalPages}
-        >
-          <FontAwesomeIcon icon={faArrowRight} />
-        </button>
-      </div>
+          <div className="pagination">
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              <FontAwesomeIcon icon={faArrowLeft} />
+            </button>
+            <span>
+              Página {currentPage} de {totalPages}
+            </span>
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              <FontAwesomeIcon icon={faArrowRight} />
+            </button>
+          </div>
+        </>
+      )}
 
       <div className="chat-conversa">
-      <Link 
-  to={'https://chat-node-js-onvs.onrender.com'} 
-  className="btn btn-info" 
-  target="_blank" 
-  rel="noopener noreferrer"
->
-  <FontAwesomeIcon icon={faComment} color="#fff" />
-</Link>
+        <Link
+          to={'https://chat-node-js-onvs.onrender.com'}
+          className="btn btn-info"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <FontAwesomeIcon icon={faComment} color="#fff" />
+        </Link>
 
       </div>
     </div>

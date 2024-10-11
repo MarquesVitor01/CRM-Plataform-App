@@ -17,6 +17,10 @@
     padding-block: 10px;
     color: #fff;
 }
+.header img{
+  width: 100%;
+  height: 22vh;
+}
 .condicoes{
     display: flex;
     justify-content: center;

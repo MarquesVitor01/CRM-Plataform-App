@@ -1,37 +1,27 @@
 // Operador.tsx
-import React from "react";
-import Select from "react-select";
-
+import React from 'react';
 interface OperadorProps {
-  form: any;
+  form: {
+    numeroContrato: string;
+    data: string;
+    dataVencimento: string;
+    operador: string;
+    equipe: string;
+    validade: string;
+    parcelas: string;
+    valorVenda: string;
+    contrato: string;
+    formaPagamento: string;
+  };
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
+  handleSelectChange: (selectedOption: any) => void;
+  operadoresOpcoes: { value: string; label: string }[];
 }
 
-const operadoresOpcoes = [
-  { value: 'Operador 1', label: 'Operador 1' },
-  { value: 'Operador 2', label: 'Operador 2' },
-  { value: 'Operador 3', label: 'Operador 3' },
-];
-
-export const Operador: React.FC<OperadorProps> = ({ form, handleInputChange }) => {
-  const handleSelectChange = (selectedOption: any) => {
-    if (selectedOption) {
-      handleInputChange({
-        target: {
-          name: "operador",
-          value: selectedOption.value,
-        } as HTMLInputElement 
-      } as React.ChangeEvent<HTMLInputElement>); 
-    } else {
-      handleInputChange({
-        target: {
-          name: "operador",
-          value: "",
-        } as HTMLInputElement 
-      } as React.ChangeEvent<HTMLInputElement>); 
-    }
-  };
-
+export const Operador: React.FC<OperadorProps> = ({
+  form,
+  handleInputChange,
+}) => {
   return (
     <div className="row d-flex justify-content-center">
       <h4 className="text-white">Informações do Contrato</h4>
@@ -45,6 +35,8 @@ export const Operador: React.FC<OperadorProps> = ({ form, handleInputChange }) =
           name="numeroContrato"
           value={form.numeroContrato}
           onChange={handleInputChange}
+          placeholder='Inserido de forma automática a partir do cnpj/cpf'
+          readOnly
         />
       </div>
       <div className="form-group mb-3 col-md-4">
@@ -54,32 +46,48 @@ export const Operador: React.FC<OperadorProps> = ({ form, handleInputChange }) =
           className="form-control"
           id="valorVenda"
           name="valorVenda"
-          value={form.numeroContrato}
+          value={form.valorVenda}
           onChange={handleInputChange}
+          placeholder='Insira o valor da venda'
         />
       </div>
       <div className="form-group mb-3 col-md-4">
-        <label htmlFor="validade">Parcelas</label>
+        <label htmlFor="parcelas">Parcelas</label>
         <select
           className="form-control"
-          id="validade"
-          name="validade"
-          value={form.validade}
+          id="parcelas"
+          name="parcelas"
+          value={form.parcelas}
           onChange={handleInputChange}
         >
           <option value="">Selecione uma opção</option>
-          <option value="Cancelamento">1</option>
-          <option value="1 Mês">2</option>
-          <option value="3 Meses">3</option>
-          <option value="6 Meses">4</option>
-          <option value="1 Ano">5</option>
-          <option value="Cancelamento">6</option>
-          <option value="1 Mês">7</option>
-          <option value="3 Meses">8</option>
-          <option value="6 Meses">9</option>
-          <option value="1 Ano">10</option>
-          <option value="6 Meses">11</option>
-          <option value="1 Ano">12</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="9">9</option>
+          <option value="10">10</option>
+          <option value="11">11</option>
+          <option value="12">12</option>
+        </select>
+      </div>
+      <div className="form-group mb-3 col-md-4">
+        <label htmlFor="formaPagamento">Forma de Pagamento</label>
+        <select
+          className="form-control"
+          id="formaPagamento"
+          name="formaPagamento"
+          value={form.formaPagamento}
+          onChange={handleInputChange}
+        >
+          <option value="">Selecione uma opção</option>
+          <option value="Pix">Pix</option>
+          <option value="Boleto">Boleto</option>
+          <option value="Crédito">Crédito</option>
         </select>
       </div>
 
@@ -95,27 +103,27 @@ export const Operador: React.FC<OperadorProps> = ({ form, handleInputChange }) =
         />
       </div>
       <div className="form-group mb-3 col-md-4">
-        <label htmlFor="data">Data do Vencimento (dd/mm/aaaa)</label>
+        <label htmlFor="dataVencimento">Data do Vencimento (dd/mm/aaaa)</label>
         <input
           type="date"
           className="form-control"
-          id="data"
-          name="data"
-          value={form.data}
+          id="dataVencimento"
+          name="dataVencimento"
+          value={form.dataVencimento}
           onChange={handleInputChange}
         />
       </div>
 
       <div className="form-group mb-3 col-md-4">
         <label htmlFor="operador">Operador</label>
-        <Select
+        <input
+          type="text"
+          className="form-control"
           id="operador"
           name="operador"
-          options={operadoresOpcoes}
-          onChange={handleSelectChange}
-          isClearable 
-          placeholder="Selecione um operador"
-          classNamePrefix="react-select" 
+          value={form.operador}
+          onChange={handleInputChange}
+          readOnly
         />
       </div>
 
@@ -127,6 +135,7 @@ export const Operador: React.FC<OperadorProps> = ({ form, handleInputChange }) =
           id="equipe"
           name="equipe"
           value={form.equipe}
+          onChange={handleInputChange}
           readOnly
         />
       </div>
@@ -158,8 +167,8 @@ export const Operador: React.FC<OperadorProps> = ({ form, handleInputChange }) =
           onChange={handleInputChange}
         >
           <option value="">Selecione uma opção</option>
-          <option value="Cancelamento">Base</option>
-          <option value="1 Mês">Renovação</option>
+          <option value="Base">Base</option>
+          <option value="Renovacao">Renovação</option>
         </select>
       </div>
     </div>

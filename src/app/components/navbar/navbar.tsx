@@ -15,15 +15,16 @@ import "./navbar.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import foto_perfil from "../../Assets/pessoa.avif";
 import "./ScriptNav/script";
 import ScriptNav from "./ScriptNav/script";
+import { useAuth } from "../../context/AuthContext";
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [script1, setScript1] = useState(false);
   const [script2, setScript2] = useState(false);
+  const { nome, avatar } = useAuth(); 
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
@@ -66,9 +67,9 @@ export const Navbar = () => {
         <div className="sidebar-sticky">
           <div className="nav-perfil">
             <Link to={"/perfil"}>
-              <img src={foto_perfil} alt="Foto de Perfil" />
+              <img src={avatar} alt="Foto de Perfil" />
             </Link>
-            <p>Guilherme Silva</p>
+            <p>{nome}</p>
           </div>
           <ul className="nav options flex-column">
             <li className="nav-item">

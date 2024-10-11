@@ -1,92 +1,99 @@
-import React from "react";
+import { doc, getDoc } from "firebase/firestore";
+import React, { useEffect, useState } from "react";
+import { db } from "../../../firebaseConfig";
+import { useParams } from "react-router-dom";
 
 export const DadosEmpresa: React.FC = () => {
-  // Objeto com as informações da empresa
-  const empresaInfo = {
-    razaoSocial: "Churrascaria e Restaurante Vitorio - LTDA",
-    nomeFantasia: "Churrascaria e Restaurante Vitorio",
-    bairro: "Loteamento Prodoeste",
-    estado: "MT",
-    cnpj: "52.767.015/0001-83",
-    enderecoComercial: "Rodovia Br 364, 117,5",
-    cep: "78795-000",
-    cidade: "PEDRA PRETA",
-    telefone: "",
-    celular: "67984817459",
-    whatsapp: "67984817459",
-    horario: "10:30 18:00",
-    email1: "weslwyvitorio@gmail.com",
-    email2: "",
-    link: "www.google.com",
-    obs: "Teste aqui",
-    responsavel: "WESLEY DOS SANTOS VITORIO",
-    cargo: "Proprietário",
-  };
+  const { id } = useParams<{ id: string }>();
+  const [clientData, setClientData] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchClientData = async () => {
+      try {
+        if (id) {
+          const docRef = doc(db, "clientes", id);
+          const docSnap = await getDoc(docRef);
+
+          if (docSnap.exists()) {
+            setClientData(docSnap.data());
+          } else {
+            console.log("Não encontrado");
+          }
+        }
+      } catch (error) {
+        console.error("Erro ao buscar os dados do cliente: ", error);
+      }
+    };
+
+    fetchClientData();
+  }, [id]);
+
 
   return (
+    clientData && (
     <div className="dados-empresa card p-4 my-3 shadow-sm">
       <h5 className="text-center font-weight-bold">DADOS DA EMPRESA</h5>
       <div className="row">
         <div className="col-md-6 mb-3">
           <div className="p-3 bg-light rounded">
             <p>
-              <strong>RAZÃO SOCIAL:</strong> {empresaInfo.razaoSocial}
+              <strong>RAZÃO SOCIAL:</strong> {clientData.razaoSocial}
             </p>
             <p>
-              <strong>NOME FANTASIA:</strong> {empresaInfo.nomeFantasia}
+              <strong>NOME FANTASIA:</strong> {clientData.nomeFantasia}
             </p>
             <p>
-              <strong>BAIRRO:</strong> {empresaInfo.bairro}
+              <strong>BAIRRO:</strong> {clientData.bairro}
             </p>
             <p>
-              <strong>ESTADO:</strong> {empresaInfo.estado}
+              <strong>ESTADO:</strong> {clientData.estado}
             </p>
             <p>
-              <strong>CNPJ/CPF:</strong> {empresaInfo.cnpj}
+              <strong>CNPJ/CPF:</strong> {clientData.cnpj || clientData.cpf}
             </p>
             <p>
-              <strong>ENDEREÇO COMERCIAL:</strong> {empresaInfo.enderecoComercial}
+              <strong>ENDEREÇO COMERCIAL:</strong> {clientData.enderecoComercial}
             </p>
             <p>
-              <strong>CEP:</strong> {empresaInfo.cep}
+              <strong>CEP:</strong> {clientData.cep}
             </p>
             <p>
-              <strong>CIDADE:</strong> {empresaInfo.cidade}
+              <strong>CIDADE:</strong> {clientData.cidade}
             </p>
           </div>
         </div>
         <div className="col-md-6 mb-3">
           <div className="p-3 bg-light rounded">
             <p>
-              <strong>TELEFONE:</strong> {empresaInfo.telefone || "N/A"}
+              <strong>TELEFONE:</strong> {clientData.telefone || "N/A"}
             </p>
             <p>
-              <strong>CELULAR:</strong> {empresaInfo.celular}
+              <strong>CELULAR:</strong> {clientData.celular}
             </p>
             <p>
-              <strong>WHATSAPP:</strong> {empresaInfo.whatsapp}
+              <strong>WHATSAPP:</strong> {clientData.whatsapp}
             </p>
             <p>
-              <strong>HORÁRIO DE FUNCIONAMENTO:</strong> {empresaInfo.horario}
+              <strong>HORÁRIO DE FUNCIONAMENTO:</strong> {clientData.horario}
             </p>
             <p>
-              <strong>1º E-MAIL:</strong> {empresaInfo.email1}
+              <strong>1º E-MAIL:</strong> {clientData.email1}
             </p>
             <p>
-              <strong>2º E-MAIL:</strong> {empresaInfo.email2 || "N/A"}
+              <strong>2º E-MAIL:</strong> {clientData.email2 || "N/A"}
             </p>
             <p>
               <strong>LINK DA PÁGINA GOOGLE:</strong>{" "}
               <a
-                href={`https://${empresaInfo.link}`}
+                href={`https://${clientData.link}`}
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                {empresaInfo.link}
+                {clientData.link}
               </a>
             </p>
             <p>
-              <strong>OBSERVAÇÕES:</strong> {empresaInfo.obs}
+              <strong>OBSERVAÇÕES:</strong> {clientData.obs}
             </p>
           </div>
         </div>
@@ -96,12 +103,12 @@ export const DadosEmpresa: React.FC = () => {
     <div className="row">
       <div className="col-6">
         <p>
-          <strong>NOME DO RESPONSÁVEL:</strong> {empresaInfo.responsavel}
+          <strong>NOME DO RESPONSÁVEL:</strong> {clientData.responsavel}
         </p>
       </div>
       <div className="col-6">
         <p>
-          <strong>CARGO:</strong> {empresaInfo.cargo}
+          <strong>CARGO:</strong> {clientData.cargo}
         </p>
       </div>
     </div>
@@ -109,5 +116,6 @@ export const DadosEmpresa: React.FC = () => {
 </div>
 
     </div>
+    )
   );
 };

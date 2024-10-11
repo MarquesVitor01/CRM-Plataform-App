@@ -1,28 +1,89 @@
-import { faSync } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useState } from "react";
+import { faSync } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React, { useState } from 'react';
 
-interface DadosEmpresaFormProps {
-  form: any;
-  handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+interface DadosEmpresaProps {
+  form: {
+    numeroContrato: string;
+    data: string;
+    operador: string;
+    equipe: string;
+    razaoSocial: string;
+    cpf: string;
+    cnpj: string;
+    nomeFantasia: string;
+    enderecoComercial: string;
+    bairro: string;
+    cep: string;
+    estado: string;
+    cidade: string;
+    validade: string;
+    observacoes: string;
+    fixo: string;
+    celular: string;
+    whatsapp: string;
+    email1: string;
+    email2: string;
+    horarioFuncionamento: string;
+    responsavel: string;
+    cargo: string;
+    opcao1: boolean;
+    opcao2: boolean;
+    opcao3: boolean;
+    opcao4: boolean;
+  };
+  handleInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void;
+  tipoDocumento: string;
+  handleToggleDocumento: () => void;
+  isRotated: boolean;
 }
 
-export const DadosEmpresa: React.FC<DadosEmpresaFormProps> = ({
+export const DadosEmpresa: React.FC<DadosEmpresaProps> = ({
   form,
   handleInputChange,
+  tipoDocumento,
+  handleToggleDocumento,
+  isRotated,
 }) => {
-  const [tipoDocumento, setTipoDocumento] = useState<"CPF" | "CNPJ">("CPF");
-  const [isRotated, setIsRotated] = useState(false);
-  const handleToggleDocumento = () => {
-    setTipoDocumento((prev) => (prev === 'CPF' ? 'CNPJ' : 'CPF'));
-    setIsRotated(!isRotated);
+  const [formattedDocument, setFormattedDocument] = useState<string>(tipoDocumento === "CPF" ? form.cpf : form.cnpj);
+
+  const formatCNPJ = (value: string) => {
+    return value.replace(/\D/g, '').replace(/(\d{2})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1/$2').replace(/(\d{4})(\d{1,2})$/, '$1-$2');
   };
-  
+
+  const formatCPF = (value: string) => {
+    return value.replace(/\D/g, '').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+  };
+
+  const handleDocumentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+
+    const maxLength = tipoDocumento === "CPF" ? 14 : 18;
+
+    const trimmedValue = value.slice(0, maxLength);
+
+    const formattedValue = tipoDocumento === "CPF" ? formatCPF(trimmedValue) : formatCNPJ(trimmedValue);
+    
+    setFormattedDocument(formattedValue);
+
+    if (tipoDocumento === "CPF") {
+      if (form.cnpj && form.cnpj.replace(/\D/g, '') !== "") {
+        handleInputChange({ target: { name: "cnpj", value: "" } } as React.ChangeEvent<HTMLInputElement>);
+      }
+    } else {
+      if (form.cpf && form.cpf.replace(/\D/g, '') !== "") {
+        handleInputChange({ target: { name: "cpf", value: "" } } as React.ChangeEvent<HTMLInputElement>);
+      }
+    }
+
+    handleInputChange({ target: { name: tipoDocumento === "CPF" ? "cpf" : "cnpj", value: formattedValue } } as React.ChangeEvent<HTMLInputElement>);
+  };
+
+
   return (
     <div className="row d-flex justify-content-center">
       <h4 className="text-white">Dados da Empresa</h4>
 
-      {/* Razão Social */}
       <div className="form-group mb-3 col-md-4">
         <label htmlFor="razaoSocial">Razão Social</label>
         <input
@@ -36,7 +97,6 @@ export const DadosEmpresa: React.FC<DadosEmpresaFormProps> = ({
         />
       </div>
 
-      {/* Documento CPF/CNPJ */}
       <div className="form-group mb-3 col-md-4">
         <label htmlFor="documento">{tipoDocumento}</label>
         <div className="input-group">
@@ -45,8 +105,8 @@ export const DadosEmpresa: React.FC<DadosEmpresaFormProps> = ({
             className="form-control"
             id="documento"
             name={tipoDocumento === "CPF" ? "cpf" : "cnpj"}
-            value={form[tipoDocumento === "CPF" ? "cpf" : "cnpj"]}
-            onChange={handleInputChange}
+            value={formattedDocument}
+            onChange={handleDocumentChange}
             placeholder={`Insira o ${tipoDocumento}`}
           />
           <button
@@ -62,7 +122,6 @@ export const DadosEmpresa: React.FC<DadosEmpresaFormProps> = ({
         </div>
       </div>
 
-      {/* Nome Fantasia */}
       <div className="form-group mb-3 col-md-4">
         <label htmlFor="nomeFantasia">Nome Fantasia</label>
         <input
@@ -76,7 +135,6 @@ export const DadosEmpresa: React.FC<DadosEmpresaFormProps> = ({
         />
       </div>
 
-      {/* Endereço Comercial */}
       <div className="form-group mb-3 col-md-4">
         <label htmlFor="enderecoComercial">Endereço Comercial</label>
         <input
@@ -90,7 +148,6 @@ export const DadosEmpresa: React.FC<DadosEmpresaFormProps> = ({
         />
       </div>
 
-      {/* Bairro */}
       <div className="form-group mb-3 col-md-4">
         <label htmlFor="bairro">Bairro</label>
         <input
@@ -104,7 +161,6 @@ export const DadosEmpresa: React.FC<DadosEmpresaFormProps> = ({
         />
       </div>
 
-      {/* CEP */}
       <div className="form-group mb-3 col-md-4">
         <label htmlFor="cep">CEP</label>
         <input
@@ -118,7 +174,6 @@ export const DadosEmpresa: React.FC<DadosEmpresaFormProps> = ({
         />
       </div>
 
-      {/* Estado */}
       <div className="form-group mb-3 col-md-4">
         <label htmlFor="estado">Estado</label>
         <input
@@ -132,7 +187,6 @@ export const DadosEmpresa: React.FC<DadosEmpresaFormProps> = ({
         />
       </div>
 
-      {/* Cidade */}
       <div className="form-group mb-3 col-md-4">
         <label htmlFor="cidade">Cidade</label>
         <input
@@ -146,7 +200,6 @@ export const DadosEmpresa: React.FC<DadosEmpresaFormProps> = ({
         />
       </div>
 
-      {/* Telefone Fixo */}
       <div className="form-group mb-3 col-md-4">
         <label htmlFor="fixo">Telefone Fixo</label>
         <input
@@ -160,7 +213,6 @@ export const DadosEmpresa: React.FC<DadosEmpresaFormProps> = ({
         />
       </div>
 
-      {/* Celular */}
       <div className="form-group mb-3 col-md-4">
         <label htmlFor="celular">Celular</label>
         <input
@@ -174,7 +226,6 @@ export const DadosEmpresa: React.FC<DadosEmpresaFormProps> = ({
         />
       </div>
 
-      {/* Whatsapp Comercial */}
       <div className="form-group mb-3 col-md-4">
         <label htmlFor="whatsapp">Whatsapp Comercial</label>
         <input
@@ -188,7 +239,6 @@ export const DadosEmpresa: React.FC<DadosEmpresaFormProps> = ({
         />
       </div>
 
-      {/* E-mails */}
       <div className="form-group mb-3 col-md-4">
         <label htmlFor="email1">1º E-mail</label>
         <input
@@ -214,7 +264,6 @@ export const DadosEmpresa: React.FC<DadosEmpresaFormProps> = ({
         />
       </div>
 
-      {/* Horário de Funcionamento */}
       <div className="form-group mb-3 col-md-4">
         <label htmlFor="horarioFuncionamento">Horário de Funcionamento</label>
         <input
@@ -228,7 +277,6 @@ export const DadosEmpresa: React.FC<DadosEmpresaFormProps> = ({
         />
       </div>
 
-      {/* Responsável */}
       <div className="form-group mb-3 col-md-4">
         <label htmlFor="responsavel">Nome do Responsável</label>
         <input
@@ -241,8 +289,6 @@ export const DadosEmpresa: React.FC<DadosEmpresaFormProps> = ({
           placeholder="Insira o nome do responsável"
         />
       </div>
-
-      {/* Cargo */}
       <div className="form-group mb-3 col-md-4">
         <label htmlFor="cargo">Cargo</label>
         <input

@@ -5,20 +5,22 @@ import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 
 interface HeaderPerfilProps {
   nome: string;
-  fotoUrl: string;
-  login: string;
+  email: string;
+  avatar: string;
+  cargo: string;
 }
 
-const HeaderPerfil: React.FC<HeaderPerfilProps> = ({ nome, fotoUrl, login }) => {
+const HeaderPerfil: React.FC<HeaderPerfilProps> = ({ nome, avatar, cargo, email }) => {
+  console.log("Cargo no HeaderPerfil:", cargo);
   return (
     <header className="profile-header">
       <div className="profile-header-content">
-        <img src={fotoUrl} alt="Profile" className="profile-pic" />
+        <img src={avatar} alt="Profile" className="profile-pic" />
         <div className="profile-info">
           <h1 className="profile-name">{nome}</h1>
-          <p className="profile-title">Gerente de Vendas</p>
+          <p className="profile-title">{cargo}</p>
           <p className="profile-email">
-            <FontAwesomeIcon icon={faEnvelope} className="icon-email" /> {login}
+            <FontAwesomeIcon icon={faEnvelope} className="icon-email" /> {email}
           </p>
         </div>
       </div>

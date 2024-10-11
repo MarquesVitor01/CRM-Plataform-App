@@ -8,6 +8,7 @@ interface PasswordInputProps {
   placeholder?: string;
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void; 
 }
 
 export const PasswordInput: React.FC<PasswordInputProps> = ({
@@ -16,6 +17,7 @@ export const PasswordInput: React.FC<PasswordInputProps> = ({
   placeholder,
   value,
   onChange,
+  onKeyDown
 }) => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -32,6 +34,7 @@ export const PasswordInput: React.FC<PasswordInputProps> = ({
         placeholder={placeholder}
         value={value}
         onChange={onChange}
+        onKeyDown={onKeyDown}
       />
       <FontAwesomeIcon
       icon={showPassword ? faEyeSlash : faEye} 
