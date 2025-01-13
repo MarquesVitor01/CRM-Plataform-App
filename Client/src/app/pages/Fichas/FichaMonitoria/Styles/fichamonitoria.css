@@ -35,3 +35,11 @@
 .box-quest label{
     text-align: center;
 }
+
+.img-boleto{
+    justify-content: center;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    width: 210px;
+}

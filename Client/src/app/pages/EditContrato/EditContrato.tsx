@@ -38,7 +38,8 @@ interface ClientData {
   cargo: string;
   parcelas: string;
   dataVencimento: string;
-  qrcodeText: string;
+  // qrcodeText: string;
+  linkGravacao: string;
   linkGoogle: string;
   renovacaoAutomatica: string;
   criacao: string;

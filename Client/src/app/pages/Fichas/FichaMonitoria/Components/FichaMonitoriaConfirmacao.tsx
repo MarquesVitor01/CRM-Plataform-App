@@ -5,12 +5,15 @@ interface InfoConfirmacao {
   monitoriaConcluidaYes: boolean;
   monitoriaConcluidaNo: boolean;
   nomeMonitor: string;
-  qrcodeText: string;
+  // qrcodeText: string;
+  linkGravacao: string;
+  imagemUrl?: string;
 }
 
 interface InfoConfirmacaoProps {
   form: InfoConfirmacao | null;
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const questions = [
@@ -26,6 +29,7 @@ const questions = [
 export const FichaMonitoriaConfirmacao: React.FC<InfoConfirmacaoProps> = ({
   form,
   handleInputChange,
+  handleImageUpload,
 }) => {
   if (!form) return null;
 
@@ -74,22 +78,52 @@ export const FichaMonitoriaConfirmacao: React.FC<InfoConfirmacaoProps> = ({
           />
         </div>
         <div className="col-md-6 box-quest">
-          <label>Informe o Qrcode:</label>
+          <label>Informe o Link da Gravação:</label>
           <input
             className="form-control"
-            id="qrcodeText"
-            name="qrcodeText"
-            value={form.qrcodeText}
+            id="linkGravacao"
+            name="linkGravacao"
+            value={form.linkGravacao}
             onChange={handleInputChange}
             placeholder="Digite seu nome aqui"
           />
         </div>
-        {form.qrcodeText && (
+                <div className="col-md-6 box-quest">
+          <label>Informe o Link da Gravação:</label>
+          <input
+            className="form-control"
+            id="linkGravacao"
+            name="linkGravacao"
+            value={form.linkGravacao}
+            onChange={handleInputChange}
+            placeholder="Digite seu nome aqui"
+          />
+        </div>
+        <div className="col-md-6 box-quest">
+          <label>Upload de Imagem:</label>
+          <input
+            className="form-control"
+            type="file"
+            id="imagemUpload"
+            accept="image/*"
+            onChange={handleImageUpload}
+          />
+          {form.imagemUrl && (
+            <div className="mt-3 img-boleto">
+              <img
+                src={form.imagemUrl}
+                alt="Preview"
+                className="img-fluid mt-2"
+              />
+            </div>
+          )}
+        </div>
+        {/* {form.qrcodeText && (
           <div className="mt-3 justify-content-center d-flex flex-column align-items-center">
             <h5>QR Code:</h5>
             <QRCodeSVG value={form.qrcodeText} size={128} />
           </div>
-        )}
+        )} */}
       </div>
     </>
   );

@@ -3,7 +3,8 @@ import { QRCodeSVG } from 'qrcode.react';
 
 interface VendaData {
   observacoes: string;
-  qrcodeText: string;
+  // qrcodeText: string;
+  linkGravacao: string;
   renovacaoAutomatica: string;
   criacao: string;
   ctdigital: string;
@@ -208,20 +209,20 @@ export const EditInfoAdicionais: React.FC<EditInfoAdicionaisProps> = ({ form, ha
       </div>
 
       <InputField
-        id="qrcode"
-        label="Texto para QR Code"
-        name="qrcodeText"
-        value={form.qrcodeText}
+        id="linkGravacao"
+        label="Url para Link da gravação"
+        name="linkGravacao"
+        value={form.linkGravacao}
         onChange={handleInputChange}
-        placeholder="Digite o texto para gerar o QR Code..."
+        placeholder="Digite o texto para gerar o Link"
       />
 
-      {form.qrcodeText && (
+      {/* {form.qrcodeText && (
         <div className="mt-3">
           <h5>QR Code:</h5>
           <QRCodeSVG value={form.qrcodeText} size={128} />
         </div>
-      )}
+      )} */}
 
     </div>
   );

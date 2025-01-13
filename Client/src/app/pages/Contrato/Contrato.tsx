@@ -7,28 +7,33 @@ import { Bonus } from "./Components/Bonus";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFilePdf } from "@fortawesome/free-solid-svg-icons";
 import html2pdf from "html2pdf.js"; 
+import { Infoqr } from "./Components/Infoqr";
 
 const Contrato: FC = () => {
   const downloadPDF = () => {
     const contratoElement = document.getElementById("contrato");
     const condicoesElement = document.querySelector('.condicoes p') as HTMLElement;
     const bgInfosContrato = document.querySelector('.bg-infos-contrato') as HTMLElement;
-
+  
     if (contratoElement && condicoesElement && bgInfosContrato) {
       const originalCondicoesWidth = condicoesElement.style.width;
       const originalPadding = bgInfosContrato.style.padding;
-
+  
       condicoesElement.style.width = "680px";
       bgInfosContrato.style.padding = "0"; 
-
+  
       const opt = {
         margin: 0.5,
         filename: 'contrato.pdf',
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2 },
+        html2canvas: { 
+          scale: 2, 
+          useCORS: true, // Habilitar CORS para capturar imagens de domínios externos
+          logging: true,  // Para debugging: verificar se as imagens estão sendo carregadas
+        },
         jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
       };
-
+  
       html2pdf()
         .set(opt)
         .from(contratoElement)
@@ -45,12 +50,14 @@ const Contrato: FC = () => {
       alert("Erro: Um ou mais elementos não foram encontrados.");
     }
   };
+  
 
   return (
     <div className="bg-contrato">
       <div className="bg-infos-contrato" id="contrato">
       <Header />
         <DadosEmpresa />
+        <Infoqr />
         <Condicoes />
         <Bonus />
       </div>
