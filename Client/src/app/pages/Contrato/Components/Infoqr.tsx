@@ -44,14 +44,14 @@ export const Infoqr: React.FC = () => {
   };
   return (
     clientData && (
-      <div className="bonus card text-center mt-2">
+      <div className="bonus card text-center mt-5">
         <h5 className="text-white ">GRAVAÇÃO</h5>
         <div className="form-group">
           <h6>
             <strong>
               ACEITE REALIZADO DE FORMA VERBAL; 
               <br />PARA VERIFICAR SUA ADESÃO CLIQUE
-              NO BOTÃO A BAIXO
+              NO BOTÃO A BAIXO OU ESCANEIE O QRCODE DA GRAVAÇÃO
             </strong>
           </h6>
         </div>
@@ -68,6 +68,14 @@ export const Infoqr: React.FC = () => {
             />
           </div>
         </a>
+
+        <div className="mb-2">
+          {clientData.linkGravacao && (
+            <div className="">
+              <QRCodeSVG value={clientData.linkGravacao} size={90} />
+            </div>
+          )}
+        </div>
       </div>
     )
   );

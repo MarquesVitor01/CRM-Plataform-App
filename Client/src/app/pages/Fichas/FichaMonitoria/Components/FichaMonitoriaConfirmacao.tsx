@@ -88,7 +88,7 @@ export const FichaMonitoriaConfirmacao: React.FC<InfoConfirmacaoProps> = ({
             placeholder="Digite seu nome aqui"
           />
         </div>
-                <div className="col-md-6 box-quest">
+                {/* <div className="col-md-6 box-quest">
           <label>Informe o Link da Gravação:</label>
           <input
             className="form-control"
@@ -98,8 +98,8 @@ export const FichaMonitoriaConfirmacao: React.FC<InfoConfirmacaoProps> = ({
             onChange={handleInputChange}
             placeholder="Digite seu nome aqui"
           />
-        </div>
-        <div className="col-md-6 box-quest">
+        </div> */}
+        {/* <div className="col-md-6 box-quest">
           <label>Upload de Imagem:</label>
           <input
             className="form-control"
@@ -117,7 +117,7 @@ export const FichaMonitoriaConfirmacao: React.FC<InfoConfirmacaoProps> = ({
               />
             </div>
           )}
-        </div>
+        </div> */}
         {/* {form.qrcodeText && (
           <div className="mt-3 justify-content-center d-flex flex-column align-items-center">
             <h5>QR Code:</h5>

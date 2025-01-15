@@ -135,9 +135,6 @@ export const DadosEmpresa: React.FC = () => {
                   {clientData.linkGoogle}
                 </a>
               </p>
-              <p className="obs">
-                <strong>OBSERVAÇÕES:</strong> {clientData.observacoes}
-              </p>
             </div>
           </div>
         </div>
@@ -159,7 +156,19 @@ export const DadosEmpresa: React.FC = () => {
           </div>
         </div>
 
-        <div className="d-flex align-items-center my-3 upper-span">
+        <div className="col-12 p-2">
+          <div className="bg-light rounded">
+            <div className="row">
+              <div className="col-12">
+                <p className="obs">
+                  <strong>OBSERVAÇÕES:</strong> {clientData.observacoes}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="d-flex align-items-center my-5 upper-span">
           <div className="flex-grow-1 border-top"></div>
           <span className="mx-5 font-weight-bold">
             RENOVAÇÃO AUTOMÁTICA: {clientData.renovacaoAutomatica}

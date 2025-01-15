@@ -44,7 +44,7 @@ export const Bonus: React.FC = () => {
   };
   return (
     clientData && (
-      <div className="bonus card text-center mt-2">
+      <div className="bonus card text-center ">
         <h5 className="text-white ">CONDIÇÕES DE PAGAMENTO</h5>
         <div className="d-flex justify-content-center my-1">
           {clientData.criacao === "sim" && (
@@ -125,12 +125,43 @@ export const Bonus: React.FC = () => {
           CONTRATANTE.
         </p>
 
-        <div className="mt-3 img-boleto">
-          <img
-            src={clientData.imagemUrl}
-            alt="Preview"
-            className="img-fluid mt-2"
-          />
+        <div className="boleto-container">
+          <div className="boleto-logo">
+            <img src={require("../../../Assets/logo-efi.png")} alt="EFI Pay" />
+          </div>
+          <div className="boleto-header mt-3">
+            <div className="boleto-info">
+              <div className="header-boleto">
+                <p className="mt-3">
+                  Código do boleto: <br />
+                  {clientData.boleto?.[0]?.barcode}
+                </p>
+                <p className="mt-3">
+                  Link do boleto: <br />
+                  <a href={clientData.boleto?.[0]?.billetLink}>
+                    {clientData.boleto?.[0]?.billetLink}
+                  </a>
+                </p>
+              </div>
+              <div className="code-boleto">
+                <p className="mt-3">
+                  QrCode para pagamento:
+                  {clientData.boleto?.[0]?.pix && (
+                    <div className="mt-1">
+                      <QRCodeSVG
+                        value={clientData.boleto?.[0]?.pix}
+                        size={105}
+                      />
+                    </div>
+                  )}
+                </p>
+              </div>
+              <p className="mt-3">
+                Data de vencimento:{" "}
+                {formatDateToBrazilian(clientData.dataVencimento)}
+              </p>
+            </div>
+          </div>
         </div>
         <h5 className="mt-2">CENTRAL DE ATENDIMENTO</h5>
         <p>0800 050 0069 / 0800 580 2766 / (11) 3195-8710</p>

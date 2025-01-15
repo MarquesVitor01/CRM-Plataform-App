@@ -15,6 +15,7 @@ import "react-toastify/dist/ReactToastify.css";
 import "./Components/Styles/add.css";
 import { useAuth } from "../../context/AuthContext";
 import { InfoAdicionais } from "./Components/InfoAdicionais";
+import { Button, Modal } from "react-bootstrap";
 
 export const Add = () => {
   const userId = auth.currentUser?.uid;
@@ -67,6 +68,31 @@ export const Add = () => {
   const [error, setError] = useState<string | null>(null);
   const [tipoDocumento, setTipoDocumento] = useState("CPF");
   const [redirect, setRedirect] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [novoId, setNovoId] = useState<string | null>(null);
+
+  const [senha, setSenha] = useState("");
+  const [senhaCorreta, setSenhaCorreta] = useState("068543"); 
+  const [erroSenha, setErroSenha] = useState("");
+
+  const handleSenhaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSenha(e.target.value);
+    setErroSenha(""); 
+  };
+
+  const handleSaveWithPassword = async () => {
+    if (senha === senhaCorreta) {
+      if (novoId) {
+        const novoClienteRef = doc(db, "vendas", novoId);
+        await setDoc(novoClienteRef, form);
+        toast.success("Cliente salvo com um novo ID!");
+        handleModalClose();
+        setRedirect(true);
+      }
+    } else {
+      setErroSenha("Senha incorreta. Entre em contato com seu supervisor");
+    }
+  };
 
   const handleInputChange = (
     e: React.ChangeEvent<
@@ -77,7 +103,7 @@ export const Add = () => {
 
     setForm((prev) => {
       const updatedForm = { ...prev, [name]: value };
-  
+
       if (name === "valorVenda" || name === "parcelas") {
         const valorVenda = parseFloat(
           name === "valorVenda" ? value : prev.valorVenda || "0"
@@ -85,12 +111,14 @@ export const Add = () => {
         const parcelas = parseInt(
           name === "parcelas" ? value : prev.parcelas || "1"
         );
-  
+
         if (!isNaN(valorVenda) && parcelas > 0) {
           if (parcelas === 1) {
             updatedForm.valorParcelado = Math.round(valorVenda).toString();
           } else {
-            updatedForm.valorParcelado = Math.round(valorVenda / parcelas).toString();
+            updatedForm.valorParcelado = Math.round(
+              valorVenda / parcelas
+            ).toString();
           }
         }
       }
@@ -121,7 +149,7 @@ export const Add = () => {
   const handleNext = () => {
     setStep((prevStep) => prevStep + 1);
   };
- 
+
   const handleBack = () => {
     setStep((prevStep) => prevStep - 1);
   };
@@ -130,34 +158,26 @@ export const Add = () => {
     window.history.back();
   };
 
+  const handleModalClose = () => setShowModal(false);
+  const handleModalShow = () => setShowModal(true);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
-  
+
     try {
       const clienteRef = doc(db, "vendas", form.numeroContrato);
       const docSnap = await getDoc(clienteRef);
-  
+
       if (docSnap.exists()) {
-        const userConfirmed = window.confirm(
-          `O número de contrato ${form.numeroContrato} já existe. Deseja salvar o cliente com um novo ID?`
-        );
-  
-        if (userConfirmed) {
-          const novoId = `${form.numeroContrato}_${Date.now()}`; // Cria um novo ID único
-          const novoClienteRef = doc(db, "vendas", novoId);
-          await setDoc(novoClienteRef, form);
-          toast.success("Cliente salvo com um novo ID!");
-        } else {
-          toast.info("Ação cancelada pelo usuário.");
-        }
+        setNovoId(`${form.numeroContrato}_${Date.now()}`); 
+        handleModalShow(); 
       } else {
         await setDoc(clienteRef, form);
         toast.success("Cliente salvo com sucesso!");
+        setRedirect(true);
       }
-  
-      setRedirect(true);
     } catch (error) {
       console.error("Erro ao salvar cliente:", error);
       setError("Erro ao salvar cliente. Tente novamente.");
@@ -165,7 +185,6 @@ export const Add = () => {
       setLoading(false);
     }
   };
-  
 
   if (redirect) {
     return <Navigate to={"/vendas"} />;
@@ -239,6 +258,33 @@ export const Add = () => {
         </form>
         <ToastContainer />
       </div>
+      <Modal show={showModal} onHide={handleModalClose} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirmação</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>
+            O número de contrato <strong>{form.numeroContrato}</strong> já
+            existe. Para salvar com um novo ID, confirme sua senha abaixo:
+          </p>
+          <input
+            type="password"
+            placeholder="Digite sua senha"
+            value={senha}
+            onChange={handleSenhaChange}
+            className="form-control mt-3"
+          />
+          {erroSenha && <p className="text-danger mt-2">{erroSenha}</p>}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleModalClose}>
+            Cancelar
+          </Button>
+          <Button variant="primary" onClick={handleSaveWithPassword}>
+            Confirmar e Salvar
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };

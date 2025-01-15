@@ -63,6 +63,16 @@ export const DadosEmpresa: React.FC<DadosEmpresaProps> = ({
       .substring(0, 18);
   };
 
+  const handleEmailChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ): void => {
+    const { name, value } = e.target;
+    const sanitizedValue = value.replace(/\s+/g, ""); // Remove todos os espaços
+    handleInputChange({
+      target: { name, value: sanitizedValue },
+    } as React.ChangeEvent<HTMLInputElement>);
+  };
+
 
   const handleDocumentChange = (
     e: React.ChangeEvent<HTMLInputElement>
@@ -250,7 +260,7 @@ export const DadosEmpresa: React.FC<DadosEmpresaProps> = ({
           id="email1"
           name="email1"
           value={form.email1}
-          onChange={handleInputChange}
+          onChange={handleEmailChange}
           placeholder="Insira o primeiro e-mail"
         />
       </div>
@@ -262,7 +272,7 @@ export const DadosEmpresa: React.FC<DadosEmpresaProps> = ({
           id="email2"
           name="email2"
           value={form.email2}
-          onChange={handleInputChange}
+          onChange={handleEmailChange}
           placeholder="Insira o segundo e-mail"
         />
       </div>

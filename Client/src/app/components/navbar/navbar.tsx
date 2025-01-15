@@ -1,4 +1,17 @@
-import { faBars, faHome, faChartLine, faTachometerAlt, faBullhorn, faMoneyBillWave, faHandHoldingUsd, faTimes, faFileCode, faFileAlt, faClose } from "@fortawesome/free-solid-svg-icons";
+import {
+  faBars,
+  faHome,
+  faChartLine,
+  faTachometerAlt,
+  faBullhorn,
+  faMoneyBillWave,
+  faHandHoldingUsd,
+  faTimes,
+  faFileCode,
+  faFileAlt,
+  faClose,
+  faClock,
+} from "@fortawesome/free-solid-svg-icons";
 import "./navbar.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
@@ -131,6 +144,16 @@ export const Navbar = () => {
                 </Link>
               </li>
             )}
+            <li className="nav-item">
+              <Link
+                className="nav-link icon-tooltip"
+                to="/ponto"
+                data-tooltip="Ponto"
+              >
+                <FontAwesomeIcon icon={faClock} />
+                <span>Ponto</span>
+              </Link>
+            </li>
           </ul>
           <ul className="nav flex-column">
             {(cargo === "vendas" || userId === adminId) && (
@@ -160,8 +183,18 @@ export const Navbar = () => {
       </nav>
 
       <ScriptNav isOpen={isModalOpen} onClose={closeModal}>
-        <button className="btn btn-primary" onClick={() => handleScriptChange("Script 1")}>Script 1</button>
-        <button className="btn btn-primary" onClick={() => handleScriptChange("Script 2")}>Script 2</button>
+        <button
+          className="btn btn-primary"
+          onClick={() => handleScriptChange("Script 1")}
+        >
+          Script 1
+        </button>
+        <button
+          className="btn btn-primary"
+          onClick={() => handleScriptChange("Script 2")}
+        >
+          Script 2
+        </button>
         {script1 && (
           <div className="box-script">
             <p className="close-script">

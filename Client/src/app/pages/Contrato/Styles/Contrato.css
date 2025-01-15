@@ -17,8 +17,8 @@
 }
 
 .header img {
-  width: 100%;
-  height: 22vh;
+  width: 90%;
+  height: 10vh;
 }
 
 .condicoes {
@@ -26,7 +26,7 @@
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  margin-top: 130px;
+  margin-top: 30px;
 }
 
 .condicoes p {
@@ -51,6 +51,7 @@
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  margin-top: 220px;
 }
 
 .bonus h5 {
@@ -71,4 +72,38 @@
 
 .upper-span span{
   text-transform: uppercase!important;
+}
+
+
+.boleto-container {
+  font-family: Arial, sans-serif;
+  max-width: 700px;
+  margin: 20px auto;
+  padding: 20px;
+  border: 2px solid #333;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.boleto-header {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.boleto-logo img {
+  width:70px ;
+}
+
+
+@media print {
+  a {
+    text-decoration: none;
+    color: black;
+    pointer-events: none; /* Desativa interatividade */
+  }
 }

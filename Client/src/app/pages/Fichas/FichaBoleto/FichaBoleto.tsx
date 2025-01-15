@@ -15,6 +15,7 @@ interface BoletoData {
   pdfLink: string;
   status: string;
   chargeId: string;
+  pix: string;
 }
 
 export const FichaBoleto: React.FC = () => {
@@ -112,6 +113,7 @@ export const FichaBoleto: React.FC = () => {
   
         boletosGerados.push({
           barcode: data.barcode,
+          pix : data.pix.qrcode,
           billetLink: data.billet_link,
           expireAt: vencimento.toISOString(),
           pdfLink: data.pdf.charge,
@@ -245,6 +247,9 @@ export const FichaBoleto: React.FC = () => {
                     {" "}
                     <p>
                       <strong>Código de barra:</strong> {boleto.barcode}
+                    </p>
+                    <p>
+                      <strong>Pix:</strong> {boleto.pix}
                     </p>
                     <p>
                       <strong>Link do boleto:</strong>{" "}

@@ -16,12 +16,13 @@ import {
   FichaMarketing,
   FichaFinanceiro,
   FichaCobranca,
-  FichaBoleto
+  FichaBoleto,
 } from "../pages";
-import Contrato from "../pages/Contrato/Contrato";
+import { Contrato } from "../pages";
 import { Financeiro } from "../pages/dashboard/financeiro/Financeiro";
 import { Cobranca } from "../pages/dashboard/cobranca/Cobranca";
 import { Comprovantes } from "../pages/Comprovantes/Comprovantes";
+
 
 export const LocalRoutes: React.FC = () => {
   return (
