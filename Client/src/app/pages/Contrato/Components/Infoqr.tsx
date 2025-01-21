@@ -44,38 +44,38 @@ export const Infoqr: React.FC = () => {
   };
   return (
     clientData && (
-      <div className="bonus card text-center mt-5">
+      <div className="bonus card text-center gravacao">
         <h5 className="text-white ">GRAVAÇÃO</h5>
         <div className="form-group">
           <h6>
             <strong>
-              ACEITE REALIZADO DE FORMA VERBAL; 
-              <br />PARA VERIFICAR SUA ADESÃO CLIQUE
-              NO BOTÃO A BAIXO OU ESCANEIE O QRCODE DA GRAVAÇÃO
+              ACEITE REALIZADO DE FORMA VERBAL;
+              <br />
+              PARA VERIFICAR SUA ADESÃO CLIQUE NO BOTÃO A BAIXO OU ESCANEIE O
+              QRCODE DA GRAVAÇÃO
             </strong>
           </h6>
         </div>
-        <a
-          href={clientData.linkGravacao}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <div className="">
-            <img
-              src={require("../../../Assets/play.png")}
-              alt="WhatsApp"
-              style={{ width: "100px" }}
-            />
-          </div>
-        </a>
+        <div className="qrcode-container">
+  <a
+    href={clientData.linkGravacao}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="qrcode-link"
+  >
+    <img
+      src={require("../../../Assets/play.png")}
+      alt="WhatsApp"
+      style={{ width: "100px" }}
+    />
+    {clientData.linkGravacao && (
+      <div className="qrcode">
+        <QRCodeSVG value={clientData.linkGravacao} size={90} />
+      </div>
+    )}
+  </a>
+</div>
 
-        <div className="mb-2">
-          {clientData.linkGravacao && (
-            <div className="">
-              <QRCodeSVG value={clientData.linkGravacao} size={90} />
-            </div>
-          )}
-        </div>
       </div>
     )
   );

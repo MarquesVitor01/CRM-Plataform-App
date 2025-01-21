@@ -29,7 +29,7 @@
   margin-top: 30px;
 }
 
-.condicoes p {
+.condicoes .text-condicoes {
   width: 900px;
   font-size: 12px;
   text-align: justify;
@@ -50,11 +50,10 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-direction: column;
-  margin-top: 220px;
 }
 
-.bonus h5 {
+.bonus h5,
+.condicoes h5 {
   width: 652px;
   background-color: #59afd6;
   padding-block: 7px;
@@ -97,6 +96,30 @@
 
 .boleto-logo img {
   width:70px ;
+}
+
+.gravacao{
+  margin-top: 300px;
+}
+
+.qrcode-container {
+  display: flex;
+  align-items: center;
+}
+
+.qrcode-link {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Ajuste o espaço entre a imagem e o QR code */
+}
+
+.qrcode img {
+  width: 100px;
+}
+
+.qrcode svg {
+  width: 90px; /* Tamanho do QR Code */
+  height: 90px; /* Tamanho do QR Code */
 }
 
 

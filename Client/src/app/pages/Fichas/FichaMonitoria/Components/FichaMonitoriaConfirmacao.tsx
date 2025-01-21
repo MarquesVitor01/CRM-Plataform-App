@@ -85,7 +85,7 @@ export const FichaMonitoriaConfirmacao: React.FC<InfoConfirmacaoProps> = ({
             name="linkGravacao"
             value={form.linkGravacao}
             onChange={handleInputChange}
-            placeholder="Digite seu nome aqui"
+            placeholder="Insira o link da gravação"
           />
         </div>
                 {/* <div className="col-md-6 box-quest">

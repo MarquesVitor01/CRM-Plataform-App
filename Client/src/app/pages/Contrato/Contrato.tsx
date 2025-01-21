@@ -56,9 +56,9 @@ export const Contrato: FC = () => {
       <div className="bg-infos-contrato" id="contrato">
         <Header />
         <DadosEmpresa />
+        <Bonus />
         <Infoqr />
         <Condicoes />
-        <Bonus />
       </div>
       <button className="btn btn-danger mt-4" onClick={downloadPDF}>
         <FontAwesomeIcon icon={faFilePdf} /> Baixar PDF

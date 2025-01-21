@@ -72,22 +72,40 @@ export const Add = () => {
   const [novoId, setNovoId] = useState<string | null>(null);
 
   const [senha, setSenha] = useState("");
-  const [senhaCorreta, setSenhaCorreta] = useState("068543"); 
+  const [senhaCorreta, setSenhaCorreta] = useState("068543");
   const [erroSenha, setErroSenha] = useState("");
+  const [nomeAutorizado, setNomeAutorizado] = useState("");
+  const [erroNomeAutorizado, setErroNomeAutorizado] = useState("");
+  const [senhaHabilitada, setSenhaHabilitada] = useState(false);
 
   const handleSenhaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSenha(e.target.value);
-    setErroSenha(""); 
+    setErroSenha("");
   };
 
   const handleSaveWithPassword = async () => {
     if (senha === senhaCorreta) {
       if (novoId) {
-        const novoClienteRef = doc(db, "vendas", novoId);
-        await setDoc(novoClienteRef, form);
-        toast.success("Cliente salvo com um novo ID!");
-        handleModalClose();
-        setRedirect(true);
+        if (!nomeAutorizado) {
+          setErroNomeAutorizado("O nome de quem autorizou é obrigatório.");
+          return;
+        }
+
+        const dadosAtualizados = {
+          ...form,
+          nomeAutorizado, 
+        };
+
+        try {
+          const novoClienteRef = doc(db, "vendas", novoId);
+          await setDoc(novoClienteRef, dadosAtualizados); 
+          toast.success("Cliente salvo com um novo ID!");
+          handleModalClose();
+          setRedirect(true);
+        } catch (error) {
+          console.error("Erro ao salvar os dados:", error);
+          toast.error("Erro ao salvar os dados. Tente novamente.");
+        }
       }
     } else {
       setErroSenha("Senha incorreta. Entre em contato com seu supervisor");
@@ -171,8 +189,8 @@ export const Add = () => {
       const docSnap = await getDoc(clienteRef);
 
       if (docSnap.exists()) {
-        setNovoId(`${form.numeroContrato}_${Date.now()}`); 
-        handleModalShow(); 
+        setNovoId(`${form.numeroContrato}_${Date.now()}`);
+        handleModalShow();
       } else {
         await setDoc(clienteRef, form);
         toast.success("Cliente salvo com sucesso!");
@@ -259,32 +277,59 @@ export const Add = () => {
         <ToastContainer />
       </div>
       <Modal show={showModal} onHide={handleModalClose} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>Confirmação</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p>
-            O número de contrato <strong>{form.numeroContrato}</strong> já
-            existe. Para salvar com um novo ID, confirme sua senha abaixo:
-          </p>
-          <input
-            type="password"
-            placeholder="Digite sua senha"
-            value={senha}
-            onChange={handleSenhaChange}
-            className="form-control mt-3"
-          />
-          {erroSenha && <p className="text-danger mt-2">{erroSenha}</p>}
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleModalClose}>
-            Cancelar
-          </Button>
-          <Button variant="primary" onClick={handleSaveWithPassword}>
-            Confirmar e Salvar
-          </Button>
-        </Modal.Footer>
-      </Modal>
+  <Modal.Header closeButton>
+    <Modal.Title>Confirmação</Modal.Title>
+  </Modal.Header>
+  <Modal.Body>
+    <p>
+      O número de contrato <strong>{form.numeroContrato}</strong> já
+      existe. Para salvar com um novo ID, confirme sua senha abaixo:
+    </p>
+    
+    {/* Campo para o nome da pessoa que autorizou */}
+    <input
+      type="text"
+      placeholder="Nome de quem autorizou"
+      value={nomeAutorizado}
+      onChange={(e) => {
+        setNomeAutorizado(e.target.value);
+        if (e.target.value.length >= 4) {
+          setSenhaHabilitada(true);
+        } else {
+          setSenhaHabilitada(false);
+        }
+      }}
+      className="form-control mt-3"
+    />
+    {erroNomeAutorizado && (
+      <p className="text-danger mt-2">{erroNomeAutorizado}</p>
+    )}
+
+    {/* Campo para a senha */}
+    <input
+      type="password"
+      placeholder="Digite sua senha"
+      value={senha}
+      onChange={handleSenhaChange}
+      className="form-control mt-3"
+      disabled={!senhaHabilitada} 
+    />
+    {erroSenha && <p className="text-danger mt-2">{erroSenha}</p>}
+  </Modal.Body>
+  <Modal.Footer>
+    <Button variant="secondary" onClick={handleModalClose}>
+      Cancelar
+    </Button>
+    <Button
+      variant="primary"
+      onClick={handleSaveWithPassword}
+      disabled={!senhaHabilitada}
+    >
+      Confirmar e Salvar
+    </Button>
+  </Modal.Footer>
+</Modal>
+
     </div>
   );
 };
