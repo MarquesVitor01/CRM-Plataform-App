@@ -32,7 +32,7 @@ export const Condicoes: React.FC = () => {
 
   return (
     clientData && (
-      <div className="condicoes">
+      <div className="condicoes card p-4">
         <h2>CONDIÇÕES</h2>
         <p className="text-condicoes">
           {" "}
@@ -83,7 +83,7 @@ export const Condicoes: React.FC = () => {
         <p className="text-center text-decoration-underline fw-bold">
           CLIQUE NA IMAGEM ACIMA PARA VERIFICAR OS TERMOS
         </p>
-        <div className="mx-auto text-center">
+        <div className="mx-auto w-100 text-center">
           <h5 className="mt-2">CENTRAL DE ATENDIMENTO</h5>
           <p>0800 050 0069 / 0800 580 2766 / (11) 3195-8710</p>
           <p>

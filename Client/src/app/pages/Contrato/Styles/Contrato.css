@@ -9,11 +9,18 @@
 .bg-infos-contrato {
   background-color: #fff;
 }
+.page-break {
+  page-break-before: always; /* Força a quebra de página antes deste elemento */
+}
 
 .dados-empresa h5 {
   background-color: #59afd6;
   padding-block: 10px;
   color: #fff;
+}
+
+.dados-empresa p {
+  font-size: 15px;
 }
 
 .header img {
@@ -26,7 +33,7 @@
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  margin-top: 30px;
+  margin-top: 50px;
 }
 
 .condicoes .text-condicoes {
@@ -54,7 +61,7 @@
 
 .bonus h5,
 .condicoes h5 {
-  width: 652px;
+  width: 100%;
   background-color: #59afd6;
   padding-block: 7px;
   color: #Fff;
@@ -99,7 +106,9 @@
 }
 
 .gravacao{
-  margin-top: 300px;
+  margin-top: 20px;
+  display: flex;
+  gap: 20px;
 }
 
 .qrcode-container {
@@ -120,6 +129,10 @@
 .qrcode svg {
   width: 90px; /* Tamanho do QR Code */
   height: 90px; /* Tamanho do QR Code */
+}
+
+.obs{
+  font-size: 14px;
 }
 
 

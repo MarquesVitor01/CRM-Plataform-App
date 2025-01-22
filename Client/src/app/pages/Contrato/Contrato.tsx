@@ -19,7 +19,7 @@ export const Contrato: FC = () => {
       const originalCondicoesWidth = condicoesElement.style.width;
       const originalPadding = bgInfosContrato.style.padding;
 
-      condicoesElement.style.width = "680px";
+      condicoesElement.style.width = "700px";
       bgInfosContrato.style.padding = "0";
 
       const opt = {
@@ -56,8 +56,10 @@ export const Contrato: FC = () => {
       <div className="bg-infos-contrato" id="contrato">
         <Header />
         <DadosEmpresa />
+        <div className="page-break"></div> 
         <Bonus />
         <Infoqr />
+        <div className="page-break"></div>
         <Condicoes />
       </div>
       <button className="btn btn-danger mt-4" onClick={downloadPDF}>
@@ -65,4 +67,5 @@ export const Contrato: FC = () => {
       </button>
     </div>
   );
+  
 };

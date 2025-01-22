@@ -29,22 +29,22 @@ export const Bonus: React.FC = () => {
     fetchClientData();
   }, [id]);
 
-  // Função para formatar a data no formato brasileiro
   const formatDateToBrazilian = (dateString: string) => {
     const date = new Date(dateString);
-    date.setHours(date.getHours() + 3); // Ajuste para o horário de Brasília, se necessário
+    date.setHours(date.getHours() + 3);
     const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // meses começam do zero
+    const month = String(date.getMonth() + 1).padStart(2, "0"); 
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
   };
+  
 
   const formatValor = (value: string): string => {
     return value.replace(/\D/g, "").replace(/(\d)(\d{2})$/, "$1,$2");
   };
   return (
     clientData && (
-      <div className="bonus card text-center ">
+      <div className="bonus card text-center p-4">
         <h5 className="text-white ">CONDIÇÕES DE PAGAMENTO</h5>
         <div className="d-flex justify-content-center my-1">
           {clientData.criacao === "sim" && (
@@ -163,17 +163,6 @@ export const Bonus: React.FC = () => {
             </div>
           </div>
         </div>
-        <h5 className="mt-2">CENTRAL DE ATENDIMENTO</h5>
-        <p>0800 050 0069 / 0800 580 2766 / (11) 3195-8710</p>
-        <p>
-          <a href="mailto:MARKETING@GRUPOMAPSEMPRESAS.com.br">
-            MARKETING@GRUPOMAPSEMPRESAS.com.br
-          </a>
-          <br />
-          <a href="mailto:CONTATO@GRUPOMAPSEMPRESAS.com.br">
-            CONTATO@GRUPOMAPSEMPRESAS.com.br
-          </a>
-        </p>
         {/* <p>PARA ATENDIMENTO VIA WHATSAPP BASTA CLICAR NO ÍCONE ABAIXO:</p>
         <a
           href="https://wa.link/ulgll4"

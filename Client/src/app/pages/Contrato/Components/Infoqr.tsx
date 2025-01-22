@@ -44,7 +44,7 @@ export const Infoqr: React.FC = () => {
   };
   return (
     clientData && (
-      <div className="bonus card text-center gravacao">
+      <div className="bonus card text-center gravacao p-4">
         <h5 className="text-white ">GRAVAÇÃO</h5>
         <div className="form-group">
           <h6>
