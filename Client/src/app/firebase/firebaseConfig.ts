@@ -20,7 +20,7 @@ const firebaseConfig = {
   // measurementId: "G-XRE4YMX1GW"
 };
 
-console.log(firebaseConfig); // Verifique se a chave da API está sendo lida corretamente
+
 
 
 const app = initializeApp(firebaseConfig);
