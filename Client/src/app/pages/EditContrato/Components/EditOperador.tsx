@@ -14,6 +14,8 @@ interface VendaData {
   valorParcelado: string;
   grupo: string;
   account: string;
+  diaData: string;
+  valorExtenso: string;
 }
 
 interface EditOperadorProps {
@@ -252,8 +254,37 @@ export const EditOperador: React.FC<EditOperadorProps> = ({
         options={[
           { value: "Base", label: "Base" },
           { value: "Renovacao", label: "Renovação" },
+          { value: "Recorencia", label: "Base - Recorrência" },
         ]}
       />
+            {form.contrato === "Recorencia" && (
+        <div className="form-group mb-3 col-md-4">
+          <label htmlFor="valorExtenso">Valor por Extenso</label>
+          <select
+            className="form-control"
+            id="valorExtenso"
+            name="valorExtenso"
+            value={form.valorExtenso}
+            onChange={handleInputChange}
+          >
+            <option value="Duzentos e Quarenta e Nove Reais e Noventa Centavos">Duzentos e Quarenta e Nove Reais e Noventa Centavos</option>
+            <option value="Cento e Noventa e Nove Reais e Noventa Centavos">Cento e Noventa e Nove Reais e Noventa Centavos</option>
+            <option value="Cento e Quarenta e Nove Reais e Noventa Centavos">Cento e Quarenta e Nove Reais e Noventa Centavos</option>
+          </select>
+        </div>
+      )}
+      {form.contrato === "Recorencia" && (
+        <div className="form-group mb-3 col-md-4">
+          <label htmlFor="diaData">Dia (dd)</label>
+          <input
+            type="text"
+            className="form-control"
+            id="diaData"
+            name="diaData"
+            value={form.diaData}
+          />
+        </div>
+      )}
     </div>
   );
 };

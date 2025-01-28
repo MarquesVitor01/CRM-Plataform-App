@@ -57,25 +57,24 @@ export const Infoqr: React.FC = () => {
           </h6>
         </div>
         <div className="qrcode-container">
-  <a
-    href={clientData.linkGravacao}
-    target="_blank"
-    rel="noopener noreferrer"
-    className="qrcode-link"
-  >
-    <img
-      src={require("../../../Assets/play.png")}
-      alt="WhatsApp"
-      style={{ width: "100px" }}
-    />
-    {clientData.linkGravacao && (
-      <div className="qrcode">
-        <QRCodeSVG value={clientData.linkGravacao} size={90} />
-      </div>
-    )}
-  </a>
-</div>
-
+          <a
+            href={clientData.linkGravacao}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="qrcode-link"
+          >
+            <img
+              src={require("../../../Assets/play.png")}
+              alt="WhatsApp"
+              style={{ width: "80px" }}
+            />
+            {clientData.linkGravacao && (
+              <div className="qrcode">
+                <QRCodeSVG value={clientData.linkGravacao} size={90} />
+              </div>
+            )}
+          </a>
+        </div>
       </div>
     )
   );

@@ -14,6 +14,9 @@ interface OperadorProps {
     formaPagamento: string;
     account: string;
     grupo: string;
+    parcelaRecorrente: string;
+    diaData: string;
+    valorExtenso: string;
   };
   handleInputChange: (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -42,7 +45,31 @@ export const Operador: React.FC<OperadorProps> = ({
         target: { name, value: value.replace(/\D/g, "") },
       } as React.ChangeEvent<HTMLInputElement>);
     }
+    if (name === "parcelaRecorrente") {
+      formattedValue = formatValor(value);
+      handleInputChange({
+        target: { name, value: value.replace(/\D/g, "") },
+      } as React.ChangeEvent<HTMLInputElement>);
+    }
   };
+
+  const extractDayFromDate = (dataVencimento: string): string => {
+    if (!dataVencimento) return "";
+    const [year, month, day] = dataVencimento.split("-");
+    return day || "";
+  };
+
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    const { name, value } = e.target;
+    if (name === "dataVencimento") {
+      const dia = extractDayFromDate(value);
+      handleInputChange({
+        target: { name: "diaData", value: dia },
+      } as React.ChangeEvent<HTMLInputElement>);
+    }
+    handleInputChange(e);
+  };
+
   return (
     <div className="row d-flex justify-content-center">
       <h4 className="text-white">Informações do Contrato</h4>
@@ -72,6 +99,7 @@ export const Operador: React.FC<OperadorProps> = ({
           placeholder="Insira o valor da venda"
         />
       </div>
+
       <div className="form-group mb-3 col-md-4">
         <label htmlFor="parcelas">Parcelas</label>
         <select
@@ -95,6 +123,58 @@ export const Operador: React.FC<OperadorProps> = ({
           <option value="12">12</option>
         </select>
       </div>
+
+      <div className="form-group mb-3 col-md-4">
+        <label htmlFor="contrato">Tipo de Contrato</label>
+        <select
+          className="form-control"
+          id="contrato"
+          name="contrato"
+          value={form.contrato}
+          onChange={handleInputChange}
+        >
+          <option value="">Selecione uma opção</option>
+          <option value="Base">Base</option>
+          <option value="Recorencia">Base - Recorrência</option>
+          <option value="Renovacao">Renovação</option>
+        </select>
+      </div>
+
+      {form.contrato === "Recorencia" && (
+        <div className="form-group mb-3 col-md-4">
+          <label htmlFor="valorExtenso">Valor por Extenso</label>
+          <select
+            className="form-control"
+            id="valorExtenso"
+            name="valorExtenso"
+            value={form.valorExtenso}
+            onChange={handleInputChange}
+          >
+            <option value="Duzentos e Quarenta e Nove Reais e Noventa Centavos">Duzentos e Quarenta e Nove Reais e Noventa Centavos</option>
+            <option value="Cento e Noventa e Nove Reais e Noventa Centavos">Cento e Noventa e Nove Reais e Noventa Centavos</option>
+            <option value="Cento e Quarenta e Nove Reais e Noventa Centavos">Cento e Quarenta e Nove Reais e Noventa Centavos</option>
+          </select>
+        </div>
+      )}
+
+      {form.contrato === "Recorencia" && (
+        <div className="form-group mb-3 col-md-4">
+          <label htmlFor="parcelaRecorrente">Valor da Parcela Recorrente</label>
+          <input
+            type="text"
+            className="form-control"
+            id="parcelaRecorrente"
+            name="parcelaRecorrente"
+            value={
+              form.parcelaRecorrente ? formatValor(form.parcelaRecorrente) : ""
+            }
+            onChange={handleDocumentChange}
+            placeholder="Insira o valor da parcela"
+            disabled
+          />
+        </div>
+      )}
+
       <div className="form-group mb-3 col-md-4">
         <label htmlFor="formaPagamento">Forma de Pagamento</label>
         <select
@@ -123,16 +203,29 @@ export const Operador: React.FC<OperadorProps> = ({
         />
       </div>
       <div className="form-group mb-3 col-md-4">
-        <label htmlFor="dataVencimento">Data do Vencimento (dd/mm/aaaa)</label>
+        <label htmlFor="data">Data Vencimento (dd/mm/aaaa)</label>
         <input
           type="date"
           className="form-control"
           id="dataVencimento"
           name="dataVencimento"
           value={form.dataVencimento}
-          onChange={handleInputChange}
+          onChange={handleDateChange}
         />
       </div>
+      {form.contrato === "Recorencia" && (
+        <div className="form-group mb-3 col-md-4">
+          <label htmlFor="diaData">Dia (dd)</label>
+          <input
+            type="text"
+            className="form-control"
+            id="diaData"
+            name="diaData"
+            value={form.diaData}
+            readOnly
+          />
+        </div>
+      )}
 
       <div className="form-group mb-3 col-md-4">
         <label htmlFor="operador">Operador</label>
@@ -208,20 +301,6 @@ export const Operador: React.FC<OperadorProps> = ({
           <option value="Trimestral">Trimestral</option>
           <option value="Semestral">Semestral</option>
           <option value="Anual">Anual</option>
-        </select>
-      </div>
-      <div className="form-group mb-3 col-md-4">
-        <label htmlFor="contrato">Tipo de Contrato</label>
-        <select
-          className="form-control"
-          id="contrato"
-          name="contrato"
-          value={form.contrato}
-          onChange={handleInputChange}
-        >
-          <option value="">Selecione uma opção</option>
-          <option value="Base">Base</option>
-          <option value="Renovacao">Renovação</option>
         </select>
       </div>
     </div>

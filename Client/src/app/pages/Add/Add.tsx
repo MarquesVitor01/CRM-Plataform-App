@@ -4,9 +4,7 @@ import { DadosEmpresa } from "./Components/Empresa";
 import { Navigate } from "react-router-dom";
 import { auth, db } from "../../firebase/firebaseConfig";
 import {
-  runTransaction,
   doc,
-  updateDoc,
   setDoc,
   getDoc,
 } from "firebase/firestore";
@@ -61,6 +59,9 @@ export const Add = () => {
     logotipo: "",
     anuncio: "",
     grupo: "",
+    parcelaRecorrente: "1900",
+    diaData: "",
+    valorExtenso: ""
   });
 
   const [step, setStep] = useState(0);

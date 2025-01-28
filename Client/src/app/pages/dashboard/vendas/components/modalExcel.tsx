@@ -35,7 +35,8 @@ export const ModalExcel: React.FC<ModalExcelProps> = ({ onClose, onApplyFilters 
   
   const tipoVendaOptions: Option[] = [
     { value: 'Base', label: 'Base' },
-    { value: 'Renovacao', label: 'Renovação' }
+    { value: 'Renovacao', label: 'Renovação' },
+    { value: 'Recorencia', label: 'Recorrência' }
   ];
   
   const tipoGrupoOptions: Option[] = [
