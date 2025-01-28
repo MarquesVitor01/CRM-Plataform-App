@@ -49,6 +49,8 @@ interface ClientData {
   valorParcelado: string;
   grupo: string;
   account: string;
+  diaData: string;
+  valorExtenso: string;
 }
 
 export const EditContrato = () => {

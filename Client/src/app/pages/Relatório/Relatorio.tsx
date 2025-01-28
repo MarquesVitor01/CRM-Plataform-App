@@ -95,6 +95,9 @@ export const Relatorio: React.FC = () => {
             } else if (venda.contrato === "Renovacao") {
               renovacaoCount += 1;
             }
+            else if (venda.contrato === "Recorencia") {
+              baseCount += 1;
+            }
           }
         }
 
@@ -118,7 +121,7 @@ export const Relatorio: React.FC = () => {
     if (!acc[operador]) {
       acc[operador] = { base: 0, renovacao: 0 };
     }
-    if (contrato === "Base") {
+    if (contrato === "Base" || contrato === "Recorencia") {
       acc[operador].base += 1;
     } else if (contrato === "Renovacao") {
       acc[operador].renovacao += 1;
@@ -140,12 +143,16 @@ export const Relatorio: React.FC = () => {
       });
   };
   
-  const getTopThree = (tipo: "Base" | "Renovacao") => {
-    const filtrados = Object.keys(vendasPorOperador).filter((operador) =>
-      tipo === "Base"
-        ? vendasPorOperador[operador].base > 0
-        : vendasPorOperador[operador].renovacao > 0
-    );
+  const getTopThree = (tipo: "Base" | "Renovacao" | "Recorencia") => {
+    const filtrados = Object.keys(vendasPorOperador).filter((operador) => {
+      if (tipo === "Base" || tipo === "Recorencia") {
+        return vendasPorOperador[operador].base > 0;
+      } else if (tipo === "Renovacao") {
+        return vendasPorOperador[operador].renovacao > 0;
+      }
+      return false;
+    });
+    
   
     return filtrados
       .sort((a, b) => {

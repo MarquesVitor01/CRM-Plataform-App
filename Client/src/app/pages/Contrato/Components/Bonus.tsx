@@ -33,11 +33,10 @@ export const Bonus: React.FC = () => {
     const date = new Date(dateString);
     date.setHours(date.getHours() + 3);
     const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0"); 
+    const month = String(date.getMonth() + 1).padStart(2, "0");
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
   };
-  
 
   const formatValor = (value: string): string => {
     return value.replace(/\D/g, "").replace(/(\d)(\d{2})$/, "$1,$2");
@@ -94,29 +93,54 @@ export const Bonus: React.FC = () => {
         </div>
 
         <div className="form-group">
-          <p>
-            <strong>
-              Como acordado, segue o plano no valor de{" "}
-              <u>
-                R${" "}
-                {clientData.valorVenda
-                  ? formatValor(clientData.valorVenda)
-                  : ""}
-              </u>
-              , a ser pago em{" "}
-              <u>
-                {clientData.parcelas} parcela(s)
-                {clientData.parcelas > 1 &&
-                  ` de R$ ${
-                    clientData.valorParcelado
-                      ? formatValor(clientData.valorParcelado)
-                      : ""
-                  }`}
-              </u>
-              , via <u>{clientData.formaPagamento}</u>, com o vencimento para o
-              dia <u>{formatDateToBrazilian(clientData.dataVencimento)}</u>.
-            </strong>
-          </p>
+          {clientData.contrato === "Recorencia" ? (
+            <p>
+              <strong>
+                COMO ACORDADO SEGUE PLANO{" "}
+                <u className="">{clientData.validade} </u>
+                SENDO 1º PAGAMENTO NO VALOR DE{" "}
+                <u>
+                  R${" "}
+                  {clientData.valorVenda
+                    ? formatValor(clientData.valorVenda)
+                    : ""}
+                </u>{" "}
+                ({clientData.valorExtenso}) + 11 PARCELAS
+                DE
+                <u>
+                  R${" "}
+                  19,90
+                </u>{" "}
+                (Dezenove Reais e Noventa Centavos) COM VENCIMENTO PARA O DIA
+                <u> {formatDateToBrazilian(clientData.dataVencimento)} </u>E SUAS PARCELAS PARA TODO DIA
+                <u> {clientData.diaData} </u>DE CADA MÊS.
+              </strong>
+            </p>
+          ) : (
+            <p>
+              <strong>
+                Como acordado, segue o plano no valor de{" "}
+                <u>
+                  R${" "}
+                  {clientData.valorVenda
+                    ? formatValor(clientData.valorVenda)
+                    : ""}
+                </u>
+                , a ser pago em{" "}
+                <u>
+                  {clientData.parcelas} parcela(s)
+                  {clientData.parcelas > 1 &&
+                    ` de R$ ${
+                      clientData.valorParcelado
+                        ? formatValor(clientData.valorParcelado)
+                        : ""
+                    }`}
+                </u>
+                , via <u>{clientData.formaPagamento}</u>, com o vencimento para
+                o dia <u>{formatDateToBrazilian(clientData.dataVencimento)}</u>.
+              </strong>
+            </p>
+          )}
         </div>
 
         <p className="">
@@ -150,7 +174,7 @@ export const Bonus: React.FC = () => {
                     <div className="mt-1">
                       <QRCodeSVG
                         value={clientData.boleto?.[0]?.pix}
-                        size={105}
+                        size={85}
                       />
                     </div>
                   )}

@@ -29,7 +29,11 @@ export const Condicoes: React.FC = () => {
 
     fetchClientData();
   }, [id]);
-
+  const formatValor = (value: string | number | undefined): string => {
+    if (!value) return "0,00"; // Retorna um valor padrão caso seja undefined ou null
+    const num = typeof value === "number" ? value.toFixed(2) : value.replace(/\D/g, "");
+    return num.replace(/(\d)(\d{2})$/, "$1,$2");
+  };
   return (
     clientData && (
       <div className="condicoes card p-4">
@@ -48,7 +52,9 @@ export const Condicoes: React.FC = () => {
           <br /> 4º SOBRE AS CONDIÇÕES ASSUMO AS OBRIGAÇÕES COM ESTA PRESTAÇÃO
           DE SERVIÇOS DE MARKETING DIGITAL REALIZADA PELA EMPRESA G MAPS CONTACT
           CENTER LTDA CNPJ; 40.407.753/0001-30 TENDO CIÊNCIA DO VALOR DE R$
-          <span>{clientData.valorVenda} </span>
+          <span>
+          {formatValor(clientData.valorVenda)} {""}
+          </span>
           NO PLANO {clientData.validade}.
           <br /> 5º-SABENDO QUE O NÃO PAGAMENTO PODE GERAR A NEGATIVAÇÃO DO
           CPF/CNPJ JUNTO AOS ORGÃOS COMPETENTES (SERASA/CARTÓRIO). E A COBRANÇA
@@ -85,7 +91,7 @@ export const Condicoes: React.FC = () => {
         </p>
         <div className="mx-auto w-100 text-center">
           <h5 className="mt-2">CENTRAL DE ATENDIMENTO</h5>
-          <p>0800 050 0069 / 0800 580 2766 / (11) 3195-8710</p>
+          <p>0800 580 2766</p>
           <p>
             <a href="mailto:MARKETING@GRUPOMAPSEMPRESAS.com.br">
               MARKETING@GRUPOMAPSEMPRESAS.com.br

@@ -60,8 +60,8 @@ export const Contrato: FC = () => {
         <Bonus />
         <Infoqr />
         <div className="page-break"></div>
-        <Condicoes />
-      </div>
+        <Condicoes />
+      </div>
       <button className="btn btn-danger mt-4" onClick={downloadPDF}>
         <FontAwesomeIcon icon={faFilePdf} /> Baixar PDF
       </button>

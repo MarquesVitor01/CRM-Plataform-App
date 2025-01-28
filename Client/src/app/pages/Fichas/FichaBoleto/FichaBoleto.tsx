@@ -59,6 +59,7 @@ export const FichaBoleto: React.FC = () => {
       const boletosGerados: BoletoData[] = [];
       const vencimentoBase = new Date(clientData.dataVencimento); // Certifique-se que dataVencimento existe e está correta
   
+      // Geração dos boletos principais
       for (let i = 0; i < clientData.parcelas; i++) {
         const vencimento = new Date(vencimentoBase);
         vencimento.setMonth(vencimento.getMonth() + i);
@@ -87,13 +88,16 @@ export const FichaBoleto: React.FC = () => {
             items: [
               {
                 name: clientData.validade,
-                value: Number(clientData.parcelas === 1 ? clientData.valorVenda : clientData.valorParcelado),
+                value: Number(
+                  clientData.parcelas === 1
+                    ? clientData.valorVenda
+                    : clientData.valorParcelado
+                ),
                 amount: 1,
               },
             ],
-            // shippingValue: 100,
             account: "equipe_marcio",
-            dataVencimento: vencimento.toISOString().split("T")[0], // Incluindo a data de vencimento na requisição
+            dataVencimento: vencimento.toISOString().split("T")[0],
           }),
         });
   
@@ -113,7 +117,7 @@ export const FichaBoleto: React.FC = () => {
   
         boletosGerados.push({
           barcode: data.barcode,
-          pix : data.pix.qrcode,
+          pix: data.pix.qrcode,
           billetLink: data.billet_link,
           expireAt: vencimento.toISOString(),
           pdfLink: data.pdf.charge,
@@ -122,6 +126,73 @@ export const FichaBoleto: React.FC = () => {
         });
       }
   
+      // Verificar se contrato é "Recorencia" e gerar boletos extras
+      if (clientData.contrato === "Recorencia") {
+        const vencimentoRecorrencia = new Date(vencimentoBase);
+  
+        for (let i = 0; i < 11; i++) {
+          vencimentoRecorrencia.setMonth(vencimentoRecorrencia.getMonth() + 1);
+  
+          const response = await fetch(url, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer <ACCESS_TOKEN>`,
+            },
+            body: JSON.stringify({
+              ...(isCpf
+                ? {
+                    name: clientData.responsavel,
+                    cpf: clientData.cpf,
+                    birth: "1977-01-15",
+                  }
+                : {
+                    juridical_person: {
+                      corporate_name: clientData.razaoSocial,
+                      cnpj: clientData.cnpj,
+                    },
+                  }),
+              email: clientData.email1,
+              phone_number: clientData.celular,
+              items: [
+                {
+                  name: "Superte G Maps",
+                  value: 1900,
+                  amount: 1,
+                },
+              ],
+              account: "equipe_marcio",
+              dataVencimento: vencimentoRecorrencia.toISOString().split("T")[0],
+            }),
+          });
+  
+          if (!response.ok) throw new Error(`Erro na API: ${response.status}`);
+  
+          const result = await response.json();
+          const { data } = result;
+  
+          if (
+            !data?.barcode ||
+            !data?.billet_link ||
+            !data?.pdf?.charge ||
+            !data?.expire_at
+          ) {
+            throw new Error("Resposta da API incompleta.");
+          }
+  
+          boletosGerados.push({
+            barcode: data.barcode,
+            pix: data.pix.qrcode,
+            billetLink: data.billet_link,
+            expireAt: vencimentoRecorrencia.toISOString(),
+            pdfLink: data.pdf.charge,
+            status: data.status,
+            chargeId: data.charge_id,
+          });
+        }
+      }
+  
+      // Atualizar boletos no Firestore
       const docRef = doc(db, "vendas", id!);
       await updateDoc(docRef, { boleto: boletosGerados });
   
@@ -133,8 +204,8 @@ export const FichaBoleto: React.FC = () => {
     } finally {
       setGeneratingBoleto(false);
     }
-  };  
-
+  };
+  
   const fetchBoletoDetails = async (chargeId: string) => {
     try {
       if (!chargeId || !clientData?.account) {
@@ -143,7 +214,7 @@ export const FichaBoleto: React.FC = () => {
 
       // Requisição para buscar os detalhes do boleto
       const response = await fetch(
-        `https://crm-plataform-app-6t3u.vercel.app/v1/charge/${chargeId}?account=${clientData.account}`,
+        `http://localhost:5000/v1/charge/${chargeId}?account=${clientData.account}`,
         {
           method: "GET",
           headers: {
@@ -192,6 +263,7 @@ export const FichaBoleto: React.FC = () => {
           >
             <FontAwesomeIcon icon={faLeftLong} />
           </button>
+          <div className={`boletos-container ${boletoDataList.length >= 12 ? 'with-twelve' : ''}`}>
           {boletoDataList.length === 0 ? (
             <>
               <div className="row align-center justify-content-center text-center text-white">
@@ -221,7 +293,7 @@ export const FichaBoleto: React.FC = () => {
                       className="btn btn-primary"
                       onClick={() =>
                         generateBoletos(
-                          `https://crm-plataform-app-6t3u.vercel.app/generate-boleto-${type.toLowerCase()}`,
+                          `http://localhost:5000/generate-boleto-${type.toLowerCase()}`,
                           idx === 0
                         )
                       }
@@ -279,6 +351,7 @@ export const FichaBoleto: React.FC = () => {
               </div>
             </div>
           )}
+        </div>
         </div>
         <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
       </div>
