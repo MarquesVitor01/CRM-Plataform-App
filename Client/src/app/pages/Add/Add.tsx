@@ -59,7 +59,7 @@ export const Add = () => {
     logotipo: "",
     anuncio: "",
     grupo: "",
-    parcelaRecorrente: "1900",
+    parcelaRecorrente: "1990",
     diaData: "",
     valorExtenso: ""
   });

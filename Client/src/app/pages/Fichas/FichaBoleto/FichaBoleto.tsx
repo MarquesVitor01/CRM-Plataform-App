@@ -7,6 +7,7 @@ import "react-toastify/dist/ReactToastify.css";
 import "./Styles/FichaBoleto.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLeftLong } from "@fortawesome/free-solid-svg-icons";
+import BoletosGerados from "./componentes/boletoCard";
 
 interface BoletoData {
   barcode: string;
@@ -24,6 +25,7 @@ export const FichaBoleto: React.FC = () => {
   const [boletoDataList, setBoletoDataList] = useState<BoletoData[]>([]);
   const [loading, setLoading] = useState(true);
   const [generatingBoleto, setGeneratingBoleto] = useState(false);
+  const [showRecorrencia, setShowRecorrencia] = useState(false);
 
   const fetchClientData = useCallback(async () => {
     if (!id) return;
@@ -54,84 +56,41 @@ export const FichaBoleto: React.FC = () => {
     setGeneratingBoleto(true);
   
     try {
-      if (!clientData || !clientData.parcelas) return;
+      if (!clientData || !clientData.parcelas) {
+        throw new Error("Dados do cliente ou número de parcelas ausentes.");
+      }
   
       const boletosGerados: BoletoData[] = [];
-      const vencimentoBase = new Date(clientData.dataVencimento); // Certifique-se que dataVencimento existe e está correta
+  
+      let vencimentoBase;
+      try {
+        vencimentoBase = new Date(clientData.dataVencimento);
+        if (isNaN(vencimentoBase.getTime())) {
+          throw new Error("Data de vencimento inválida.");
+        }
+      } catch (error) {
+        console.error("Erro ao processar data de vencimento:", error);
+        throw new Error("Erro no formato da data de vencimento.");
+      }
+  
+      // Extrai o dia do vencimento base
+      const diaVencimento = vencimentoBase.getDate();
   
       // Geração dos boletos principais
       for (let i = 0; i < clientData.parcelas; i++) {
-        const vencimento = new Date(vencimentoBase);
-        vencimento.setMonth(vencimento.getMonth() + i);
+        try {
+          const vencimento = new Date(vencimentoBase);
+          vencimento.setMonth(vencimento.getMonth() + i);
   
-        const response = await fetch(url, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer <ACCESS_TOKEN>`,
-          },
-          body: JSON.stringify({
-            ...(isCpf
-              ? {
-                  name: clientData.responsavel,
-                  cpf: clientData.cpf,
-                  birth: "1977-01-15",
-                }
-              : {
-                  juridical_person: {
-                    corporate_name: clientData.razaoSocial,
-                    cnpj: clientData.cnpj,
-                  },
-                }),
-            email: clientData.email1,
-            phone_number: clientData.celular,
-            items: [
-              {
-                name: clientData.validade,
-                value: Number(
-                  clientData.parcelas === 1
-                    ? clientData.valorVenda
-                    : clientData.valorParcelado
-                ),
-                amount: 1,
-              },
-            ],
-            account: "equipe_marcio",
-            dataVencimento: vencimento.toISOString().split("T")[0],
-          }),
-        });
+          // Ajusta o dia de vencimento
+          vencimento.setDate(diaVencimento);
   
-        if (!response.ok) throw new Error(`Erro na API: ${response.status}`);
-  
-        const result = await response.json();
-        const { data } = result;
-  
-        if (
-          !data?.barcode ||
-          !data?.billet_link ||
-          !data?.pdf?.charge ||
-          !data?.expire_at
-        ) {
-          throw new Error("Resposta da API incompleta.");
-        }
-  
-        boletosGerados.push({
-          barcode: data.barcode,
-          pix: data.pix.qrcode,
-          billetLink: data.billet_link,
-          expireAt: vencimento.toISOString(),
-          pdfLink: data.pdf.charge,
-          status: data.status,
-          chargeId: data.charge_id,
-        });
-      }
-  
-      // Verificar se contrato é "Recorencia" e gerar boletos extras
-      if (clientData.contrato === "Recorencia") {
-        const vencimentoRecorrencia = new Date(vencimentoBase);
-  
-        for (let i = 0; i < 11; i++) {
-          vencimentoRecorrencia.setMonth(vencimentoRecorrencia.getMonth() + 1);
+          // Verifica se o dia de vencimento existe no mês
+          if (vencimento.getDate() !== diaVencimento) {
+            // Se não existir, ajusta para o próximo dia útil
+            vencimento.setDate(0); // Último dia do mês anterior
+            vencimento.setDate(diaVencimento); // Tenta novamente
+          }
   
           const response = await fetch(url, {
             method: "POST",
@@ -156,17 +115,28 @@ export const FichaBoleto: React.FC = () => {
               phone_number: clientData.celular,
               items: [
                 {
-                  name: "Superte G Maps",
-                  value: 1900,
+                  name: clientData.validade,
+                  value: Number(
+                    clientData.parcelas === 1
+                      ? clientData.valorVenda
+                      : clientData.valorParcelado
+                  ),
                   amount: 1,
                 },
               ],
               account: "equipe_marcio",
-              dataVencimento: vencimentoRecorrencia.toISOString().split("T")[0],
+              dataVencimento: vencimento.toISOString().split("T")[0],
             }),
           });
   
-          if (!response.ok) throw new Error(`Erro na API: ${response.status}`);
+          if (!response.ok) {
+            const responseData = await response.json();
+            throw new Error(
+              `Erro na API: ${response.status} - ${JSON.stringify(
+                responseData
+              )}`
+            );
+          }
   
           const result = await response.json();
           const { data } = result;
@@ -182,30 +152,159 @@ export const FichaBoleto: React.FC = () => {
   
           boletosGerados.push({
             barcode: data.barcode,
-            pix: data.pix.qrcode,
+            pix: data.pix?.qrcode || "N/A",
             billetLink: data.billet_link,
-            expireAt: vencimentoRecorrencia.toISOString(),
+            expireAt: vencimento.toISOString(),
             pdfLink: data.pdf.charge,
             status: data.status,
             chargeId: data.charge_id,
           });
+        } catch (error) {
+          console.error(`Erro ao gerar boleto da parcela ${i + 1}:`, error);
+          throw new Error(`Falha ao gerar boleto da parcela ${i + 1}.`);
         }
       }
   
       // Atualizar boletos no Firestore
-      const docRef = doc(db, "vendas", id!);
-      await updateDoc(docRef, { boleto: boletosGerados });
+      try {
+        const docRef = doc(db, "vendas", id!);
+        await updateDoc(docRef, { boleto: boletosGerados });
+      } catch (error) {
+        console.error("Erro ao salvar boletos no Firestore:", error);
+        throw new Error("Falha ao atualizar boletos no banco de dados.");
+      }
   
       setBoletoDataList(boletosGerados);
+      setShowRecorrencia(true); // Mostrar a seção de recorrência após a geração dos boletos principais
       toast.success("Boletos gerados com sucesso!");
     } catch (error) {
       console.error("Erro ao gerar boletos:", error);
-      toast.error("Erro ao gerar os boletos.");
+      toast.error(
+        error instanceof Error ? error.message : "Erro desconhecido."
+      );
+    } finally {
+      setGeneratingBoleto(false);
+    }
+  };
+
+  const generateBoletosRecorrencia = async (url: string, isCpf: boolean) => {
+    setGeneratingBoleto(true);
+  
+    try {
+      if (!clientData || !clientData.parcelas) {
+        throw new Error("Dados do cliente ou número de parcelas ausentes.");
+      }
+  
+      const boletosGerados: BoletoData[] = [];
+      let vencimentoBase;
+  
+      try {
+        vencimentoBase = new Date(clientData.dataVencimento);
+        if (isNaN(vencimentoBase.getTime())) {
+          throw new Error("Data de vencimento inválida.");
+        }
+      } catch (error) {
+        console.error("Erro ao processar data de vencimento:", error);
+        throw new Error("Erro no formato da data de vencimento.");
+      }
+  
+      // Verificar se contrato é "Recorencia" e gerar boletos extras
+      if (clientData.contrato === "Recorencia") {
+        let vencimentoRecorrencia = new Date(vencimentoBase);
+  
+        for (let i = 0; i < 11; i++) {
+          try {
+            vencimentoRecorrencia.setMonth(vencimentoRecorrencia.getMonth() + 1);
+  
+            const response = await fetch(url, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer <ACCESS_TOKEN>`,
+              },
+              body: JSON.stringify({
+                ...(isCpf
+                  ? {
+                      name: clientData.responsavel,
+                      cpf: clientData.cpf,
+                      birth: "1977-01-15",
+                    }
+                  : {
+                      juridical_person: {
+                        corporate_name: clientData.razaoSocial,
+                        cnpj: clientData.cnpj,
+                      },
+                    }),
+                email: clientData.email1,
+                phone_number: clientData.celular,
+                items: [
+                  {
+                    name: "Superte G Maps",
+                    value: 1900,
+                    amount: 1,
+                  },
+                ],
+                account: "equipe_marcio",
+                dataVencimento: vencimentoRecorrencia.toISOString().split("T")[0],
+              }),
+            });
+  
+            if (!response.ok) {
+              const responseData = await response.json();
+              throw new Error(
+                `Erro na API (Recorrência): ${response.status} - ${JSON.stringify(responseData)}`
+              );
+            }
+  
+            const result = await response.json();
+            const { data } = result;
+  
+            if (!data?.barcode || !data?.billet_link || !data?.pdf?.charge || !data?.expire_at) {
+              throw new Error("Resposta da API incompleta (Recorrência).");
+            }
+  
+            boletosGerados.push({
+              barcode: data.barcode,
+              pix: data.pix?.qrcode || "N/A",
+              billetLink: data.billet_link,
+              expireAt: vencimentoRecorrencia.toISOString(),
+              pdfLink: data.pdf.charge,
+              status: data.status,
+              chargeId: data.charge_id,
+            });
+          } catch (error) {
+            console.error(`Erro ao gerar boleto da recorrência ${i + 1}:`, error);
+            throw new Error(`Falha ao gerar boleto da recorrência ${i + 1}.`);
+          }
+        }
+      }
+  
+      // Obtenha os boletos originais antes de adicionar os recorrentes
+      const boletosOriginais = boletoDataList;
+  
+      // Combinar os boletos originais e os recorrentes
+      const boletosCombinados = [...boletosOriginais, ...boletosGerados];
+  
+      // Atualizar boletos no Firestore
+      try {
+        const docRef = doc(db, "vendas", id!);
+        await updateDoc(docRef, { boleto: boletosCombinados });
+      } catch (error) {
+        console.error("Erro ao salvar boletos no Firestore:", error);
+        throw new Error("Falha ao atualizar boletos no banco de dados.");
+      }
+  
+      setBoletoDataList(boletosCombinados);
+      toast.success("Boletos gerados com sucesso!");
+    } catch (error) {
+      console.error("Erro ao gerar boletos:", error);
+      toast.error(error instanceof Error ? error.message : "Erro desconhecido.");
     } finally {
       setGeneratingBoleto(false);
     }
   };
   
+
   const fetchBoletoDetails = async (chargeId: string) => {
     try {
       if (!chargeId || !clientData?.account) {
@@ -214,7 +313,7 @@ export const FichaBoleto: React.FC = () => {
 
       // Requisição para buscar os detalhes do boleto
       const response = await fetch(
-        `http://localhost:5000/v1/charge/${chargeId}?account=${clientData.account}`,
+        `https://crm-plataform-app-6t3u.vercel.app/v1/charge/${chargeId}?account=${clientData.account}`,
         {
           method: "GET",
           headers: {
@@ -263,95 +362,87 @@ export const FichaBoleto: React.FC = () => {
           >
             <FontAwesomeIcon icon={faLeftLong} />
           </button>
-          <div className={`boletos-container ${boletoDataList.length >= 12 ? 'with-twelve' : ''}`}>
-          {boletoDataList.length === 0 ? (
-            <>
-              <div className="row align-center justify-content-center text-center text-white">
-                <div className="text-cpf">
-                  <p>
-                    <b>O cliente possui o CPF:</b>{" "}
-                    {clientData.cpf || "Não informado"}
-                  </p>
+          <div
+            className={`boletos-container ${
+              boletoDataList.length >= 12 ? "with-twelve" : ""
+            }`}
+          >
+            {boletoDataList.length === 0 ? (
+              <>
+                <div className="row align-center justify-content-center text-center text-white">
+                  <div className="text-cpf">
+                    <p>
+                      <b>O cliente possui o CPF:</b>{" "}
+                      {clientData.cpf || "Não informado"}
+                    </p>
+                  </div>
+                  <div className="text-cnpj">
+                    <p>
+                      <b>O cliente possui o CNPJ:</b>{" "}
+                      {clientData.cnpj || "Não informado"}
+                    </p>
+                  </div>
                 </div>
-                <div className="text-cnpj">
-                  <p>
-                    <b>O cliente possui o CNPJ:</b>{" "}
-                    {clientData.cnpj || "Não informado"}
-                  </p>
+                <div className="d-flex gap-5">
+                  {["CPF", "CNPJ"].map((type, idx) => (
+                    <div
+                      key={type}
+                      className="flex-column justify-content-center d-flex align-items-center gap-3 box-boleto"
+                    >
+                      <h2 className="text-center">
+                        Clique no botão abaixo para gerar os boletos com {type}.
+                      </h2>
+                      <button
+                        className="btn btn-primary"
+                        onClick={() =>
+                          generateBoletos(
+                            `https://crm-plataform-app-6t3u.vercel.app/generate-boleto-${type.toLowerCase()}`,
+                            idx === 0
+                          )
+                        }
+                        disabled={generatingBoleto}
+                      >
+                        {generatingBoleto
+                          ? "Gerando Boletos..."
+                          : `Gerar Boletos com ${type}`}
+                      </button>
+                    </div>
+                  ))}
                 </div>
-              </div>
-              <div className="d-flex gap-5">
-                {["CPF", "CNPJ"].map((type, idx) => (
-                  <div
-                    key={type}
-                    className="flex-column justify-content-center d-flex align-items-center gap-3 box-boleto"
-                  >
+              </>
+            ) : (
+              <>
+                <BoletosGerados 
+                  boletoDataList={boletoDataList}
+                  fetchBoletoDetails={fetchBoletoDetails}
+                  key={boletoDataList[0].chargeId}
+                />
+                {showRecorrencia && clientData.contrato === "Recorencia" && (
+                  <div className="flex-column justify-content-center d-flex align-items-center gap-3 box-boleto">
                     <h2 className="text-center">
-                      Clique no botão abaixo para gerar os boletos com {type}.
+                      Clique no botão abaixo para gerar os boletos recorrentes.
                     </h2>
                     <button
                       className="btn btn-primary"
                       onClick={() =>
-                        generateBoletos(
-                          `http://localhost:5000/generate-boleto-${type.toLowerCase()}`,
-                          idx === 0
+                        generateBoletosRecorrencia(
+                          `https://crm-plataform-app-6t3u.vercel.app/generate-boleto-${
+                            clientData.cpf ? "cpf" : "cnpj"
+                          }`,
+                          !!clientData.cpf
                         )
                       }
                       disabled={generatingBoleto}
                     >
                       {generatingBoleto
-                        ? "Gerando Boletos..."
-                        : `Gerar Boletos com ${type}`}
+                        ? "Gerando Boletos Recorrentes..."
+                        : "Gerar Boletos Recorrentes"}
                     </button>
                   </div>
-                ))}
-              </div>
-            </>
-          ) : (
-            <div className="mt-4">
-              <h3 className="text-center text-light">Boletos Gerados</h3>
-              <div className="boletos-container">
-                {boletoDataList.map((boleto) => (
-                  <div
-                    key={boleto.chargeId}
-                    className="card mb-4 p-4 boleto-card"
-                  >
-                    {" "}
-                    <p>
-                      <strong>Código de barra:</strong> {boleto.barcode}
-                    </p>
-                    <p>
-                      <strong>Pix:</strong> {boleto.pix}
-                    </p>
-                    <p>
-                      <strong>Link do boleto:</strong>{" "}
-                      <a href={boleto.billetLink}>{boleto.billetLink}</a>
-                    </p>
-                    <p>
-                      <strong>Data de expiração:</strong> {boleto.expireAt}
-                    </p>
-                    <p>
-                      <strong>Link para download do PDF:</strong>{" "}
-                      <a href={boleto.pdfLink}>{boleto.pdfLink}</a>
-                    </p>
-                    <p>
-                      <strong>Status:</strong> {boleto.status}
-                    </p>
-                    <p>
-                      <strong>Charge_id:</strong> {boleto.chargeId}
-                    </p>
-                    <button
-                      onClick={() => fetchBoletoDetails(boleto.chargeId)}
-                      className="btn btn-info"
-                    >
-                      Verificar Status do Boleto
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
+                )}
+              </>
+            )}
+          </div>
         </div>
         <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
       </div>
