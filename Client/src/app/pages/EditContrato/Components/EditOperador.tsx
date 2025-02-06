@@ -189,13 +189,13 @@ export const EditOperador: React.FC<EditOperadorProps> = ({
           { value: "Crédito", label: "Crédito" },
         ]}
       />
-      <InputData
+      {/* <InputData
         id="data"
         label="Data (dd/mm/aaaa)"
         name="data"
         value={form.data}
         onChange={handleInputChange}
-      />
+      /> */}
       <InputData
         id="dataVencimento"
         label="Data do Vencimento (dd/mm/aaaa)"

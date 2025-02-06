@@ -54,14 +54,14 @@ export const FichaBoleto: React.FC = () => {
 
   const generateBoletos = async (url: string, isCpf: boolean) => {
     setGeneratingBoleto(true);
-  
+
     try {
       if (!clientData || !clientData.parcelas) {
         throw new Error("Dados do cliente ou número de parcelas ausentes.");
       }
-  
+
       const boletosGerados: BoletoData[] = [];
-  
+
       let vencimentoBase;
       try {
         vencimentoBase = new Date(clientData.dataVencimento);
@@ -72,26 +72,26 @@ export const FichaBoleto: React.FC = () => {
         console.error("Erro ao processar data de vencimento:", error);
         throw new Error("Erro no formato da data de vencimento.");
       }
-  
+
       // Extrai o dia do vencimento base
       const diaVencimento = vencimentoBase.getDate();
-  
+
       // Geração dos boletos principais
       for (let i = 0; i < clientData.parcelas; i++) {
         try {
           const vencimento = new Date(vencimentoBase);
           vencimento.setMonth(vencimento.getMonth() + i);
-  
+
           // Ajusta o dia de vencimento
           vencimento.setDate(diaVencimento);
-  
+
           // Verifica se o dia de vencimento existe no mês
           if (vencimento.getDate() !== diaVencimento) {
             // Se não existir, ajusta para o próximo dia útil
             vencimento.setDate(0); // Último dia do mês anterior
             vencimento.setDate(diaVencimento); // Tenta novamente
           }
-  
+
           const response = await fetch(url, {
             method: "POST",
             headers: {
@@ -128,7 +128,7 @@ export const FichaBoleto: React.FC = () => {
               dataVencimento: vencimento.toISOString().split("T")[0],
             }),
           });
-  
+
           if (!response.ok) {
             const responseData = await response.json();
             throw new Error(
@@ -137,10 +137,10 @@ export const FichaBoleto: React.FC = () => {
               )}`
             );
           }
-  
+
           const result = await response.json();
           const { data } = result;
-  
+
           if (
             !data?.barcode ||
             !data?.billet_link ||
@@ -149,7 +149,7 @@ export const FichaBoleto: React.FC = () => {
           ) {
             throw new Error("Resposta da API incompleta.");
           }
-  
+
           boletosGerados.push({
             barcode: data.barcode,
             pix: data.pix?.qrcode || "N/A",
@@ -164,7 +164,7 @@ export const FichaBoleto: React.FC = () => {
           throw new Error(`Falha ao gerar boleto da parcela ${i + 1}.`);
         }
       }
-  
+
       // Atualizar boletos no Firestore
       try {
         const docRef = doc(db, "vendas", id!);
@@ -173,7 +173,7 @@ export const FichaBoleto: React.FC = () => {
         console.error("Erro ao salvar boletos no Firestore:", error);
         throw new Error("Falha ao atualizar boletos no banco de dados.");
       }
-  
+
       setBoletoDataList(boletosGerados);
       setShowRecorrencia(true); // Mostrar a seção de recorrência após a geração dos boletos principais
       toast.success("Boletos gerados com sucesso!");
@@ -189,15 +189,15 @@ export const FichaBoleto: React.FC = () => {
 
   const generateBoletosRecorrencia = async (url: string, isCpf: boolean) => {
     setGeneratingBoleto(true);
-  
+
     try {
       if (!clientData || !clientData.parcelas) {
         throw new Error("Dados do cliente ou número de parcelas ausentes.");
       }
-  
+
       const boletosGerados: BoletoData[] = [];
       let vencimentoBase;
-  
+
       try {
         vencimentoBase = new Date(clientData.dataVencimento);
         if (isNaN(vencimentoBase.getTime())) {
@@ -207,15 +207,17 @@ export const FichaBoleto: React.FC = () => {
         console.error("Erro ao processar data de vencimento:", error);
         throw new Error("Erro no formato da data de vencimento.");
       }
-  
+
       // Verificar se contrato é "Recorencia" e gerar boletos extras
       if (clientData.contrato === "Recorencia") {
         let vencimentoRecorrencia = new Date(vencimentoBase);
-  
+
         for (let i = 0; i < 11; i++) {
           try {
-            vencimentoRecorrencia.setMonth(vencimentoRecorrencia.getMonth() + 1);
-  
+            vencimentoRecorrencia.setMonth(
+              vencimentoRecorrencia.getMonth() + 1
+            );
+
             const response = await fetch(url, {
               method: "POST",
               headers: {
@@ -240,29 +242,38 @@ export const FichaBoleto: React.FC = () => {
                 items: [
                   {
                     name: "Superte G Maps",
-                    value: 1900,
+                    value: 1990,
                     amount: 1,
                   },
                 ],
                 account: "equipe_marcio",
-                dataVencimento: vencimentoRecorrencia.toISOString().split("T")[0],
+                dataVencimento: vencimentoRecorrencia
+                  .toISOString()
+                  .split("T")[0],
               }),
             });
-  
+
             if (!response.ok) {
               const responseData = await response.json();
               throw new Error(
-                `Erro na API (Recorrência): ${response.status} - ${JSON.stringify(responseData)}`
+                `Erro na API (Recorrência): ${
+                  response.status
+                } - ${JSON.stringify(responseData)}`
               );
             }
-  
+
             const result = await response.json();
             const { data } = result;
-  
-            if (!data?.barcode || !data?.billet_link || !data?.pdf?.charge || !data?.expire_at) {
+
+            if (
+              !data?.barcode ||
+              !data?.billet_link ||
+              !data?.pdf?.charge ||
+              !data?.expire_at
+            ) {
               throw new Error("Resposta da API incompleta (Recorrência).");
             }
-  
+
             boletosGerados.push({
               barcode: data.barcode,
               pix: data.pix?.qrcode || "N/A",
@@ -273,18 +284,21 @@ export const FichaBoleto: React.FC = () => {
               chargeId: data.charge_id,
             });
           } catch (error) {
-            console.error(`Erro ao gerar boleto da recorrência ${i + 1}:`, error);
+            console.error(
+              `Erro ao gerar boleto da recorrência ${i + 1}:`,
+              error
+            );
             throw new Error(`Falha ao gerar boleto da recorrência ${i + 1}.`);
           }
         }
       }
-  
+
       // Obtenha os boletos originais antes de adicionar os recorrentes
       const boletosOriginais = boletoDataList;
-  
+
       // Combinar os boletos originais e os recorrentes
       const boletosCombinados = [...boletosOriginais, ...boletosGerados];
-  
+
       // Atualizar boletos no Firestore
       try {
         const docRef = doc(db, "vendas", id!);
@@ -293,17 +307,18 @@ export const FichaBoleto: React.FC = () => {
         console.error("Erro ao salvar boletos no Firestore:", error);
         throw new Error("Falha ao atualizar boletos no banco de dados.");
       }
-  
+
       setBoletoDataList(boletosCombinados);
       toast.success("Boletos gerados com sucesso!");
     } catch (error) {
       console.error("Erro ao gerar boletos:", error);
-      toast.error(error instanceof Error ? error.message : "Erro desconhecido.");
+      toast.error(
+        error instanceof Error ? error.message : "Erro desconhecido."
+      );
     } finally {
       setGeneratingBoleto(false);
     }
   };
-  
 
   const fetchBoletoDetails = async (chargeId: string) => {
     try {
@@ -412,7 +427,13 @@ export const FichaBoleto: React.FC = () => {
               </>
             ) : (
               <>
-                <BoletosGerados 
+                <button
+                  className="btn btn-danger"
+                  onClick={() => setShowRecorrencia(true)}
+                >
+                  Disponibilizar Boletos Recorrentes
+                </button>
+                <BoletosGerados
                   boletoDataList={boletoDataList}
                   fetchBoletoDetails={fetchBoletoDetails}
                   key={boletoDataList[0].chargeId}

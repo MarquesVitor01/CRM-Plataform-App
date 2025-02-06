@@ -187,14 +187,24 @@ export const Navbar = () => {
           className="btn btn-primary"
           onClick={() => handleScriptChange("Script 1")}
         >
-          Script 1
+          Script Padrão - 01
         </button>
         <button
           className="btn btn-primary"
           onClick={() => handleScriptChange("Script 2")}
         >
-          Script 2
+          Script Padrão - 02
         </button>
+        <Link to={"https://drive.google.com/file/d/1sxYpkCuLgdwPhL2l0g8p4-vltr9qyZ_R/view?usp=sharing"}
+          className="btn btn-primary"
+        >
+          Dicas
+        </Link>
+        <Link to={"https://drive.google.com/file/d/1nud0aITvgfJcJ9293hDm3Jr0WuqyhKaz/view?usp=sharing"}
+          className="btn btn-primary"
+        >
+          Possiveis Objeções
+        </Link>
         {script1 && (
           <div className="box-script">
             <p className="close-script">
