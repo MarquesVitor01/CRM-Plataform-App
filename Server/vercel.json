@@ -26,7 +26,10 @@
       {
         "src": "/sync-marketing(.*)",
         "dest": "/index.js"
+      },
+      {
+        "src": "/api(.*)",
+        "dest": "/index.js"
       }
     ]
   }
-  

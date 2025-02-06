@@ -7,6 +7,7 @@ const boletoCnpj = require("./routes/boletoCnpj");
 const boletoCpf = require("./routes/boletoCpf");
 const chargeRoutes = require("./routes/boletoStatus");
 const syncMarketing = require("./routes/syncMarketing");
+const sendMessageRoute = require("./routes/sendMessage");
 
 
 const app = express();
@@ -24,6 +25,7 @@ app.use("/generate-boleto-cnpj", boletoCnpj);
 app.use("/generate-boleto-cpf", boletoCpf);
 app.use("/v1/charge", chargeRoutes);
 app.use("/sync-marketing", syncMarketing);
+app.use("/api", sendMessageRoute);
 
 
 // const atualizarPlanilha = async () => {
