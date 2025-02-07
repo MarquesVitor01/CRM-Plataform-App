@@ -4,7 +4,7 @@ const axios = require("axios");
 const router = express.Router();
 
 // Token da API do Whatscale
-const WHATSCALE_TOKEN = "1738689113448-75ff540ad41ccbb9d6398085aa3247d1";
+const WHATSCALE_TOKEN = "1738951372637-e5313fd9b947cfd055043e72d915d75d";
 
 // Rota para enviar mensagens via Whatscale
 router.post("/enviar-texto", async (req, res) => {
