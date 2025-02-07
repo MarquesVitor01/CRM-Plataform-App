@@ -133,7 +133,6 @@ Em caso de desistência será cobrado o valor proporcional dos serviços executa
 Em caso de dúvidas, estou a disposição ou entre em contato com a central de atendimento 0800 580 2766`,
         }
       );
-      MsgLink()
       if (response.data.success) {
         alert("Mensagem enviada com sucesso!");
       } else {
@@ -203,7 +202,6 @@ Em caso de dúvidas, estou a disposição ou entre em contato com a central de a
         }
       );
 
-      MsgLink()
       if (response.data.success) {
         alert("Mensagem enviada com sucesso!");
       } else {
@@ -278,7 +276,6 @@ Em caso de desistência será cobrado o valor proporcional dos serviços executa
 Em caso de dúvidas, estou a disposição ou entre em contato com a central de atendimento 0800 580 2766`,
         }
       );
-      MsgLink()
       if (response.data.success) {
         alert("Mensagem enviada com sucesso!");
       } else {
@@ -290,28 +287,29 @@ Em caso de dúvidas, estou a disposição ou entre em contato com a central de a
     }
   };
 
-  const MsgLink = async () => {
-    try {
-      const celularComCodigo = `55${clientData.celular.replace(/^55/, "")}`;
+  // const MsgLink = async () => {
+  //   try {
+  //     const celularComCodigo = `55${clientData.celular.replace(/^55/, "")}`;
 
-      const response = await axios.post(
-        "https://crm-plataform-app-6t3u.vercel.app/api/enviar-texto",
-        {
-          phone: celularComCodigo,
-          message: `<a href="https://youtube.com/shorts/_EgS6OVUgEA">https://youtube.com/shorts/_EgS6OVUgEA</a>`,
-        }
-      );
+  //     const response = await axios.post(
+  //       "https://crm-plataform-app-6t3u.vercel.app/api/enviar-texto",
+  //       {
+  //         phone: celularComCodigo,
+  //         message: `https://youtube.com/shorts/_EgS6OVUgEA`,
+  //       }
+  //     );
 
-      if (response.data.success) {
-        alert("Mensagem enviada com sucesso!");
-      } else {
-        alert("Falha ao enviar a mensagem.");
-      }
-    } catch (error) {
-      console.error("Erro ao enviar mensagem:", error);
-      alert("Ocorreu um erro ao enviar a mensagem.");
-    }
-  };
+  //     if (response.data.success) {
+  //       alert("Mensagem enviada com sucesso!");
+  //     } else {
+  //       alert("Falha ao enviar a mensagem.");
+  //     }
+  //   } catch (error) {
+  //     console.error("Erro ao enviar mensagem:", error);
+  //     alert("Ocorreu um erro ao enviar a mensagem.");
+  //   }
+  // };
+
   if (loading) {
     return <p>Carregando...</p>;
   }
