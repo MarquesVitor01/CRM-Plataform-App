@@ -52,6 +52,10 @@ export const FichaBoleto: React.FC = () => {
     fetchClientData();
   }, [fetchClientData]);
 
+  const NomeRecorrente = clientData?.responsavel
+  ? `R - ${clientData.responsavel}`
+  : "Nome Padrão";
+
   const generateBoletos = async (url: string, isCpf: boolean) => {
     setGeneratingBoleto(true);
 
@@ -101,7 +105,10 @@ export const FichaBoleto: React.FC = () => {
             body: JSON.stringify({
               ...(isCpf
                 ? {
-                    name: clientData.responsavel,
+                    name:
+                      clientData.contrato === "Recorencia"
+                        ? NomeRecorrente
+                        : clientData.responsavel,
                     cpf: clientData.cpf,
                     birth: "1977-01-15",
                   }
@@ -227,7 +234,7 @@ export const FichaBoleto: React.FC = () => {
               body: JSON.stringify({
                 ...(isCpf
                   ? {
-                      name: clientData.responsavel,
+                      name: NomeRecorrente,
                       cpf: clientData.cpf,
                       birth: "1977-01-15",
                     }

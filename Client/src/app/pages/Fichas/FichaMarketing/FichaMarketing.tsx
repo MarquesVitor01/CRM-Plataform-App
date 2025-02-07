@@ -72,7 +72,7 @@ export const FichaMarketing: React.FC = () => {
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
   };
-  const MessagemParcela = async () => {
+  const MsgParcela = async () => {
     try {
       const celularComCodigo = `55${clientData.celular.replace(/^55/, "")}`;
 
@@ -133,7 +133,7 @@ Em caso de desistência será cobrado o valor proporcional dos serviços executa
 Em caso de dúvidas, estou a disposição ou entre em contato com a central de atendimento 0800 580 2766`,
         }
       );
-
+      MsgLink()
       if (response.data.success) {
         alert("Mensagem enviada com sucesso!");
       } else {
@@ -145,7 +145,7 @@ Em caso de dúvidas, estou a disposição ou entre em contato com a central de a
     }
   };
 
-  const MessagemValorCheio = async () => {
+  const MsgValorCheio = async () => {
     try {
       const celularComCodigo = `55${clientData.celular.replace(/^55/, "")}`;
 
@@ -203,6 +203,7 @@ Em caso de dúvidas, estou a disposição ou entre em contato com a central de a
         }
       );
 
+      MsgLink()
       if (response.data.success) {
         alert("Mensagem enviada com sucesso!");
       } else {
@@ -214,7 +215,7 @@ Em caso de dúvidas, estou a disposição ou entre em contato com a central de a
     }
   };
 
-  const MessagemRecorrencia = async () => {
+  const MsgRecorrencia = async () => {
     try {
       const celularComCodigo = `55${clientData.celular.replace(/^55/, "")}`;
 
@@ -277,7 +278,7 @@ Em caso de desistência será cobrado o valor proporcional dos serviços executa
 Em caso de dúvidas, estou a disposição ou entre em contato com a central de atendimento 0800 580 2766`,
         }
       );
-
+      MsgLink()
       if (response.data.success) {
         alert("Mensagem enviada com sucesso!");
       } else {
@@ -289,6 +290,28 @@ Em caso de dúvidas, estou a disposição ou entre em contato com a central de a
     }
   };
 
+  const MsgLink = async () => {
+    try {
+      const celularComCodigo = `55${clientData.celular.replace(/^55/, "")}`;
+
+      const response = await axios.post(
+        "https://crm-plataform-app-6t3u.vercel.app/api/enviar-texto",
+        {
+          phone: celularComCodigo,
+          message: `<a href="https://youtube.com/shorts/_EgS6OVUgEA">https://youtube.com/shorts/_EgS6OVUgEA</a>`,
+        }
+      );
+
+      if (response.data.success) {
+        alert("Mensagem enviada com sucesso!");
+      } else {
+        alert("Falha ao enviar a mensagem.");
+      }
+    } catch (error) {
+      console.error("Erro ao enviar mensagem:", error);
+      alert("Ocorreu um erro ao enviar a mensagem.");
+    }
+  };
   if (loading) {
     return <p>Carregando...</p>;
   }
@@ -336,29 +359,28 @@ Em caso de dúvidas, estou a disposição ou entre em contato com a central de a
                   <strong>Observações:</strong> {clientData.observacoes}
                 </p>
                 {clientData.parcelas >= 2 && (
-                  <button
-                    className="btn btn-primary mt-3"
-                    onClick={MessagemParcela}
-                  >
+                  <button className="btn btn-primary mt-3" onClick={MsgParcela}>
                     Enviar Mensagem De Apresentação de Vendas Parceladas
                   </button>
                 )}
-                {clientData.contrato !== "Recorencia" && clientData.parcelas <= 1 && (
-                  <button
-                    className="btn btn-primary mt-3"
-                    onClick={MessagemValorCheio}
-                  >
-                    Enviar Mensagem De Apresentação de Vendas Sem Parcelas
-                  </button>
-                )}
-                {clientData.contrato === "Recorencia" && clientData.parcelas <= 1 && (
-                  <button
-                    className="btn btn-primary mt-3"
-                    onClick={MessagemRecorrencia}
-                  >
-                    Enviar Mensagem De Apresentação de Vendas com Recorrência
-                  </button>
-                )}
+                {clientData.contrato !== "Recorencia" &&
+                  clientData.parcelas <= 1 && (
+                    <button
+                      className="btn btn-primary mt-3"
+                      onClick={MsgValorCheio}
+                    >
+                      Enviar Mensagem De Apresentação de Vendas Sem Parcelas
+                    </button>
+                  )}
+                {clientData.contrato === "Recorencia" &&
+                  clientData.parcelas <= 1 && (
+                    <button
+                      className="btn btn-primary mt-3"
+                      onClick={MsgRecorrencia}
+                    >
+                      Enviar Mensagem De Apresentação de Vendas com Recorrência
+                    </button>
+                  )}
               </div>
             </div>
             <div className="col-md-6">
