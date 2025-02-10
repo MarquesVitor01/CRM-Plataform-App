@@ -145,9 +145,13 @@ export const Relatorio: React.FC = () => {
       )
       .sort((a, b) => {
         const totalA =
-          vendasPorOperador[a].base + vendasPorOperador[a].renovacao + vendasPorOperador[a].recorencia;
+          vendasPorOperador[a].base +
+          vendasPorOperador[a].renovacao +
+          vendasPorOperador[a].recorencia;
         const totalB =
-          vendasPorOperador[b].base + vendasPorOperador[b].renovacao + vendasPorOperador[b].recorencia;
+          vendasPorOperador[b].base +
+          vendasPorOperador[b].renovacao +
+          vendasPorOperador[b].recorencia;
         return totalB - totalA; // Ordenar do maior para o menor
       });
   };
@@ -382,55 +386,72 @@ export const Relatorio: React.FC = () => {
           <h4 className="total-contrato">
             Total Recorrência: {totalRecorencia}
           </h4>
+
+          {/* Ordenando o topRecorencia do maior para o menor */}
           <div className="podio">
-            {topRecorencia.map((operador, index) => {
-              const avatar = usuariosMap[usuariosPorNome[operador]]?.avatar;
-              return (
-                <div key={operador} className={`colocacao${index + 1}`}>
-                  <img
-                    src={avatar}
-                    alt={`${operador} Avatar`}
-                    className="img-podio"
-                  />
-                  <span className="operador-podio">
-                    {operador.replace(/\./g, " ")}
-                  </span>
-                  <span className="vendas-podio">
-                    {vendasPorOperador[operador].recorencia}
-                  </span>
-                </div>
-              );
-            })}
+            {topRecorencia
+              .sort((a, b) => {
+                const vendasA = vendasPorOperador[a]?.recorencia || 0;
+                const vendasB = vendasPorOperador[b]?.recorencia || 0;
+                return vendasB - vendasA; // Ordenando do maior para o menor
+              })
+              .map((operador, index) => {
+                const avatar = usuariosMap[usuariosPorNome[operador]]?.avatar;
+                return (
+                  <div key={operador} className={`colocacao${index + 1}`}>
+                    <img
+                      src={avatar}
+                      alt={`${operador} Avatar`}
+                      className="img-podio"
+                    />
+                    <span className="operador-podio">
+                      {operador.replace(/\./g, " ")}
+                    </span>
+                    <span className="vendas-podio">
+                      {vendasPorOperador[operador].recorencia}
+                    </span>
+                  </div>
+                );
+              })}
           </div>
+
+          {/* Ordenando o currentRecorenciaOperators do maior para o menor */}
           <ul className="tabela-ranking text-center">
-            {currentRecorenciaOperators.map((operador) => {
-              const avatar = usuariosMap[usuariosPorNome[operador]]?.avatar;
-              return (
-                <li
-                  key={operador}
-                  style={{ display: "flex", alignItems: "center" }}
-                >
-                  <img
-                    src={avatar}
-                    alt={`${operador} Avatar`}
-                    style={{
-                      width: "50px",
-                      height: "50px",
-                      borderRadius: "50%",
-                      marginRight: "10px",
-                    }}
-                    className="foto-ranking"
-                  />
-                  <span className="nome-operador">
-                    {operador.replace(/\./g, " ")}
-                  </span>
-                  <h2 className="vendas-operador">
-                    {vendasPorOperador[operador].recorencia}
-                  </h2>
-                </li>
-              );
-            })}
+            {currentRecorenciaOperators
+              .sort((a, b) => {
+                const vendasA = vendasPorOperador[a]?.recorencia || 0;
+                const vendasB = vendasPorOperador[b]?.recorencia || 0;
+                return vendasB - vendasA; // Ordenando do maior para o menor
+              })
+              .map((operador) => {
+                const avatar = usuariosMap[usuariosPorNome[operador]]?.avatar;
+                return (
+                  <li
+                    key={operador}
+                    style={{ display: "flex", alignItems: "center" }}
+                  >
+                    <img
+                      src={avatar}
+                      alt={`${operador} Avatar`}
+                      style={{
+                        width: "50px",
+                        height: "50px",
+                        borderRadius: "50%",
+                        marginRight: "10px",
+                      }}
+                      className="foto-ranking"
+                    />
+                    <span className="nome-operador">
+                      {operador.replace(/\./g, " ")}
+                    </span>
+                    <h2 className="vendas-operador">
+                      {vendasPorOperador[operador].recorencia}
+                    </h2>
+                  </li>
+                );
+              })}
           </ul>
+
           <div className="paginacao">
             <button
               onClick={() =>
@@ -455,6 +476,7 @@ export const Relatorio: React.FC = () => {
             </button>
           </div>
         </div>
+
         <div className="total-vendas">
           <h4>
             Total de vendas: {totalBase + totalRenovacao + totalRecorencia}

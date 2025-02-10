@@ -8,6 +8,7 @@ const boletoCpf = require("./routes/boletoCpf");
 const chargeRoutes = require("./routes/boletoStatus");
 const syncMarketing = require("./routes/syncMarketing");
 const sendMessageRoute = require("./routes/sendMessage");
+const buscarCnpj = require("./routes/buscarCnpj");
 
 
 const app = express();
@@ -26,6 +27,7 @@ app.use("/generate-boleto-cpf", boletoCpf);
 app.use("/v1/charge", chargeRoutes);
 app.use("/sync-marketing", syncMarketing);
 app.use("/api", sendMessageRoute);
+app.use("/buscar_cnpj", buscarCnpj);
 
 
 // const atualizarPlanilha = async () => {
@@ -45,6 +47,6 @@ app.use("/api", sendMessageRoute);
 module.exports = app;
 
 
-// app.listen(port, () => {
-//   console.log(`Server running on http://localhost:${port}`);
-// });
+app.listen(port, () => {
+  console.log(`Server running on http://localhost:${port}`);
+});
