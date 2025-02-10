@@ -1,6 +1,33 @@
 import { faSync } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import axios from "axios";
 import React, { useState } from "react";
+
+interface Address {
+  logradouro: string;
+  bairro: string;
+  estado: string;
+  cidade: string;
+  cep: string;
+}
+
+interface Contact {
+  email: string;
+  telefone: string;
+}
+
+interface QuadroSocietario {
+  nome: string;
+}
+
+interface CNPJData {
+  razao_social: string;
+  nome_fantasia: string;
+  endereco: Address;
+  atividade_principal: string;
+  quadro_societario: QuadroSocietario[];
+  contato: Contact;
+}
 
 interface DadosEmpresaProps {
   form: {
@@ -42,7 +69,6 @@ export const DadosEmpresa: React.FC<DadosEmpresaProps> = ({
   handleInputChange,
 }) => {
 
-  // Função para formatar o CPF (visual)
   const formatCPF = (value: string): string => {
     return value
       .replace(/\D/g, "")
@@ -52,7 +78,6 @@ export const DadosEmpresa: React.FC<DadosEmpresaProps> = ({
       .substring(0, 14);
   };
 
-  // Função para formatar o CNPJ (visual)
   const formatCNPJ = (value: string): string => {
     return value
       .replace(/\D/g, "")
@@ -63,16 +88,13 @@ export const DadosEmpresa: React.FC<DadosEmpresaProps> = ({
       .substring(0, 18);
   };
 
-  const handleEmailChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ): void => {
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
-    const sanitizedValue = value.replace(/\s+/g, ""); // Remove todos os espaços
+    const sanitizedValue = value.replace(/\s+/g, "");
     handleInputChange({
       target: { name, value: sanitizedValue },
     } as React.ChangeEvent<HTMLInputElement>);
   };
-
 
   const handleDocumentChange = (
     e: React.ChangeEvent<HTMLInputElement>
@@ -93,7 +115,53 @@ export const DadosEmpresa: React.FC<DadosEmpresaProps> = ({
     }
   };
 
+  
+  const buscarCNPJ = async (cnpj: string) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:5000/buscar_cnpj?cnpj=${cnpj}`
+      );
+      const data: CNPJData = response.data;
 
+      // Atualiza o estado `form` usando a função `handleInputChange`
+      handleInputChange({
+        target: { name: "razaoSocial", value: data.razao_social || "" },
+      } as React.ChangeEvent<HTMLInputElement>);
+      handleInputChange({
+        target: { name: "nomeFantasia", value: data.nome_fantasia || "" },
+      } as React.ChangeEvent<HTMLInputElement>);
+      handleInputChange({
+        target: { name: "enderecoComercial", value: data.endereco?.logradouro || "" },
+      } as React.ChangeEvent<HTMLInputElement>);
+      handleInputChange({
+        target: { name: "cep", value: data.endereco?.cep || "" },
+      } as React.ChangeEvent<HTMLInputElement>);
+      handleInputChange({
+        target: { name: "bairro", value: data.endereco?.bairro || "" },
+      } as React.ChangeEvent<HTMLInputElement>);
+      handleInputChange({
+        target: { name: "estado", value: data.endereco?.estado || "" },
+      } as React.ChangeEvent<HTMLInputElement>);
+      handleInputChange({
+        target: { name: "cidade", value: data.endereco?.cidade || "" },
+      } as React.ChangeEvent<HTMLInputElement>);
+      handleInputChange({
+        target: { name: "responsavel", value: data.quadro_societario?.map((socio) => socio.nome).join(", ") || "" },
+      } as React.ChangeEvent<HTMLInputElement>);
+      handleInputChange({
+        target: { name: "email1", value: data.contato?.email || "" },
+      } as React.ChangeEvent<HTMLInputElement>);
+
+      console.log(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleCNPJSearch = (cnpj: string) => {
+    buscarCNPJ(cnpj);
+  };
+  
   return (
     <div className="row d-flex justify-content-center">
       <h4 className="text-white">Dados da Empresa</h4>
@@ -119,6 +187,7 @@ export const DadosEmpresa: React.FC<DadosEmpresaProps> = ({
           name="cnpj"
           value={form.cnpj ? formatCNPJ(form.cnpj) : ""}
           onChange={handleDocumentChange}
+          onBlur={() => handleCNPJSearch(form.cnpj)}
           placeholder="Insira o cnpj"
         />
       </div>

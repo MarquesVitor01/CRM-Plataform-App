@@ -14,6 +14,7 @@ import "./Components/Styles/add.css";
 import { useAuth } from "../../context/AuthContext";
 import { InfoAdicionais } from "./Components/InfoAdicionais";
 import { Button, Modal } from "react-bootstrap";
+import axios from "axios";
 
 export const Add = () => {
   const userId = auth.currentUser?.uid;
@@ -79,6 +80,9 @@ export const Add = () => {
   const [erroNomeAutorizado, setErroNomeAutorizado] = useState("");
   const [senhaHabilitada, setSenhaHabilitada] = useState(false);
 
+  
+  
+  
   const handleSenhaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSenha(e.target.value);
     setErroSenha("");

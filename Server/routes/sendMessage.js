@@ -14,7 +14,6 @@ router.post("/enviar-texto", async (req, res) => {
         if (!phone || !message) {
             return res.status(400).json({ success: false, message: "phone e message são obrigatórios" });
         }
-
         // URL correta da API com o token na rota
         const url = `https://api-whatsapp.wascript.com.br/api/enviar-texto/${WHATSCALE_TOKEN}`;
 
