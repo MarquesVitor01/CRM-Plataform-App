@@ -74,7 +74,7 @@ export const Add = () => {
   const [novoId, setNovoId] = useState<string | null>(null);
 
   const [senha, setSenha] = useState("");
-  const [senhaCorreta, setSenhaCorreta] = useState("068543");
+  const [senhaCorreta, setSenhaCorreta] = useState("2025@maps");
   const [erroSenha, setErroSenha] = useState("");
   const [nomeAutorizado, setNomeAutorizado] = useState("");
   const [erroNomeAutorizado, setErroNomeAutorizado] = useState("");
