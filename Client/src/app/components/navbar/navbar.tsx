@@ -11,6 +11,7 @@ import {
   faFileAlt,
   faClose,
   faClock,
+  faBan,
 } from "@fortawesome/free-solid-svg-icons";
 import "./navbar.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -93,6 +94,18 @@ export const Navbar = () => {
                 >
                   <FontAwesomeIcon icon={faChartLine} />
                   <span>Vendas</span>
+                </Link>
+              </li>
+            )}
+            {(cargo === "vendas" || userId === adminId) && (
+              <li className="nav-item">
+                <Link
+                  className="nav-link icon-tooltip"
+                  to="/cancelados"
+                  data-tooltip="Cancelados"
+                >
+                  <FontAwesomeIcon icon={faBan} />
+                  <span>Cancelados</span>
                 </Link>
               </li>
             )}
@@ -195,12 +208,18 @@ export const Navbar = () => {
         >
           Script Padrão - 02
         </button>
-        <Link to={"https://drive.google.com/file/d/1sxYpkCuLgdwPhL2l0g8p4-vltr9qyZ_R/view?usp=sharing"}
+        <Link
+          to={
+            "https://drive.google.com/file/d/1sxYpkCuLgdwPhL2l0g8p4-vltr9qyZ_R/view?usp=sharing"
+          }
           className="btn btn-primary"
         >
           Dicas
         </Link>
-        <Link to={"https://drive.google.com/file/d/1nud0aITvgfJcJ9293hDm3Jr0WuqyhKaz/view?usp=sharing"}
+        <Link
+          to={
+            "https://drive.google.com/file/d/1nud0aITvgfJcJ9293hDm3Jr0WuqyhKaz/view?usp=sharing"
+          }
           className="btn btn-primary"
         >
           Possiveis Objeções
