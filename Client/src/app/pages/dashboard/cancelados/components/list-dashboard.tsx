@@ -318,14 +318,14 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
           </div>
 
           <div className="selects-container">
-            <Link to="/add" className="create-btn" data-tooltip-id="add-tooltip"
+            {/* <Link to="/add" className="create-btn" data-tooltip-id="add-tooltip"
               data-tooltip-content="Nova venda">
               <FontAwesomeIcon
                 icon={faPlus}
 
               />
               <Tooltip id="add-tooltip" place="top" className="custom-tooltip" />
-            </Link>
+            </Link> */}
 
             {userId === adminUserId && (
               <button onClick={openModalExclusao} className="remove-btn" data-tooltip-id="remove-tooltip"
