@@ -119,7 +119,7 @@ export const DadosEmpresa: React.FC<DadosEmpresaProps> = ({
   const buscarCNPJ = async (cnpj: string) => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/buscar_cnpj?cnpj=${cnpj}`
+        `https://crm-plataform-app-6t3u.vercel.app/buscar_cnpj?cnpj=${cnpj}`
       );
       const data: CNPJData = response.data;
 
