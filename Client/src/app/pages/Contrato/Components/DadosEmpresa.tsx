@@ -128,7 +128,7 @@ export const DadosEmpresa: React.FC = () => {
               <p>
                 <strong>LINK DA PÁGINA GOOGLE:</strong>{" "}
                 <a
-                  href={`https://${clientData.linkGoogle}`}
+                  href={`${clientData.linkGoogle}`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >

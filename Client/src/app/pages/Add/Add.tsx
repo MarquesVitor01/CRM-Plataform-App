@@ -80,9 +80,6 @@ export const Add = () => {
   const [erroNomeAutorizado, setErroNomeAutorizado] = useState("");
   const [senhaHabilitada, setSenhaHabilitada] = useState(false);
 
-  
-  
-  
   const handleSenhaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSenha(e.target.value);
     setErroSenha("");
@@ -291,7 +288,6 @@ export const Add = () => {
       existe. Para salvar com um novo ID, confirme sua senha abaixo:
     </p>
     
-    {/* Campo para o nome da pessoa que autorizou */}
     <input
       type="text"
       placeholder="Nome de quem autorizou"
@@ -310,7 +306,6 @@ export const Add = () => {
       <p className="text-danger mt-2">{erroNomeAutorizado}</p>
     )}
 
-    {/* Campo para a senha */}
     <input
       type="password"
       placeholder="Digite sua senha"
