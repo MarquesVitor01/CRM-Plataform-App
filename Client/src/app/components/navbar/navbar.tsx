@@ -12,6 +12,7 @@ import {
   faClose,
   faClock,
   faBan,
+  faUser,
 } from "@fortawesome/free-solid-svg-icons";
 import "./navbar.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -68,13 +69,30 @@ export const Navbar = () => {
 
       <nav className={`sidebar ${isOpen ? "open" : ""}`}>
         <div className="sidebar-sticky">
-          <div className="nav-perfil">
-            <Link to={"/perfil"}>
-              <img src={avatar} alt="Foto de Perfil" />
+          {/* <div className="nav-perfil">
+            <Link to={"/perfil"} className="mt-2">
+              Ver Perfil, {nome}
+               <img src={avatar} alt="Foto de Perfil" /> 
             </Link>
-            <p>{nome}</p>
+            <p></p>
+          </div> */}
+                    <div className="nav-perfil">
+            <Link to={"/perfil"} className="mt-2">
+               <img src={require("../../Assets/kaio.png")} alt="Foto de Perfil" /> 
+            </Link>
+            <p></p>
           </div>
           <ul className="nav options flex-column">
+            <li className="nav-item">
+              <Link
+                className="nav-link icon-tooltip"
+                to="/perfil"
+                data-tooltip="Perfil"
+              >
+                <FontAwesomeIcon icon={faUser} />
+                <span>Perfil</span>
+              </Link>
+            </li>
             <li className="nav-item">
               <Link
                 className="nav-link icon-tooltip"

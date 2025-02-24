@@ -41,6 +41,7 @@ export const Bonus: React.FC = () => {
   const formatValor = (value: string): string => {
     return value.replace(/\D/g, "").replace(/(\d)(\d{2})$/, "$1,$2");
   };
+
   return (
     clientData && (
       <div className="bonus card text-center p-4">
@@ -181,9 +182,15 @@ export const Bonus: React.FC = () => {
                 </p>
               </div>
               <p className="mt-3">
+                  <a href={clientData.boleto?.[0]?.link}>
+                    {clientData.boleto?.[0]?.link}
+                  </a>
+                </p>
+              <p className="mt-3">
                 Data de vencimento:{" "}
                 {formatDateToBrazilian(clientData.dataVencimento)}
               </p>
+
             </div>
           </div>
         </div>

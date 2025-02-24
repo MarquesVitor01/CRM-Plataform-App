@@ -17,6 +17,7 @@ interface BoletoData {
   status: string;
   chargeId: string;
   pix: string;
+  link: string;
 }
 
 export const FichaBoleto: React.FC = () => {
@@ -152,7 +153,8 @@ export const FichaBoleto: React.FC = () => {
             !data?.barcode ||
             !data?.billet_link ||
             !data?.pdf?.charge ||
-            !data?.expire_at
+            !data?.expire_at ||
+            !data?.link
           ) {
             throw new Error("Resposta da API incompleta.");
           }
@@ -165,6 +167,7 @@ export const FichaBoleto: React.FC = () => {
             pdfLink: data.pdf.charge,
             status: data.status,
             chargeId: data.charge_id,
+            link: data.link
           });
         } catch (error) {
           console.error(`Erro ao gerar boleto da parcela ${i + 1}:`, error);
@@ -276,7 +279,8 @@ export const FichaBoleto: React.FC = () => {
               !data?.barcode ||
               !data?.billet_link ||
               !data?.pdf?.charge ||
-              !data?.expire_at
+              !data?.expire_at ||
+              !data?.link 
             ) {
               throw new Error("Resposta da API incompleta (Recorrência).");
             }
@@ -289,6 +293,7 @@ export const FichaBoleto: React.FC = () => {
               pdfLink: data.pdf.charge,
               status: data.status,
               chargeId: data.charge_id,
+              link: data.link
             });
           } catch (error) {
             console.error(

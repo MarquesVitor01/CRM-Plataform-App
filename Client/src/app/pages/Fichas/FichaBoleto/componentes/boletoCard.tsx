@@ -8,6 +8,7 @@ interface Boleto {
   expireAt: string;
   pdfLink: string;
   status: string;
+  link: string;
 }
 
 interface BoletosGeradosProps {
@@ -60,6 +61,9 @@ const BoletosGerados: React.FC<BoletosGeradosProps> = ({
                   </p>
                   <p>
                     <strong>Charge_id:</strong> {boleto.chargeId}
+                  </p>
+                  <p>
+                    <strong>Link Boleto:</strong> {boleto.link}
                   </p>
                   <button
                     onClick={() => fetchBoletoDetails(boleto.chargeId)}
