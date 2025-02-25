@@ -4,7 +4,7 @@ const getEfiPayInstance = require("../config/efipayConfig");
 const router = express.Router();
 
 router.post("/", async (req, res) => {
-    const { email, birth, name, cpf, phone_number, items, shippingValue, account, dataVencimento } = req.body;
+    const { email, birth, name, cpf, phone_number, items, shippingValue, account, dataVencimento, address } = req.body;
 
     if (!name || !email || !items || !cpf || !dataVencimento) {
         return res.status(400).send("Missing required fields.");
@@ -31,6 +31,7 @@ router.post("/", async (req, res) => {
                     cpf,
                     birth,
                     phone_number,
+                    address
                 },
             },
         },

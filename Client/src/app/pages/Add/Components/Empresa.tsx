@@ -55,6 +55,7 @@ interface DadosEmpresaProps {
     horarioFuncionamento: string;
     responsavel: string;
     cargo: string;
+    numeroResidencial: string;
   };
   handleInputChange: (
     e: React.ChangeEvent<
@@ -68,7 +69,6 @@ export const DadosEmpresa: React.FC<DadosEmpresaProps> = ({
   form,
   handleInputChange,
 }) => {
-
   const formatCPF = (value: string): string => {
     return value
       .replace(/\D/g, "")
@@ -86,6 +86,30 @@ export const DadosEmpresa: React.FC<DadosEmpresaProps> = ({
       .replace(/^(\d{2})\.(\d{3})\.(\d{3})(\d)/, "$1.$2.$3/$4")
       .replace(/(\d{2})\.(\d{3})\.(\d{3})\/(\d{4})(\d)/, "$1.$2.$3/$4-$5")
       .substring(0, 18);
+  };
+
+  const formatCEP = (value: string): string => {
+    // Remove tudo que não é dígito e limita a 8 caracteres
+    const onlyNumbers = value.replace(/\D/g, "").substring(0, 8);
+  
+    // Insere o traço após os primeiros 5 dígitos (apenas para exibição)
+    if (onlyNumbers.length > 5) {
+      return `${onlyNumbers.slice(0, 5)}-${onlyNumbers.slice(5)}`;
+    }
+  
+    return onlyNumbers; // Retorna sem traço se tiver menos de 5 dígitos
+  };
+
+  const handleCEPChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    const { name, value } = e.target;
+  
+    // Remove o traço e limita a 8 dígitos (valor real para o banco de dados)
+    const cepWithoutMask = value.replace(/\D/g, "").substring(0, 8);
+  
+    // Atualiza o estado com o valor SEM traço
+    handleInputChange({
+      target: { name, value: cepWithoutMask }, // Salva apenas os números
+    } as React.ChangeEvent<HTMLInputElement>);
   };
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
@@ -115,7 +139,6 @@ export const DadosEmpresa: React.FC<DadosEmpresaProps> = ({
     }
   };
 
-  
   const buscarCNPJ = async (cnpj: string) => {
     try {
       const response = await axios.get(
@@ -131,7 +154,10 @@ export const DadosEmpresa: React.FC<DadosEmpresaProps> = ({
         target: { name: "nomeFantasia", value: data.nome_fantasia || "" },
       } as React.ChangeEvent<HTMLInputElement>);
       handleInputChange({
-        target: { name: "enderecoComercial", value: data.endereco?.logradouro || "" },
+        target: {
+          name: "enderecoComercial",
+          value: data.endereco?.logradouro || "",
+        },
       } as React.ChangeEvent<HTMLInputElement>);
       handleInputChange({
         target: { name: "cep", value: data.endereco?.cep || "" },
@@ -146,7 +172,11 @@ export const DadosEmpresa: React.FC<DadosEmpresaProps> = ({
         target: { name: "cidade", value: data.endereco?.cidade || "" },
       } as React.ChangeEvent<HTMLInputElement>);
       handleInputChange({
-        target: { name: "responsavel", value: data.quadro_societario?.map((socio) => socio.nome).join(", ") || "" },
+        target: {
+          name: "responsavel",
+          value:
+            data.quadro_societario?.map((socio) => socio.nome).join(", ") || "",
+        },
       } as React.ChangeEvent<HTMLInputElement>);
       handleInputChange({
         target: { name: "email1", value: data.contato?.email || "" },
@@ -161,7 +191,37 @@ export const DadosEmpresa: React.FC<DadosEmpresaProps> = ({
   const handleCNPJSearch = (cnpj: string) => {
     buscarCNPJ(cnpj);
   };
-  
+
+  const estadosBrasil = [
+    "AC",
+    "AL",
+    "AP",
+    "AM",
+    "BA",
+    "CE",
+    "DF",
+    "ES",
+    "GO",
+    "MA",
+    "MT",
+    "MS",
+    "MG",
+    "PA",
+    "PB",
+    "PR",
+    "PE",
+    "PI",
+    "RJ",
+    "RN",
+    "RS",
+    "RO",
+    "RR",
+    "SC",
+    "SP",
+    "SE",
+    "TO",
+  ];
+
   return (
     <div className="row d-flex justify-content-center">
       <h4 className="text-white">Dados da Empresa</h4>
@@ -231,6 +291,19 @@ export const DadosEmpresa: React.FC<DadosEmpresaProps> = ({
       </div>
 
       <div className="form-group mb-3 col-md-4">
+        <label htmlFor="enderecoComercial">Número do Endereço</label>
+        <input
+          type="text"
+          className="form-control"
+          id="numeroResidencial"
+          name="numeroResidencial"
+          value={form.numeroResidencial}
+          onChange={handleInputChange}
+          placeholder="Insira o número do endereço comercial"
+        />
+      </div>
+
+      <div className="form-group mb-3 col-md-4">
         <label htmlFor="bairro">Bairro</label>
         <input
           type="text"
@@ -244,29 +317,34 @@ export const DadosEmpresa: React.FC<DadosEmpresaProps> = ({
       </div>
 
       <div className="form-group mb-3 col-md-4">
-        <label htmlFor="cep">CEP</label>
-        <input
-          type="text"
-          className="form-control"
-          id="cep"
-          name="cep"
-          value={form.cep}
-          onChange={handleInputChange}
-          placeholder="Insira o CEP"
-        />
-      </div>
+  <label htmlFor="cep">CEP</label>
+  <input
+    type="text"
+    className="form-control"
+    id="cep"
+    name="cep"
+    value={formatCEP(form.cep)} // Exibe o CEP formatado (com traço)
+    onChange={handleCEPChange} // Gerencia a mudança
+    placeholder="Insira o CEP"
+  />
+</div>
 
       <div className="form-group mb-3 col-md-4">
         <label htmlFor="estado">Estado</label>
-        <input
-          type="text"
+        <select
           className="form-control"
           id="estado"
           name="estado"
           value={form.estado}
           onChange={handleInputChange}
-          placeholder="Insira o estado"
-        />
+        >
+          <option value="">Selecione um estado</option>
+          {estadosBrasil.map((uf) => (
+            <option key={uf} value={uf}>
+              {uf}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="form-group mb-3 col-md-4">

@@ -11,7 +11,8 @@ router.post("/", async (req, res) => {
     items,
     shippingValue,
     account,
-    dataVencimento
+    dataVencimento,
+    address
   } = req.body;
 
   if (!email || !items || !juridical_person || !dataVencimento) {
@@ -39,6 +40,7 @@ router.post("/", async (req, res) => {
           email,
           phone_number,
           juridical_person,
+          address 
         },
       },
     },

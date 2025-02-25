@@ -22,6 +22,7 @@ interface VendaData {
   responsavel: string;
   cargo: string;
   linkGoogle: string;
+  numeroResidencial: string;
 }
 
 interface EditEmpresaFormProps {
@@ -96,6 +97,10 @@ export const EditEmpresa: React.FC<EditEmpresaFormProps> = ({
 
   if (!form) return null;
 
+  const estadosBrasil = [
+    "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO"
+  ];
+
   return (
     <div className="row d-flex justify-content-center">
       <h4 className="text-white">Dados da Empresa</h4>
@@ -147,6 +152,14 @@ export const EditEmpresa: React.FC<EditEmpresaFormProps> = ({
         onChange={handleInputChange}
         placeholder="Insira o endereço comercial"
       />
+            <InputField
+        id="numeroResidencial"
+        label="Número do Endereço"
+        name="numeroResidencial"
+        value={form.numeroResidencial}
+        onChange={handleInputChange}
+        placeholder="Insira o número do endereço comercial"
+      />
       <InputField
         id="bairro"
         label="Bairro"
@@ -163,14 +176,21 @@ export const EditEmpresa: React.FC<EditEmpresaFormProps> = ({
         onChange={handleInputChange}
         placeholder="Insira o CEP"
       />
-      <InputField
-        id="estado"
-        label="Estado"
-        name="estado"
-        value={form.estado}
-        onChange={handleInputChange}
-        placeholder="Insira o estado"
-      />
+      <div className="form-group mb-3 col-md-4">
+        <label htmlFor="estado">Estado</label>
+        <select
+          className="form-control"
+          id="estado"
+          name="estado"
+          value={form.estado}
+          onChange={handleInputChange}
+        >
+          <option value="">Selecione um estado</option>
+          {estadosBrasil.map((uf) => (
+            <option key={uf} value={uf}>{uf}</option>
+          ))}
+        </select>
+      </div>
       <InputField
         id="cidade"
         label="Cidade"
