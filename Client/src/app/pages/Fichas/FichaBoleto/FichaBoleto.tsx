@@ -121,6 +121,15 @@ export const FichaBoleto: React.FC = () => {
                   }),
               email: clientData.email1,
               phone_number: clientData.celular,
+              address: {
+                street: clientData.enderecoComercial,
+                number: clientData.numeroResidencial,
+                neighborhood: clientData.bairro,
+                zipcode: clientData.cep,
+                city: clientData.cidade,
+                complement: "",
+                state: clientData.estado
+              },
               items: [
                 {
                   name: clientData.validade,
@@ -249,6 +258,15 @@ export const FichaBoleto: React.FC = () => {
                     }),
                 email: clientData.email1,
                 phone_number: clientData.celular,
+                address: {
+                  street: clientData.enderecoComercial,
+                  number: clientData.numeroResidencial,
+                  neighborhood: clientData.bairro,
+                  zipcode: clientData.cep,
+                  city: clientData.cidade,
+                  complement: "",
+                  state: clientData.estado
+                },
                 items: [
                   {
                     name: "Superte G Maps",

@@ -51,6 +51,7 @@ interface ClientData {
   account: string;
   diaData: string;
   valorExtenso: string;
+  numeroResidencial: string;
 }
 
 export const EditContrato = () => {

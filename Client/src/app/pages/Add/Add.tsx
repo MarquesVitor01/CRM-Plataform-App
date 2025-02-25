@@ -34,6 +34,8 @@ export const Add = () => {
     nomeFantasia: "",
     enderecoComercial: "",
     bairro: "",
+    numeroResidencial: "",
+    zipcode: "",
     cep: "",
     estado: "",
     cidade: "",
