@@ -92,7 +92,7 @@ export const DadosEmpresa: React.FC = () => {
               </p>
               <p>
                 <strong>ENDEREÇO COMERCIAL:</strong>{" "}
-                {clientData.enderecoComercial}
+                {clientData.enderecoComercial}, {clientData.numeroResidencial}
               </p>
               <p>
                 <strong>CEP:</strong> {clientData.cep}
