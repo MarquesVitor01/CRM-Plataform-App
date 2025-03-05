@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { HeaderDash } from "./components/header-dash";
 import "../vendas/components/dashboard.css";
+import './components/dashboard.css'
 import { ListDashboard } from "./components/list-dashboard";
 
 export const Vendas = () => {

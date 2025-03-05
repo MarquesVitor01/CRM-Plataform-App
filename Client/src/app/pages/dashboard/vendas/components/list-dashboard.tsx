@@ -42,6 +42,7 @@ interface Venda {
   createdBy: string;
   setor: string;
   account: string;
+  whatsapp: string
 }
 
 interface ListDashboardProps {
@@ -211,6 +212,23 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
     setModalExcel(false);
   };
 
+  const formatarTelefone = (numero: any) => {
+    if (!numero) return "";
+  
+    // Remove tudo que não for número
+    const numeros = numero.replace(/\D/g, "");
+  
+    // Verifica se tem o tamanho correto para DDD + número
+    if (numeros.length === 11) {
+      return `(${numeros.slice(0, 2)}) ${numeros.slice(2, 7)}-${numeros.slice(7)}`;
+    } else if (numeros.length === 10) {
+      return `(${numeros.slice(0, 2)}) ${numeros.slice(2, 6)}-${numeros.slice(6)}`;
+    }
+  
+    return numero; // Retorna o número sem formatação se não for válido
+  };
+  
+
   const downloadClients = () => {
     const clientsToDownload = applyFilters();
 
@@ -379,6 +397,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                 <th>CNPJ/CPF</th>
                 <th>Nome</th>
                 <th>Email</th>
+                <th>Whatsapp</th>
                 <th>Operador</th>
                 <th>Grupo</th>
                 <th></th>
@@ -407,6 +426,9 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                   </td>
                   <td className={selectedItems.has(venda.id) ? "selected" : ""}>
                     {venda.email1}
+                  </td>
+                  <td className={selectedItems.has(venda.id) ? "selected" : ""}>
+                  {formatarTelefone(venda.whatsapp)}
                   </td>
                   <td className={selectedItems.has(venda.id) ? "selected" : ""}>
                     {venda.operador.replace(/\./g, " ")}
