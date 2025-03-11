@@ -178,7 +178,7 @@ export const Navbar = () => {
             <li className="nav-item">
               <Link
                 className="nav-link icon-tooltip"
-                to="/ponto"
+                to="https://dashboard-adm-front-end.vercel.app"
                 data-tooltip="Ponto"
               >
                 <FontAwesomeIcon icon={faClock} />
