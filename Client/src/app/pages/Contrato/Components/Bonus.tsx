@@ -146,8 +146,7 @@ export const Bonus: React.FC = () => {
 
         <p className="">
           O PAGAMENTO PODE SER FEITO ATRAVÉS DO BOLETO BANCÁRIO OU PIX QR-CODE
-          DISPONÍVEL NO BOLETO, ENVIADO ATRAVÉS DO E-MAIL E WHATSAPP DO
-          CONTRATANTE.
+          DISPONÍVEL NO BOLETO.
         </p>
 
         <div className="boleto-container">
