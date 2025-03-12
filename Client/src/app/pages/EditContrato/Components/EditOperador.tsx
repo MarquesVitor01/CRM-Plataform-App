@@ -184,9 +184,9 @@ export const EditOperador: React.FC<EditOperadorProps> = ({
         value={form.formaPagamento}
         onChange={handleInputChange}
         options={[
-          { value: "Pix", label: "Pix" },
+          // { value: "Pix", label: "Pix" },
           { value: "Boleto", label: "Boleto" },
-          { value: "Crédito", label: "Crédito" },
+          // { value: "Crédito", label: "Crédito" },
         ]}
       />
       {/* <InputData

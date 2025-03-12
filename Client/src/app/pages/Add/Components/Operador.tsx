@@ -185,9 +185,9 @@ export const Operador: React.FC<OperadorProps> = ({
           onChange={handleInputChange}
         >
           <option value="">Selecione uma opção</option>
-          <option value="Pix">Pix</option>
+          {/* <option value="Pix">Pix</option> */}
           <option value="Boleto">Boleto</option>
-          <option value="Crédito">Crédito</option>
+          {/* <option value="Crédito">Crédito</option> */}
         </select>
       </div>
 
