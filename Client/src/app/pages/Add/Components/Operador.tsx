@@ -192,7 +192,7 @@ export const Operador: React.FC<OperadorProps> = ({
       </div>
 
       <div className="form-group mb-3 col-md-4">
-        <label htmlFor="data">Data (dd/mm/aaaa)</label>
+        <label htmlFor="data">Data da Venda (dd/mm/aaaa)</label>
         <input
           type="date"
           className="form-control"
@@ -203,7 +203,7 @@ export const Operador: React.FC<OperadorProps> = ({
         />
       </div>
       <div className="form-group mb-3 col-md-4">
-        <label htmlFor="data">Data Vencimento (dd/mm/aaaa)</label>
+        <label htmlFor="data">Data do Vencimento (dd/mm/aaaa)</label>
         <input
           type="date"
           className="form-control"
