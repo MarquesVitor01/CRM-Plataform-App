@@ -1,7 +1,9 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import { faSync } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface Address {
   logradouro: string;
@@ -20,6 +22,10 @@ interface QuadroSocietario {
   nome: string;
 }
 
+interface Situacao {
+  situacao_atual: string;
+}
+
 interface CNPJData {
   razao_social: string;
   nome_fantasia: string;
@@ -27,6 +33,7 @@ interface CNPJData {
   atividade_principal: string;
   quadro_societario: QuadroSocietario[];
   contato: Contact;
+  situacao_cadastral: Situacao;
 }
 
 interface DadosEmpresaProps {
@@ -69,6 +76,10 @@ export const DadosEmpresa: React.FC<DadosEmpresaProps> = ({
   form,
   handleInputChange,
 }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+  const navigate = useNavigate();
+
   const formatCPF = (value: string): string => {
     return value
       .replace(/\D/g, "")
@@ -91,21 +102,21 @@ export const DadosEmpresa: React.FC<DadosEmpresaProps> = ({
   const formatCEP = (value: string): string => {
     // Remove tudo que não é dígito e limita a 8 caracteres
     const onlyNumbers = value.replace(/\D/g, "").substring(0, 8);
-  
+
     // Insere o traço após os primeiros 5 dígitos (apenas para exibição)
     if (onlyNumbers.length > 5) {
       return `${onlyNumbers.slice(0, 5)}-${onlyNumbers.slice(5)}`;
     }
-  
+
     return onlyNumbers; // Retorna sem traço se tiver menos de 5 dígitos
   };
 
   const handleCEPChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
-  
+
     // Remove o traço e limita a 8 dígitos (valor real para o banco de dados)
     const cepWithoutMask = value.replace(/\D/g, "").substring(0, 8);
-  
+
     // Atualiza o estado com o valor SEM traço
     handleInputChange({
       target: { name, value: cepWithoutMask }, // Salva apenas os números
@@ -142,11 +153,24 @@ export const DadosEmpresa: React.FC<DadosEmpresaProps> = ({
   const buscarCNPJ = async (cnpj: string) => {
     try {
       const response = await axios.get(
+        // `http://localhost:5000/buscar_cnpj?cnpj=${cnpj}`
         `https://crm-plataform-app-6t3u.vercel.app/buscar_cnpj?cnpj=${cnpj}`
       );
       const data: CNPJData = response.data;
 
-      // Atualiza o estado `form` usando a função `handleInputChange`
+      console.log("Dados recebidos:", data);
+
+      if (data.situacao_cadastral?.situacao_atual?.toUpperCase() === "INAPTA") {
+        setModalMessage(
+          `A empresa com o CNPJ informado está com a situação ${
+            data.situacao_cadastral?.situacao_atual || "desconhecida"
+          }.
+          Infelizmente, não será possível dar continuidade a essa operação no momento.`
+        );
+        setIsModalOpen(true);
+        return;
+      }
+
       handleInputChange({
         target: { name: "razaoSocial", value: data.razao_social || "" },
       } as React.ChangeEvent<HTMLInputElement>);
@@ -181,11 +205,15 @@ export const DadosEmpresa: React.FC<DadosEmpresaProps> = ({
       handleInputChange({
         target: { name: "email1", value: data.contato?.email || "" },
       } as React.ChangeEvent<HTMLInputElement>);
-
-      console.log(response.data);
     } catch (error) {
-      console.log(error);
+      console.error("Erro ao buscar CNPJ:", error);
     }
+  };
+
+  const closeModalSituacao = () => {
+    setIsModalOpen(false);
+
+    navigate("/vendas");
   };
 
   const handleCNPJSearch = (cnpj: string) => {
@@ -317,17 +345,17 @@ export const DadosEmpresa: React.FC<DadosEmpresaProps> = ({
       </div>
 
       <div className="form-group mb-3 col-md-4">
-  <label htmlFor="cep">CEP</label>
-  <input
-    type="text"
-    className="form-control"
-    id="cep"
-    name="cep"
-    value={formatCEP(form.cep)} // Exibe o CEP formatado (com traço)
-    onChange={handleCEPChange} // Gerencia a mudança
-    placeholder="Insira o CEP"
-  />
-</div>
+        <label htmlFor="cep">CEP</label>
+        <input
+          type="text"
+          className="form-control"
+          id="cep"
+          name="cep"
+          value={formatCEP(form.cep)} // Exibe o CEP formatado (com traço)
+          onChange={handleCEPChange} // Gerencia a mudança
+          placeholder="Insira o CEP"
+        />
+      </div>
 
       <div className="form-group mb-3 col-md-4">
         <label htmlFor="estado">Estado</label>
@@ -473,6 +501,30 @@ export const DadosEmpresa: React.FC<DadosEmpresaProps> = ({
           placeholder="Insira o link da página do Google Maps"
         />
       </div>
+      {isModalOpen && (
+        <div
+          className="modal fade show d-block"
+          tabIndex={-1}
+          role="dialog"
+          style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+        >
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header bg-danger text-white">
+                <h5 className="modal-title">⚠️ Alerta de Situação</h5>
+              </div>
+              <div className="modal-body">
+                <p className="text-dark">{modalMessage}</p>
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-danger" onClick={closeModalSituacao}>
+                  Fechar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
