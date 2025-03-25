@@ -8,6 +8,7 @@ import {
 import "./Relatorio.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLeftLong, faRightLong } from "@fortawesome/free-solid-svg-icons";
+import { Ranking } from "./components/Ranking";
 
 interface Venda {
   operador: string;
@@ -25,6 +26,21 @@ export const Relatorio: React.FC = () => {
   const [vendasDiarias, setVendasDiarias] = useState<
     (Venda & { avatar?: string })[]
   >([]);
+  const [, setVendasSemanais] = useState<
+    (Venda & { avatar?: string })[]
+  >([]);
+  const [, setVendasMensais] = useState<
+    (Venda & { avatar?: string })[]
+  >([]);
+  const [, setVendasPorOperadorDiario] = useState<
+    Record<string, number>
+  >({});
+  const [vendasPorOperadorSemanal, setVendasPorOperadorSemanal] = useState<
+    Record<string, number>
+  >({});
+  const [vendasPorOperadorMensal, setVendasPorOperadorMensal] = useState<
+    Record<string, number>
+  >({});
   const [usuariosMap, setUsuariosMap] = useState<Record<string, Usuario>>({});
   const [usuariosPorNome, setUsuariosPorNome] = useState<
     Record<string, string>
@@ -48,9 +64,8 @@ export const Relatorio: React.FC = () => {
 
       usuariosSnapshot.forEach((doc) => {
         const usuario = doc.data() as Usuario;
-        // Mantendo o nome como está no banco, sem alteração
         usuarios[doc.id] = usuario;
-        nomeParaID[usuario.nome.trim()] = doc.id; // Apenas removendo espaços extras
+        nomeParaID[usuario.nome.trim()] = doc.id;
       });
 
       setUsuariosMap(usuarios);
@@ -61,46 +76,62 @@ export const Relatorio: React.FC = () => {
   }, [db]);
 
   useEffect(() => {
-    const fetchVendasDiarias = () => {
+    const fetchVendas = () => {
       const vendasCollection = collection(db, "vendas");
 
       const unsubscribe = onSnapshot(vendasCollection, (querySnapshot) => {
         const vendasHoje: (Venda & { avatar?: string })[] = [];
-        const today = new Date().toISOString().split("T")[0];
+        const vendasSemana: (Venda & { avatar?: string })[] = [];
+        const vendasMes: (Venda & { avatar?: string })[] = [];
+
+        const today = new Date();
+        const todayString = today.toISOString().split("T")[0];
+
+        const weekStart = new Date(today);
+        weekStart.setDate(today.getDate() - today.getDay());
+        const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+        const operadoresDiario: Record<string, number> = {};
+        const operadoresSemanal: Record<string, number> = {};
+        const operadoresMensal: Record<string, number> = {};
+
+        let baseCount = 0;
+        let renovacaoCount = 0;
+        let recorenciaCount = 0;
 
         const vendasMapeadas = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         })) as (Venda & { id: string })[];
 
-        // Reset totals
-        let baseCount = 0;
-        let renovacaoCount = 0;
-        let recorenciaCount = 0;
-
         for (const venda of vendasMapeadas) {
-          if (venda.data === today) {
-            // Verificando o operador
-            const usuarioID = usuariosPorNome[venda.operador] || venda.operador;
+          const usuarioID = usuariosPorNome[venda.operador] || venda.operador;
+          const usuario = usuariosMap[usuarioID];
 
-            const usuario = usuariosMap[usuarioID];
-            if (usuario) {
-              const vendaComAvatar = { ...venda, avatar: usuario.avatar };
-              vendasHoje.push(vendaComAvatar);
-            } else {
-              console.warn(
-                `Usuário não encontrado para o operador: ${venda.operador}`
-              );
-            }
+          const vendaComAvatar = { ...venda, avatar: usuario?.avatar };
+          const vendaDate = new Date(venda.data);
 
-            // Contabilizando o total por tipo de contrato
-            if (venda.contrato === "Base") {
-              baseCount += 1;
-            } else if (venda.contrato === "Renovacao") {
-              renovacaoCount += 1;
-            } else if (venda.contrato === "Recorencia") {
-              recorenciaCount += 1;
-            }
+          if (venda.data === todayString) {
+            vendasHoje.push(vendaComAvatar);
+            operadoresDiario[venda.operador] =
+              (operadoresDiario[venda.operador] || 0) + 1;
+          }
+
+          if (vendaDate >= weekStart && vendaDate <= today) {
+            vendasSemana.push(vendaComAvatar);
+            operadoresSemanal[venda.operador] =
+              (operadoresSemanal[venda.operador] || 0) + 1;
+          }
+
+          if (vendaDate >= monthStart && vendaDate <= today) {
+            vendasMes.push(vendaComAvatar);
+            operadoresMensal[venda.operador] =
+              (operadoresMensal[venda.operador] || 0) + 1;
+          }
+
+          if (venda.data === todayString) {
+            if (venda.contrato === "Base") baseCount += 1;
+            else if (venda.contrato === "Renovacao") renovacaoCount += 1;
+            else if (venda.contrato === "Recorencia") recorenciaCount += 1;
           }
         }
 
@@ -108,132 +139,125 @@ export const Relatorio: React.FC = () => {
         setTotalRenovacao(renovacaoCount);
         setTotalRecorencia(recorenciaCount);
         setVendasDiarias(vendasHoje);
+        setVendasSemanais(vendasSemana);
+        setVendasMensais(vendasMes);
+        setVendasPorOperadorDiario(operadoresDiario);
+        setVendasPorOperadorSemanal(operadoresSemanal);
+        setVendasPorOperadorMensal(operadoresMensal);
       });
 
       return () => unsubscribe();
     };
 
     if (Object.keys(usuariosMap).length > 0) {
-      fetchVendasDiarias();
+      fetchVendas();
     }
   }, [db, usuariosMap, usuariosPorNome]);
 
-  const vendasPorOperador = vendasDiarias.reduce<
-    Record<string, { base: number; renovacao: number; recorencia: number }>
-  >((acc, venda) => {
-    const { operador, contrato } = venda;
-    if (!acc[operador]) {
-      acc[operador] = { base: 0, renovacao: 0, recorencia: 0 };
-    }
-    if (contrato === "Base") {
-      acc[operador].base += 1;
-    } else if (contrato === "Renovacao") {
-      acc[operador].renovacao += 1;
-    } else if (contrato === "Recorencia") {
-      acc[operador].recorencia += 1;
-    }
-    return acc;
-  }, {});
+  const rankingOperadores = Object.keys(vendasPorOperadorSemanal).map(
+    (operador) => {
+      const usuarioID = usuariosPorNome[operador] || operador;
+      const usuario = usuariosMap[usuarioID];
 
-  const getAllOperators = () => {
-    return Object.keys(vendasPorOperador)
-      .filter(
-        (operador) =>
-          vendasPorOperador[operador].base > 0 ||
-          vendasPorOperador[operador].recorencia > 0 ||
-          vendasPorOperador[operador].renovacao > 0
-      )
-      .sort((a, b) => {
-        const totalA =
-          vendasPorOperador[a].base +
-          vendasPorOperador[a].renovacao +
-          vendasPorOperador[a].recorencia;
-        const totalB =
-          vendasPorOperador[b].base +
-          vendasPorOperador[b].renovacao +
-          vendasPorOperador[b].recorencia;
-        return totalB - totalA; // Ordenar do maior para o menor
-      });
-  };
+      return {
+        operador: operador.replace(/\./g, " "),
+        imgOperador: usuario?.avatar || "https://placehold.co/600x400",
+        vendasSemanal: vendasPorOperadorSemanal[operador] || 0,
+        vendasMensal: vendasPorOperadorMensal[operador] || 0,
+      };
+    }
+  );
 
-  const getTopThree = (tipo: "Base" | "Renovacao" | "Recorencia") => {
-    const filtrados = Object.keys(vendasPorOperador).filter((operador) => {
-      if (tipo === "Base") {
-        return vendasPorOperador[operador].base > 0;
-      } else if (tipo === "Renovacao") {
-        return vendasPorOperador[operador].renovacao > 0;
-      } else if (tipo === "Recorencia") {
-        return vendasPorOperador[operador].recorencia > 0;
-      }
-      return false;
+  type TipoContrato = "base" | "renovacao" | "recorencia"; // Usando as chaves com letras minúsculas
+
+const vendasPorOperador = vendasDiarias.reduce<
+  Record<string, { base: number; renovacao: number; recorencia: number }>
+>((acc, venda) => {
+  const { operador, contrato } = venda;
+
+  if (!acc[operador]) {
+    acc[operador] = { base: 0, renovacao: 0, recorencia: 0 };
+  }
+
+  if (contrato === "Base") {
+    acc[operador].base += 1;
+  } else if (contrato === "Renovacao") {
+    acc[operador].renovacao += 1;
+  } else if (contrato === "Recorencia") {
+    acc[operador].recorencia += 1;
+  }
+
+  return acc;
+}, {});
+
+const getTopThree = (tipo: TipoContrato) => {
+  const filtrados = Object.keys(vendasPorOperador).filter((operador) => {
+    if (tipo === "base") {
+      return vendasPorOperador[operador].base > 0;
+    } else if (tipo === "renovacao") {
+      return vendasPorOperador[operador].renovacao > 0;
+    } else if (tipo === "recorencia") {
+      return vendasPorOperador[operador].recorencia > 0;
+    }
+    return false;
+  });
+
+  return filtrados
+    .sort((a, b) => {
+      const totalA = vendasPorOperador[a][tipo]; // Ordena apenas pelo tipo de contrato específico
+      const totalB = vendasPorOperador[b][tipo]; // Ordena apenas pelo tipo de contrato específico
+      return totalB - totalA; // Ordena do maior para o menor
+    })
+    .slice(0, 3); // Retorna os 3 primeiros
+};
+
+const topRenovacao = getTopThree("renovacao");
+const topBase = getTopThree("base");
+const topRecorencia = getTopThree("recorencia");
+
+const calculateTotalPages = (contractType: "base" | "renovacao" | "recorencia") => {
+  const filteredOperators = Object.keys(vendasPorOperador).filter(
+    (operador) => vendasPorOperador[operador][contractType] > 0
+  );
+  return Math.ceil(filteredOperators.length / itemsPerPage);
+};
+
+const getOperatorsForContractType = (
+  contractType: "base" | "renovacao" | "recorencia",
+  currentPage: number
+) => {
+  const indexOfLastOperator = currentPage * itemsPerPage;
+  const indexOfFirstOperator = indexOfLastOperator - itemsPerPage;
+
+  const filteredOperators = Object.keys(vendasPorOperador)
+    .filter((operador) => vendasPorOperador[operador][contractType] > 0)
+    .sort((a, b) => {
+      const totalA = vendasPorOperador[a][contractType];
+      const totalB = vendasPorOperador[b][contractType];
+      return totalB - totalA; // Ordem decrescente
     });
 
-    return filtrados
-      .sort((a, b) => {
-        const totalA =
-          vendasPorOperador[a].base +
-          vendasPorOperador[a].renovacao +
-          vendasPorOperador[a].recorencia;
-        const totalB =
-          vendasPorOperador[b].base +
-          vendasPorOperador[b].renovacao +
-          vendasPorOperador[b].recorencia;
-        return totalB - totalA; // Ordenar do maior para o menor
-      })
-      .slice(0, 3);
-  };
+  return filteredOperators.slice(indexOfFirstOperator, indexOfLastOperator);
+};
 
-  const topRenovacao = getTopThree("Renovacao");
-  const topBase = getTopThree("Base");
-  const topRecorencia = getTopThree("Recorencia");
-  const allOperators = getAllOperators();
+const currentBaseOperators = getOperatorsForContractType("base", currentPageBase);
+const totalBasePages = calculateTotalPages("base");
 
-  // Cálculo da paginação para Base
-  const indexOfLastBaseOperator = currentPageBase * itemsPerPage;
-  const indexOfFirstBaseOperator = indexOfLastBaseOperator - itemsPerPage;
+const currentRenovacaoOperators = getOperatorsForContractType("renovacao", currentPageRenovacao);
+const totalRenovacaoPages = calculateTotalPages("renovacao");
 
-  const currentBaseOperators = allOperators
-    .filter((operador) => vendasPorOperador[operador].base > 0)
-    .slice(indexOfFirstBaseOperator, indexOfLastBaseOperator);
-  const totalBasePages = Math.ceil(
-    Object.keys(vendasPorOperador).filter(
-      (operador) => vendasPorOperador[operador].base > 0
-    ).length / itemsPerPage
-  );
+const currentRecorenciaOperators = getOperatorsForContractType("recorencia", currentPageRecorencia);
+const totalRecorenciaPages = calculateTotalPages("recorencia");
 
-  // Cálculo da paginação para Renovação
-  const indexOfLastRenovacaoOperator = currentPageRenovacao * itemsPerPage;
-  const indexOfFirstRenovacaoOperator =
-    indexOfLastRenovacaoOperator - itemsPerPage;
-
-  const currentRenovacaoOperators = allOperators
-    .filter((operador) => vendasPorOperador[operador].renovacao > 0)
-    .slice(indexOfFirstRenovacaoOperator, indexOfLastRenovacaoOperator);
-  const totalRenovacaoPages = Math.ceil(
-    Object.keys(vendasPorOperador).filter(
-      (operador) => vendasPorOperador[operador].renovacao > 0
-    ).length / itemsPerPage
-  );
-
-  const indexOfLastRecorenciaOperator = currentPageRecorencia * itemsPerPage;
-  const indexOfFirstRecorenciaOperator =
-    indexOfLastRecorenciaOperator - itemsPerPage;
-
-  const currentRecorenciaOperators = allOperators
-    .filter((operador) => vendasPorOperador[operador].recorencia > 0)
-    .slice(indexOfFirstRecorenciaOperator, indexOfLastRecorenciaOperator);
-
-  const totalRecorenciaPages = Math.ceil(
-    Object.keys(vendasPorOperador).filter(
-      (operador) => vendasPorOperador[operador].recorencia > 0
-    ).length / itemsPerPage
-  );
-
-  console.log(currentRecorenciaOperators);
 
   return (
     <section className="dashboard">
       <div className="bg-relatorio">
+        <FontAwesomeIcon
+          icon={faLeftLong}
+          className="icon-back-relatorio"
+          onClick={() => window.history.back()}
+        />
         <div className="ranking renovacao">
           <h4 className="total-contrato">Total Renovação: {totalRenovacao}</h4>
           <div className="podio">
@@ -476,13 +500,11 @@ export const Relatorio: React.FC = () => {
             </button>
           </div>
         </div>
-
-        <div className="total-vendas">
-          <h4>
-            Total de vendas: {totalBase + totalRenovacao + totalRecorencia}
-          </h4>
-        </div>
       </div>
+      <div className="total-vendas">
+        <h4>Total de vendas: {totalBase + totalRenovacao + totalRecorencia}</h4>
+      </div>
+      <Ranking operadores={rankingOperadores} />
     </section>
   );
 };
