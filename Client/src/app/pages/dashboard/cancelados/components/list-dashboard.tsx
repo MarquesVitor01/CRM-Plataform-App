@@ -69,7 +69,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
   const userId = auth.currentUser?.uid;
   const adminUserId = "9CfoYP8HtPg7nymfGzrn8GE2NOR2";
   const SupervisorUserId = "wWLmbV9TIUemmTkcMUSAQ4xGlju2";
-
+  const graziId ="nQwF9Uxh0lez9ETIOmP2gCgM0pf2"
   useEffect(() => {
     const fetchCancelados = async () => {
       setLoading(true);
@@ -82,7 +82,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
         })) as Cancelado[];
 
         const filteredCancelados =
-          userId === adminUserId || userId === SupervisorUserId
+          userId === adminUserId || userId === SupervisorUserId || userId === graziId
             ? canceladosList
             : canceladosList.filter((cancelado) => cancelado.createdBy === userId);
 

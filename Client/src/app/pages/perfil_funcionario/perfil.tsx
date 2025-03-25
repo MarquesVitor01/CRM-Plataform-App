@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { doc, getDoc, setDoc, collection, getDocs, updateDoc } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  setDoc,
+  collection,
+  getDocs,
+  updateDoc,
+} from "firebase/firestore";
 import { db } from "../../firebase/firebaseConfig";
 import HeaderPerfil from "./Components/HeaderPerfil";
 import InfoPerfil from "./Components/InfoPerfil";
@@ -9,6 +16,7 @@ import ModalEditarFoto from "./Components/ModalEditarFoto";
 import "./Components/perfil.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import { Modal, Button } from "react-bootstrap";
 
 interface PerfilData {
   nome: string;
@@ -21,9 +29,7 @@ interface PerfilData {
   vendasDiarias: number;
 }
 
-const avatarOptions = [
-  "https://grupomapscartaodigital.com.br/img/mps.jpg",
-];
+const avatarOptions = ["https://grupomapscartaodigital.com.br/img/mps.jpg"];
 
 export const Perfil: React.FC = () => {
   const [perfilData, setPerfilData] = useState<PerfilData>({
@@ -46,6 +52,11 @@ export const Perfil: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const usersPerPage = 5;
+
+  const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
 
   const adminUserId = "9CfoYP8HtPg7nymfGzrn8GE2NOR2";
 
@@ -113,9 +124,10 @@ export const Perfil: React.FC = () => {
       const startOfYesterday = new Date(yesterday.setHours(0, 0, 0, 0));
       const endOfYesterday = new Date(yesterday.setHours(23, 59, 59, 999));
 
-      const vendasFiltradas = user?.uid === adminUserId
-        ? vendas
-        : vendas.filter((venda) => venda.createdBy === user?.uid);
+      const vendasFiltradas =
+        user?.uid === adminUserId
+          ? vendas
+          : vendas.filter((venda) => venda.createdBy === user?.uid);
 
       vendasFiltradas.forEach((venda) => {
         const vendaData = new Date(venda.data);
@@ -160,7 +172,9 @@ export const Perfil: React.FC = () => {
       const fetchUsuarios = async () => {
         const usuariosCollection = collection(db, "usuarios");
         const usuariosSnapshot = await getDocs(usuariosCollection);
-        setUsuarios(usuariosSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+        setUsuarios(
+          usuariosSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+        );
       };
       fetchUsuarios();
     }
@@ -170,7 +184,9 @@ export const Perfil: React.FC = () => {
     const userRef = doc(db, "usuarios", id);
     await updateDoc(userRef, { cargo: novoCargo });
     setUsuarios((prevUsuarios) =>
-      prevUsuarios.map((usuario) => (usuario.id === id ? { ...usuario, cargo: novoCargo } : usuario))
+      prevUsuarios.map((usuario) =>
+        usuario.id === id ? { ...usuario, cargo: novoCargo } : usuario
+      )
     );
   };
 
@@ -183,12 +199,31 @@ export const Perfil: React.FC = () => {
     }
   };
 
+  const handleChangePassword = async () => {
+    if (!user) return;
+
+    const senhaRef = doc(db, "senhas", "senhaCorreta");
+    const senhaSnap = await getDoc(senhaRef);
+
+    if (senhaSnap.exists() && senhaSnap.data().senha === oldPassword) {
+      await updateDoc(senhaRef, { senha: newPassword });
+      setPasswordError("");
+      setShowChangePasswordModal(false);
+      alert("Senha alterada com sucesso!");
+    } else {
+      setPasswordError("Senha antiga incorreta.");
+    }
+  };
+
   const filteredUsers = usuarios.filter((usuario) =>
     usuario.nome.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
-  const displayedUsers = filteredUsers.slice((currentPage - 1) * usersPerPage, currentPage * usersPerPage);
+  const displayedUsers = filteredUsers.slice(
+    (currentPage - 1) * usersPerPage,
+    currentPage * usersPerPage
+  );
 
   const backHome = () => {
     window.history.back();
@@ -218,83 +253,106 @@ export const Perfil: React.FC = () => {
           vendasDiarias={perfilData.vendasDiarias}
         />
       </div>
-        <footer className="profile-footer mt-5">
-          <>
-            {user?.uid === adminUserId && (
-              <>
-                <button className="btn btn-secondary" onClick={() => setShowUserList((prev) => !prev)}>
-                  {showUserList ? "Ocultar Usuários" : "Mostrar Usuários"}
-                </button>
+      <footer className="profile-footer mt-5">
+        <>
+          {user?.uid === adminUserId && (
+            <>
+              <button
+                className="btn btn-secondary"
+                onClick={() => setShowUserList((prev) => !prev)}
+              >
+                {showUserList ? "Ocultar Usuários" : "Mostrar Usuários"}
+              </button>
 
-                {showUserList && (
-                  <div className="mystic-veil">
-                    <div className="command-center">
-                      <h3>Gestão de Usuários</h3>
-                      <button className="exit-button" onClick={() => setShowUserList(false)}>
-                        Fechar
+              {showUserList && (
+                <div className="mystic-veil">
+                  <div className="command-center">
+                    <h3>Gestão de Usuários</h3>
+                    <button
+                      className="exit-button"
+                      onClick={() => setShowUserList(false)}
+                    >
+                      Fechar
+                    </button>
+
+                    <input
+                      type="text"
+                      placeholder="Pesquisar usuários..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="search-perfil"
+                    />
+
+                    {displayedUsers.map((usuario) => (
+                      <div key={usuario.id} className="user-profile">
+                        <span>{usuario.nome}</span>
+                        <select
+                          value={usuario.cargo}
+                          onChange={(e) =>
+                            handleCargoChange(usuario.id, e.target.value)
+                          }
+                          className="styled-select"
+                        >
+                          <option value="">Selecione</option>
+                          <option value="vendas">Vendas</option>
+                          <option value="monitoria">Monitoria</option>
+                          <option value="marketing">Marketing</option>
+                          <option value="financeiro">Financeiro</option>
+                          <option value="cobranca">Cobrança</option>
+                        </select>
+                      </div>
+                    ))}
+
+                    <div className="paginationn">
+                      <button
+                        className="arrow-button"
+                        onClick={() =>
+                          setCurrentPage((prev) => Math.max(prev - 1, 1))
+                        }
+                        disabled={currentPage === 1}
+                        aria-label="Página Anterior"
+                      >
+                        <span>&lt;</span> {/* Seta esquerda */}
                       </button>
 
-                      <input
-                        type="text"
-                        placeholder="Pesquisar usuários..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="search-perfil"
-                      />
-
-                      {displayedUsers.map((usuario) => (
-                        <div key={usuario.id} className="user-profile">
-                          <span>{usuario.nome}</span>
-                          <select
-                            value={usuario.cargo}
-                            onChange={(e) => handleCargoChange(usuario.id, e.target.value)}
-                            className="styled-select"
-                          >
-                            <option value="">Selecione</option>
-                            <option value="vendas">Vendas</option>
-                            <option value="monitoria">Monitoria</option>
-                            <option value="marketing">Marketing</option>
-                            <option value="financeiro">Financeiro</option>
-                            <option value="cobranca">Cobrança</option>
-                          </select>
-                        </div>  
-                      ))}
-
-                      <div className="paginationn">
-                        <button
-                          className="arrow-button"
-                          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                          disabled={currentPage === 1}
-                          aria-label="Página Anterior"
-                        >
-                          <span>&lt;</span> {/* Seta esquerda */}
-                        </button>
-
-                        <button
-                          className="arrow-button"
-                          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                          disabled={currentPage === totalPages}
-                          aria-label="Próxima Página"
-                        >
-                          <span>&gt;</span> {/* Seta direita */}
-                        </button>
-                      </div>
-
+                      <button
+                        className="arrow-button"
+                        onClick={() =>
+                          setCurrentPage((prev) =>
+                            Math.min(prev + 1, totalPages)
+                          )
+                        }
+                        disabled={currentPage === totalPages}
+                        aria-label="Próxima Página"
+                      >
+                        <span>&gt;</span> {/* Seta direita */}
+                      </button>
                     </div>
                   </div>
-                )}
-              </>
-            )}
-          </>
+                </div>
+              )}
+            </>
+          )}
+        </>
 
-
-          <button className="btn btn-primary" onClick={() => setIsModalOpen(true)}>
-            Editar Foto
+        <button
+          className="btn btn-primary"
+          onClick={() => setIsModalOpen(true)}
+        >
+          Editar Foto
+        </button>
+        {user?.uid === adminUserId && (
+          <button
+            className="btn btn-warning"
+            onClick={() => setShowChangePasswordModal(true)}
+          >
+            Alterar Senha
           </button>
-          <button className="btn btn-danger" onClick={handleLogout}>
-            Sair
-          </button>
-        </footer>
+        )}
+        <button className="btn btn-danger" onClick={handleLogout}>
+          Sair
+        </button>
+      </footer>
 
       <ModalEditarFoto
         isOpen={isModalOpen}
@@ -307,6 +365,44 @@ export const Perfil: React.FC = () => {
           }
         }}
       />
+
+      <Modal
+        show={showChangePasswordModal}
+        onHide={() => setShowChangePasswordModal(false)}
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Alterar Senha</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <input
+            type="password"
+            placeholder="Senha Antiga"
+            value={oldPassword}
+            onChange={(e) => setOldPassword(e.target.value)}
+            className="form-control mb-3"
+          />
+          <input
+            type="password"
+            placeholder="Nova Senha"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            className="form-control mb-3"
+          />
+          {passwordError && <p className="text-danger">{passwordError}</p>}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="secondary"
+            onClick={() => setShowChangePasswordModal(false)}
+          >
+            Cancelar
+          </Button>
+          <Button variant="primary" onClick={handleChangePassword}>
+            Alterar Senha
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };

@@ -42,7 +42,8 @@ interface Venda {
   createdBy: string;
   setor: string;
   account: string;
-  whatsapp: string
+  whatsapp: string;
+  infoCancelamento: string;
 }
 
 interface ListDashboardProps {
@@ -57,6 +58,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [modalExcel, setModalExcel] = useState(false);
   const [modalExclusao, setModalExclusao] = useState(false);
+  const [infoCancelamento, setInfoCancelamento] = useState<string>("");
   const itemsPerPage = 5;
   const [loading, setLoading] = useState<boolean>(true);
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -66,13 +68,15 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
     dueDate: "",
     saleType: "",
     salesPerson: "",
-    saleGroup: ""
+    saleGroup: "",
   });
 
   const auth = getAuth();
   const userId = auth.currentUser?.uid;
   const adminUserId = "9CfoYP8HtPg7nymfGzrn8GE2NOR2";
   const SupervisorUserId = "wWLmbV9TIUemmTkcMUSAQ4xGlju2";
+  const graziId ="nQwF9Uxh0lez9ETIOmP2gCgM0pf2"
+
 
   useEffect(() => {
     const fetchVendas = async () => {
@@ -86,7 +90,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
         })) as Venda[];
 
         const filteredVendas =
-          userId === adminUserId || userId === SupervisorUserId
+          userId === adminUserId || userId === SupervisorUserId || userId === graziId
             ? vendasList
             : vendasList.filter((venda) => venda.createdBy === userId);
 
@@ -115,7 +119,10 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
   };
 
   const handleRemoveSelected = async () => {
-    if (selectedItems.size === 0) return;
+    if (selectedItems.size === 0 || !infoCancelamento.trim()) {
+      alert("Por favor, forneça um motivo para o cancelamento.");
+      return;
+    }
 
     const deletePromises = Array.from(selectedItems).map(async (id) => {
       const vendaDoc = doc(db, "vendas", id);
@@ -124,6 +131,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
       if (vendaData) {
         await setDoc(doc(db, "cancelados", id), {
           ...vendaData,
+          infoCancelamento,
           deletedAt: new Date(),
         });
       }
@@ -133,10 +141,12 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
 
     await Promise.all(deletePromises);
 
-    setVendas((prevVendas) => {
-      return prevVendas.filter((venda) => !selectedItems.has(venda.id));
-    });
+    setVendas((prevVendas) =>
+      prevVendas.filter((venda) => !selectedItems.has(venda.id))
+    );
     setSelectedItems(new Set());
+    setInfoCancelamento(""); // Resetar o motivo após a exclusão
+    closeModalExclusao();
   };
 
   const applyFilters = () => {
@@ -149,10 +159,12 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
           venda.responsavel.toLowerCase().includes(lowerCaseTerm)) ||
         (venda.email1 && venda.email1.toLowerCase().includes(lowerCaseTerm)) ||
         (venda.email2 && venda.email2.toLowerCase().includes(lowerCaseTerm)) ||
-        (venda.operador && venda.operador.toLowerCase().includes(lowerCaseTerm));
-        (venda.account && venda.account.toLowerCase().includes(lowerCaseTerm));
+        (venda.operador &&
+          venda.operador.toLowerCase().includes(lowerCaseTerm));
+      venda.account && venda.account.toLowerCase().includes(lowerCaseTerm);
 
-      const { startDate, endDate, dueDate, saleType, salesPerson, saleGroup } = filters;
+      const { startDate, endDate, dueDate, saleType, salesPerson, saleGroup } =
+        filters;
 
       const vendaData = new Date(venda.data);
       const isStartDateValid = startDate
@@ -167,11 +179,13 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
       const vendaDataVencimento = new Date(venda.dataVencimento);
       const isDueDateValid = dueDate
         ? vendaDataVencimento.toDateString() ===
-        new Date(dueDate).toDateString()
+          new Date(dueDate).toDateString()
         : true;
 
       const isSaleTypeValid = saleType ? venda.contrato === saleType : true;
-      const isSalesPersonValid = salesPerson ? venda.operador === salesPerson : true;
+      const isSalesPersonValid = salesPerson
+        ? venda.operador === salesPerson
+        : true;
 
       const isGroupTypeValid = saleGroup ? venda.account === saleGroup : true;
       return (
@@ -179,7 +193,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
         isDateInRange &&
         isDueDateValid &&
         isSaleTypeValid &&
-        isSalesPersonValid && 
+        isSalesPersonValid &&
         isGroupTypeValid
       );
     });
@@ -214,20 +228,23 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
 
   const formatarTelefone = (numero: any) => {
     if (!numero) return "";
-  
+
     // Remove tudo que não for número
     const numeros = numero.replace(/\D/g, "");
-  
+
     // Verifica se tem o tamanho correto para DDD + número
     if (numeros.length === 11) {
-      return `(${numeros.slice(0, 2)}) ${numeros.slice(2, 7)}-${numeros.slice(7)}`;
+      return `(${numeros.slice(0, 2)}) ${numeros.slice(2, 7)}-${numeros.slice(
+        7
+      )}`;
     } else if (numeros.length === 10) {
-      return `(${numeros.slice(0, 2)}) ${numeros.slice(2, 6)}-${numeros.slice(6)}`;
+      return `(${numeros.slice(0, 2)}) ${numeros.slice(2, 6)}-${numeros.slice(
+        6
+      )}`;
     }
-  
+
     return numero; // Retorna o número sem formatação se não for válido
   };
-  
 
   const downloadClients = () => {
     const clientsToDownload = applyFilters();
@@ -305,19 +322,44 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
           <div className="modal-exclusao">
             <div className="modal-header">
               <h2>Excluir Item</h2>
-              <button className="close-btn" onClick={() => setModalExclusao(false)}>&#10006;</button>
+              <button
+                className="close-btn"
+                onClick={() => setModalExclusao(false)}
+              >
+                &#10006;
+              </button>
+            </div>
+            <div className="form-group mb-3">
+              <label htmlFor="infoCancelamento">Motivo do cancelamento:</label>
+              <textarea
+                className="form-control"
+                placeholder="Digite o motivo do cancelamento..."
+                value={infoCancelamento}
+                onChange={(e) => setInfoCancelamento(e.target.value)}
+                rows={3}
+                required
+              />
             </div>
             <div className="modal-body">
               <p>Tem certeza de que deseja excluir este item?</p>
             </div>
             <div className="modal-footer">
-            <button className="planilha-btn" onClick={() => { handleRemoveSelected(); closeModalExclusao(); }}>Confirmar</button>
-              <button className="remove-btn" onClick={closeModalExclusao}>Cancelar</button>
+              <button
+                className="planilha-btn"
+                onClick={() => {
+                  handleRemoveSelected();
+                  closeModalExclusao();
+                }}
+              >
+                Confirmar
+              </button>
+              <button className="remove-btn" onClick={closeModalExclusao}>
+                Cancelar
+              </button>
             </div>
           </div>
         </div>
       )}
-
 
       <div className="header-list">
         <div className="header-content">
@@ -339,34 +381,48 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
           </div>
 
           <div className="selects-container">
-            <Link to="/add" className="create-btn" data-tooltip-id="add-tooltip"
-              data-tooltip-content="Nova venda">
-              <FontAwesomeIcon
-                icon={faPlus}
-
+            <Link
+              to="/add"
+              className="create-btn"
+              data-tooltip-id="add-tooltip"
+              data-tooltip-content="Nova venda"
+            >
+              <FontAwesomeIcon icon={faPlus} />
+              <Tooltip
+                id="add-tooltip"
+                place="top"
+                className="custom-tooltip"
               />
-              <Tooltip id="add-tooltip" place="top" className="custom-tooltip" />
             </Link>
 
-            {userId === adminUserId && (
-              <button onClick={openModalExclusao} className="remove-btn" data-tooltip-id="remove-tooltip"
-                data-tooltip-content="Remover selecionados">
-                <FontAwesomeIcon
-                  icon={faTrashAlt}
-
+            {(userId === adminUserId || userId === SupervisorUserId || userId === graziId) && (
+              <button
+                onClick={openModalExclusao}
+                className="remove-btn"
+                data-tooltip-id="remove-tooltip"
+                data-tooltip-content="Remover selecionados"
+              >
+                <FontAwesomeIcon icon={faTrashAlt} />
+                <Tooltip
+                  id="remove-tooltip"
+                  place="top"
+                  className="custom-tooltip"
                 />
-                <Tooltip id="remove-tooltip" place="top" className="custom-tooltip" />
               </button>
             )}
 
-            <button className="filtros-btn" onClick={openModalExcel} data-tooltip-id="filter-tooltip"
-              data-tooltip-content="Aplicar filtros">
-              <FontAwesomeIcon
-                icon={faFilter}
-                color="#fff"
-
+            <button
+              className="filtros-btn"
+              onClick={openModalExcel}
+              data-tooltip-id="filter-tooltip"
+              data-tooltip-content="Aplicar filtros"
+            >
+              <FontAwesomeIcon icon={faFilter} color="#fff" />
+              <Tooltip
+                id="filter-tooltip"
+                place="top"
+                className="custom-tooltip"
               />
-              <Tooltip id="filter-tooltip" place="top" className="custom-tooltip" />
             </button>
 
             <button
@@ -376,7 +432,11 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
               data-tooltip-content="Baixar planilha"
             >
               <FontAwesomeIcon icon={faDownload} color="#fff" />
-              <Tooltip id="download-tooltip" place="top" className="custom-tooltip" />
+              <Tooltip
+                id="download-tooltip"
+                place="top"
+                className="custom-tooltip"
+              />
             </button>
           </div>
         </div>
@@ -418,8 +478,8 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                     {venda.cnpj
                       ? formatCNPJ(venda.cnpj)
                       : venda.cpf
-                        ? formatCPF(venda.cpf)
-                        : venda.cnpj || venda.cpf}
+                      ? formatCPF(venda.cpf)
+                      : venda.cnpj || venda.cpf}
                   </td>
                   <td className={selectedItems.has(venda.id) ? "selected" : ""}>
                     {venda.responsavel}
@@ -428,7 +488,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                     {venda.email1}
                   </td>
                   <td className={selectedItems.has(venda.id) ? "selected" : ""}>
-                  {formatarTelefone(venda.whatsapp)}
+                    {formatarTelefone(venda.whatsapp)}
                   </td>
                   <td className={selectedItems.has(venda.id) ? "selected" : ""}>
                     {venda.operador.replace(/\./g, " ")}
@@ -445,7 +505,11 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                         data-tooltip-id="tooltip-edit"
                         data-tooltip-content="Editar contrato"
                       />
-                      <Tooltip id="tooltip-edit" place="top" className="custom-tooltip" />
+                      <Tooltip
+                        id="tooltip-edit"
+                        place="top"
+                        className="custom-tooltip"
+                      />
                     </Link>
 
                     <Link to={`/comprovantes/${venda.id}`}>
@@ -455,7 +519,11 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                         data-tooltip-id="tooltip-comprovantes"
                         data-tooltip-content="Ver comprovantes"
                       />
-                      <Tooltip id="tooltip-comprovantes" place="top" className="custom-tooltip" />
+                      <Tooltip
+                        id="tooltip-comprovantes"
+                        place="top"
+                        className="custom-tooltip"
+                      />
                     </Link>
 
                     <Link to={`/contrato/${venda.id}`}>
@@ -465,7 +533,11 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                         data-tooltip-id="tooltip-contrato"
                         data-tooltip-content="Visualizar contrato"
                       />
-                      <Tooltip id="tooltip-contrato" place="top" className="custom-tooltip" />
+                      <Tooltip
+                        id="tooltip-contrato"
+                        place="top"
+                        className="custom-tooltip"
+                      />
                     </Link>
 
                     <Link to={`/fichaboleto/${venda.id}`}>
@@ -475,10 +547,13 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                         data-tooltip-id="tooltip-boleto"
                         data-tooltip-content="Ver ficha de boleto"
                       />
-                      <Tooltip id="tooltip-boleto" place="top" className="custom-tooltip" />
+                      <Tooltip
+                        id="tooltip-boleto"
+                        place="top"
+                        className="custom-tooltip"
+                      />
                     </Link>
                   </td>
-
                 </tr>
               ))}
             </tbody>
