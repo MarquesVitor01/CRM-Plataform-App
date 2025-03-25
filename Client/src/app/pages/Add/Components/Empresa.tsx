@@ -160,7 +160,7 @@ export const DadosEmpresa: React.FC<DadosEmpresaProps> = ({
 
       console.log("Dados recebidos:", data);
 
-      if (data.situacao_cadastral?.situacao_atual?.toUpperCase() === "INAPTA") {
+      if (data.situacao_cadastral?.situacao_atual?.toUpperCase() === "INAPTA" || data.situacao_cadastral?.situacao_atual?.toUpperCase() === "BAIXADA") {
         setModalMessage(
           `A empresa com o CNPJ informado está com a situação ${
             data.situacao_cadastral?.situacao_atual || "desconhecida"

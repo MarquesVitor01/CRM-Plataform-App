@@ -29,6 +29,8 @@ export const Navbar = () => {
   const [script2, setScript2] = useState(false);
   const { nome, avatar, cargo, userId } = useAuth();
   const adminId = "9CfoYP8HtPg7nymfGzrn8GE2NOR2";
+  const supervisorId ="wWLmbV9TIUemmTkcMUSAQ4xGlju2"
+  const graziId ="nQwF9Uxh0lez9ETIOmP2gCgM0pf2"
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
@@ -76,12 +78,15 @@ export const Navbar = () => {
             </Link>
             <p></p>
           </div> */}
-                    <div className="nav-perfil">
+          {/* <div className="nav-perfil">
             <Link to={"/perfil"} className="mt-2">
-               <img src={require("../../Assets/kaio.png")} alt="Foto de Perfil" /> 
+              <img
+                src={require("../../Assets/kaio.png")}
+                alt="Foto de Perfil"
+              />
             </Link>
             <p></p>
-          </div>
+          </div> */}
           <ul className="nav options flex-column">
             <li className="nav-item">
               <Link
@@ -103,7 +108,7 @@ export const Navbar = () => {
                 <span>Home</span>
               </Link>
             </li>
-            {(cargo === "vendas" || userId === adminId) && (
+            {(cargo === "vendas" || userId === adminId || userId === graziId) && (
               <li className="nav-item">
                 <Link
                   className="nav-link icon-tooltip"
@@ -115,7 +120,7 @@ export const Navbar = () => {
                 </Link>
               </li>
             )}
-            {(cargo === "vendas" || userId === adminId) && (
+            {(cargo === "vendas" || userId === adminId || userId === graziId) && (
               <li className="nav-item">
                 <Link
                   className="nav-link icon-tooltip"
@@ -127,7 +132,7 @@ export const Navbar = () => {
                 </Link>
               </li>
             )}
-            {(cargo === "monitoria" || userId === adminId) && (
+            {(cargo === "monitoria" || userId === adminId || userId === supervisorId) && (
               <li className="nav-item">
                 <Link
                   className="nav-link icon-tooltip"
@@ -139,7 +144,7 @@ export const Navbar = () => {
                 </Link>
               </li>
             )}
-            {(cargo === "marketing" || userId === adminId) && (
+            {(cargo === "marketing" || userId === adminId || userId === supervisorId) && (
               <li className="nav-item">
                 <Link
                   className="nav-link icon-tooltip"
@@ -151,7 +156,7 @@ export const Navbar = () => {
                 </Link>
               </li>
             )}
-            {(cargo === "financeiro" || userId === adminId) && (
+            {(cargo === "financeiro" || userId === adminId ) && (
               <li className="nav-item">
                 <Link
                   className="nav-link icon-tooltip"
@@ -163,7 +168,7 @@ export const Navbar = () => {
                 </Link>
               </li>
             )}
-            {(cargo === "cobranca" || userId === adminId) && (
+            {(cargo === "cobranca" || userId === adminId || userId === supervisorId) && (
               <li className="nav-item">
                 <Link
                   className="nav-link icon-tooltip"

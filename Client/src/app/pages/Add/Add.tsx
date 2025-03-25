@@ -1,20 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Operador } from "./Components/Operador";
 import { DadosEmpresa } from "./Components/Empresa";
 import { Navigate } from "react-router-dom";
 import { auth, db } from "../../firebase/firebaseConfig";
-import {
-  doc,
-  setDoc,
-  getDoc,
-} from "firebase/firestore";
+import { doc, setDoc, getDoc, updateDoc } from "firebase/firestore";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./Components/Styles/add.css";
 import { useAuth } from "../../context/AuthContext";
 import { InfoAdicionais } from "./Components/InfoAdicionais";
 import { Button, Modal } from "react-bootstrap";
-import axios from "axios";
 
 export const Add = () => {
   const userId = auth.currentUser?.uid;
@@ -76,15 +71,32 @@ export const Add = () => {
   const [novoId, setNovoId] = useState<string | null>(null);
 
   const [senha, setSenha] = useState("");
-  const [senhaCorreta, setSenhaCorreta] = useState("2025@maps");
+  const [senhaCorreta, setSenhaCorreta] = useState("");
   const [erroSenha, setErroSenha] = useState("");
   const [nomeAutorizado, setNomeAutorizado] = useState("");
   const [erroNomeAutorizado, setErroNomeAutorizado] = useState("");
   const [senhaHabilitada, setSenhaHabilitada] = useState(false);
+  const [novaSenha, setNovaSenha] = useState("");
+  const [mostrarTrocarSenha, setMostrarTrocarSenha] = useState(false);
+
+  useEffect(() => {
+    const fetchSenha = async () => {
+      const senhaRef = doc(db, "senhas", "senhaCorreta");
+      const senhaSnap = await getDoc(senhaRef);
+      if (senhaSnap.exists()) {
+        setSenhaCorreta(senhaSnap.data().senha);
+      }
+    };
+    fetchSenha();
+  }, []);
 
   const handleSenhaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSenha(e.target.value);
     setErroSenha("");
+  };
+
+  const handleNovaSenhaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNovaSenha(e.target.value);
   };
 
   const handleSaveWithPassword = async () => {
@@ -97,12 +109,12 @@ export const Add = () => {
 
         const dadosAtualizados = {
           ...form,
-          nomeAutorizado, 
+          nomeAutorizado,
         };
 
         try {
           const novoClienteRef = doc(db, "vendas", novoId);
-          await setDoc(novoClienteRef, dadosAtualizados); 
+          await setDoc(novoClienteRef, dadosAtualizados);
           toast.success("Cliente salvo com um novo ID!");
           handleModalClose();
           setRedirect(true);
@@ -113,6 +125,23 @@ export const Add = () => {
       }
     } else {
       setErroSenha("Senha incorreta. Entre em contato com seu supervisor");
+    }
+  };
+
+  const handleTrocarSenha = async () => {
+    if (senha === senhaCorreta) {
+      try {
+        const senhaRef = doc(db, "senhas", "senhaCorreta");
+        await updateDoc(senhaRef, { senha: novaSenha });
+        setSenhaCorreta(novaSenha);
+        setNovaSenha("");
+        toast.success("Senha alterada com sucesso!");
+      } catch (error) {
+        console.error("Erro ao alterar a senha:", error);
+        toast.error("Erro ao alterar a senha. Tente novamente.");
+      }
+    } else {
+      setErroSenha("Senha incorreta. Não é possível alterar a senha.");
     }
   };
 
@@ -281,57 +310,75 @@ export const Add = () => {
         <ToastContainer />
       </div>
       <Modal show={showModal} onHide={handleModalClose} centered>
-  <Modal.Header closeButton>
-    <Modal.Title>Confirmação</Modal.Title>
-  </Modal.Header>
-  <Modal.Body>
-    <p>
-      O número de contrato <strong>{form.numeroContrato}</strong> já
-      existe. Para salvar com um novo ID, confirme sua senha abaixo:
-    </p>
-    
-    <input
-      type="text"
-      placeholder="Nome de quem autorizou"
-      value={nomeAutorizado}
-      onChange={(e) => {
-        setNomeAutorizado(e.target.value);
-        if (e.target.value.length >= 4) {
-          setSenhaHabilitada(true);
-        } else {
-          setSenhaHabilitada(false);
-        }
-      }}
-      className="form-control mt-3"
-    />
-    {erroNomeAutorizado && (
-      <p className="text-danger mt-2">{erroNomeAutorizado}</p>
-    )}
+        <Modal.Header closeButton>
+          <Modal.Title>Confirmação</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>
+            O número de contrato <strong>{form.numeroContrato}</strong> já
+            existe. Para salvar com um novo ID, confirme sua senha abaixo:
+          </p>
 
-    <input
-      type="password"
-      placeholder="Digite sua senha"
-      value={senha}
-      onChange={handleSenhaChange}
-      className="form-control mt-3"
-      disabled={!senhaHabilitada} 
-    />
-    {erroSenha && <p className="text-danger mt-2">{erroSenha}</p>}
-  </Modal.Body>
-  <Modal.Footer>
-    <Button variant="secondary" onClick={handleModalClose}>
-      Cancelar
-    </Button>
-    <Button
-      variant="primary"
-      onClick={handleSaveWithPassword}
-      disabled={!senhaHabilitada}
-    >
-      Confirmar e Salvar
-    </Button>
-  </Modal.Footer>
-</Modal>
+          <input
+            type="text"
+            placeholder="Nome de quem autorizou"
+            value={nomeAutorizado}
+            onChange={(e) => {
+              setNomeAutorizado(e.target.value);
+              if (e.target.value.length >= 4) {
+                setSenhaHabilitada(true);
+              } else {
+                setSenhaHabilitada(false);
+              }
+            }}
+            className="form-control mt-3"
+          />
+          {erroNomeAutorizado && (
+            <p className="text-danger mt-2">{erroNomeAutorizado}</p>
+          )}
 
+          <input
+            type="password"
+            placeholder="Digite sua senha"
+            value={senha}
+            onChange={handleSenhaChange}
+            className="form-control mt-3"
+            disabled={!senhaHabilitada}
+          />
+          {erroSenha && <p className="text-danger mt-2">{erroSenha}</p>}
+
+          {/* {senha === senhaCorreta && (
+            <div>
+              <input
+                type="password"
+                placeholder="Nova Senha"
+                value={novaSenha}
+                onChange={handleNovaSenhaChange}
+                className="form-control mt-3"
+              />
+              <button
+                type="button"
+                className="btn btn-warning mt-3"
+                onClick={handleTrocarSenha}
+              >
+                Trocar Senha
+              </button>
+            </div>
+          )} */}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleModalClose}>
+            Cancelar
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleSaveWithPassword}
+            disabled={!senhaHabilitada}
+          >
+            Confirmar e Salvar
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };

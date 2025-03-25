@@ -47,6 +47,6 @@ app.use("/buscar_cnpj", buscarCnpj);
 module.exports = app;
 
 
-// app.listen(port, () => {
-//   console.log(`Server running on http://localhost:${port}`);
-// });
+app.listen(port, () => {
+  console.log(`Server running on http://localhost:${port}`);
+});
