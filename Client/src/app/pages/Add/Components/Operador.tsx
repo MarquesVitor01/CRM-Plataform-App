@@ -200,6 +200,7 @@ export const Operador: React.FC<OperadorProps> = ({
           name="data"
           value={form.data}
           onChange={handleInputChange}
+          required
         />
       </div>
       <div className="form-group mb-3 col-md-4">

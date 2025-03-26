@@ -16,7 +16,7 @@ export const Add = () => {
   const { nome, cargo } = useAuth();
   const [form, setForm] = useState({
     numeroContrato: "",
-    data: "",
+    data: new Date().toISOString().split("T")[0],
     dataVencimento: "",
     operador: nome,
     createdBy: userId,
