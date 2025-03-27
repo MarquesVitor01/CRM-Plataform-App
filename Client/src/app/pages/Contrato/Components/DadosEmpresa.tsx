@@ -77,12 +77,6 @@ export const DadosEmpresa: React.FC = () => {
                 <strong>NOME FANTASIA:</strong> {clientData.nomeFantasia}
               </p>
               <p>
-                <strong>BAIRRO:</strong> {clientData.bairro}
-              </p>
-              <p>
-                <strong>ESTADO:</strong> {clientData.estado}
-              </p>
-              <p>
                 <strong>CNPJ/CPF:</strong>{" "}
                 {clientData.cnpj
                   ? formatCNPJ(clientData.cnpj)
@@ -95,11 +89,20 @@ export const DadosEmpresa: React.FC = () => {
                 {clientData.enderecoComercial}, {clientData.numeroResidencial}
               </p>
               <p>
-                <strong>CEP:</strong> {clientData.cep}
+                <strong>BAIRRO:</strong> {clientData.bairro}
               </p>
               <p>
                 <strong>CIDADE:</strong> {clientData.cidade}
               </p>
+              <p>
+                <strong>ESTADO:</strong> {clientData.estado}
+              </p>
+              
+            
+              <p>
+                <strong>CEP:</strong> {clientData.cep}
+              </p>
+             
             </div>
           </div>
           <div className="col-md-6 mb-1">
@@ -116,14 +119,15 @@ export const DadosEmpresa: React.FC = () => {
                 <strong>WHATSAPP:</strong>{" "}
                 {clientData.whatsapp ? formatCelular(clientData.whatsapp) : ""}
               </p>
-              <p>
-                <strong>HORÁRIO DE FUNCIONAMENTO:</strong> {clientData.horario}
-              </p>
+              
               <p>
                 <strong>1º E-MAIL:</strong> {clientData.email1}
               </p>
               <p>
                 <strong>2º E-MAIL:</strong> {clientData.email2 || "N/A"}
+              </p>
+              <p>
+                <strong>HORÁRIO DE FUNCIONAMENTO:</strong> {clientData.horario}
               </p>
               <p>
                 <strong>LINK DA PÁGINA GOOGLE:</strong>{" "}
