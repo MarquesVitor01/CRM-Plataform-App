@@ -108,7 +108,7 @@ export const Relatorio: React.FC = () => {
           const usuario = usuariosMap[usuarioID];
 
           const vendaComAvatar = { ...venda, avatar: usuario?.avatar };
-          const vendaDate = new Date(`${venda.data}T12:00:00`);
+          const vendaDate = new Date(`${venda.data}T03:00:00`);
 
           if (venda.data === todayString) {
             vendasHoje.push(vendaComAvatar);
