@@ -127,7 +127,7 @@ export const DadosEmpresa: React.FC = () => {
                 <strong>2º E-MAIL:</strong> {clientData.email2 || "N/A"}
               </p>
               <p>
-                <strong>HORÁRIO DE FUNCIONAMENTO:</strong> {clientData.horario}
+                <strong>HORÁRIO DE FUNCIONAMENTO:</strong> {clientData.horarioFuncionamento}
               </p>
               <p>
                 <strong>LINK DA PÁGINA GOOGLE:</strong>{" "}
