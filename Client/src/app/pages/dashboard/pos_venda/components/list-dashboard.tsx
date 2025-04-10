@@ -13,6 +13,7 @@ import {
   faBars,
   faMoneyCheckDollar,
   faTrashAlt,
+  faBalanceScaleLeft,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { ModalExcel } from "./modalExcel";
@@ -25,13 +26,15 @@ import {
   setDoc,
   deleteDoc,
   getDoc,
+  addDoc,
 } from "firebase/firestore";
 import { toast, ToastContainer } from "react-toastify";
 import { Tooltip } from "react-tooltip";
 import { getAuth } from "firebase/auth";
 
-interface Marketing {
+interface PosVenda {
   id: string;
+  vendaId: string;
   cnpj: string;
   cpf: string;
   responsavel: string;
@@ -41,6 +44,8 @@ interface Marketing {
   data: string;
   dataVencimento: string;
   contrato: string;
+  operadorPosVenda: string;
+  posVendaConcuida: boolean;
   nomeMonitor: string;
   monitoriaConcluidaYes: boolean;
   servicosConcluidos: boolean;
@@ -60,21 +65,18 @@ interface venda {
   nomeMonitor: string;
   monitoriaConcluidaYes: boolean;
   servicosConcluidos: boolean;
-  posVendaConcuida: boolean;
 }
 
 interface ListDashboardProps {
-  setTotalMarketings: (total: number) => void;
-  setTotalRealizados: (total: number) => void;
+  setTotalPosVenda: (total: number) => void;
+  setTotalRealizadosPosVenda: (total: number) => void;
 }
 
-
-
 export const ListDashboard: React.FC<ListDashboardProps> = ({
-  setTotalMarketings,
-  setTotalRealizados,
+  setTotalPosVenda,
+  setTotalRealizadosPosVenda,
 }) => {
-  const [marketings, setMarketings] = useState<Marketing[]>([]);
+  const [posVenda, setPosVenda] = useState<PosVenda[]>([]);
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [modalExcel, setModalExcel] = useState(false);
@@ -93,68 +95,78 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
   });
   const [showConcluidas, setShowConcluidas] = useState(false);
 
-  useEffect(() => {
-    const fetchMarketings = async () => {
-      setLoading(true);
-      try {
-        const marketingsCollection = collection(db, "marketings");
-        const marketingsSnapshot = await getDocs(marketingsCollection);
-        const marketingsList = marketingsSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        })) as Marketing[];
+  // useEffect(() => {
+  //   const fetchvendas = async () => {
+  //     setLoading(true);
+  //     try {
+  //       const vendasCollection = collection(db, "vendas");
+  //       const vendasSnapshot = await getDocs(vendasCollection);
+  //       const vendasList = vendasSnapshot.docs.map((doc) => ({
+  //         id: doc.id,
+  //         ...doc.data(),
+  //       })) as PosVenda[];
 
-        setMarketings(marketingsList);
-        setTotalMarketings(marketingsList.length);
+  //       setPosVenda(vendasList);
+  //       setTotalPosVenda(vendasList.length);
 
-        const totalRealizados = marketingsList.filter(
-          (marketing) => marketing.servicosConcluidos
-        ).length;
-        setTotalRealizados(totalRealizados);
-      } catch (error) {
-        console.error("Erro ao buscar marketings:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  //       const totalRealizados = vendasList.filter(
+  //         (venda) => venda.monitoriaConcluidaYes
+  //       ).length;
+  //       setTotalRealizados(totalRealizados);
+  //     } catch (error) {
+  //       console.error("Erro ao buscar vendas para o pós venda:", error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
 
-    fetchMarketings();
-  }, [setTotalMarketings, setTotalRealizados]);
+  //   fetchvendas();
+  // }, [setTotalPosVenda, setTotalRealizados]);
 
   const auth = getAuth();
   const userId = auth.currentUser?.uid;
   const adminUserId = process.env.REACT_APP_ADMIN_USER_ID;
   const SupervisorUserId = "wWLmbV9TIUemmTkcMUSAQ4xGlju2";
 
-  useEffect(() => {
-    const fetchVendas = async () => {
-      setLoading(true);
-      try {
-        const marketingsCollection = collection(db, "marketings");
-        const marketingsSnapshot = await getDocs(marketingsCollection);
-        const marketingsList = marketingsSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        })) as Marketing[];
+  const handleSyncClients = async () => {
+    setSyncLoading(true);
+    try {
+      const vendasCollection = collection(db, "vendas");
+      const vendasSnapshot = await getDocs(vendasCollection);
+      const vendasList = vendasSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as venda[];
 
-        const filteredVendas =
-          userId === adminUserId || userId === SupervisorUserId
-            ? marketingsList
-            : marketingsList.filter(
-                (marketing) => marketing.createdBy === userId
-              );
+      const syncedvendas = vendasList.filter(
+        (venda) => venda.monitoriaConcluidaYes
+      );
 
-        setMarketings(filteredVendas);
-        setTotalMarketings(filteredVendas.length);
-      } catch (error) {
-        console.error("Erro ao buscar marketings:", error);
-      } finally {
-        setLoading(false);
+      const batch = writeBatch(db);
+      for (const venda of syncedvendas) {
+        const marketingDocRef = doc(db, "posVendas", venda.id);
+        batch.set(marketingDocRef, venda, { merge: true });
       }
-    };
 
-    fetchVendas();
-  }, [setTotalMarketings, userId]);
+      await batch.commit();
+
+      const posVendaSnapshot = await getDocs(collection(db, "posVendas"));
+      const posVendaList = posVendaSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as PosVenda[];
+
+      setPosVenda(posVendaList);
+      setTotalPosVenda(posVendaList.length);
+    } catch (error) {
+      console.error("Erro ao sincronizar clientes:", error);
+      toast.error("Erro na sincronização!");
+    } finally {
+      setSyncLoading(false);
+    }
+  };
+
+  console.log("PosVenda:", posVenda);
 
   const handleCheckboxChange = (id: string) => {
     setSelectedItems((prevSelectedItems) => {
@@ -175,7 +187,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
     if (selectedItems.size === 0) return;
 
     const deletePromises = Array.from(selectedItems).map(async (id) => {
-      const marketingDoc = doc(db, "marketings", id);
+      const marketingDoc = doc(db, "posVenda", id);
       const vendaData = (await getDoc(marketingDoc)).data();
 
       if (vendaData) {
@@ -190,53 +202,52 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
 
     await Promise.all(deletePromises);
 
-    setMarketings((prevVendas) => {
-      return prevVendas.filter((marketing) => !selectedItems.has(marketing.id));
+    setPosVenda((prevVendas) => {
+      return prevVendas.filter((posVenda) => !selectedItems.has(posVenda.id));
     });
     setSelectedItems(new Set());
   };
 
   const applyFilters = () => {
-    let filteredClients = marketings.filter((marketing) => {
+    let filteredClients = posVenda.filter((posVenda) => {
       const lowerCaseTerm = searchTerm.toLowerCase();
       const matchesSearchTerm =
-        (marketing.cnpj &&
-          marketing.cnpj.toLowerCase().includes(lowerCaseTerm)) ||
-        (marketing.cpf &&
-          marketing.cpf.toLowerCase().includes(lowerCaseTerm)) ||
-        (marketing.responsavel &&
-          marketing.responsavel.toLowerCase().includes(lowerCaseTerm)) ||
-        (marketing.email1 &&
-          marketing.email1.toLowerCase().includes(lowerCaseTerm)) ||
-        (marketing.email2 &&
-          marketing.email2.toLowerCase().includes(lowerCaseTerm)) ||
-        (marketing.operador &&
-          marketing.operador.toLowerCase().includes(lowerCaseTerm));
+        (posVenda.cnpj &&
+          posVenda.cnpj.toLowerCase().includes(lowerCaseTerm)) ||
+        (posVenda.cpf && posVenda.cpf.toLowerCase().includes(lowerCaseTerm)) ||
+        (posVenda.responsavel &&
+          posVenda.responsavel.toLowerCase().includes(lowerCaseTerm)) ||
+        (posVenda.email1 &&
+          posVenda.email1.toLowerCase().includes(lowerCaseTerm)) ||
+        (posVenda.email2 &&
+          posVenda.email2.toLowerCase().includes(lowerCaseTerm)) ||
+        (posVenda.operador &&
+          posVenda.operador.toLowerCase().includes(lowerCaseTerm));
 
       const { startDate, endDate, dueDate, vendaType, vendasPerson } = filters;
 
-      const marketingData = new Date(marketing.data);
+      const posVendaData = new Date(posVenda.data);
       const isStartDateValid = startDate
-        ? marketingData.toDateString() === new Date(startDate).toDateString()
+        ? posVendaData.toDateString() === new Date(startDate).toDateString()
         : true;
 
       const isDateInRange =
         startDate && endDate
-          ? marketingData >= new Date(startDate) &&
-            marketingData <= new Date(endDate)
+          ? posVendaData >= new Date(startDate) &&
+            posVendaData <= new Date(endDate)
           : isStartDateValid;
 
-      const marketingDataVencimento = new Date(marketing.dataVencimento);
+      const posVendaDataVencimento = new Date(posVenda.dataVencimento);
       const isDueDateValid = dueDate
-        ? marketingDataVencimento.toDateString() ===
+        ? posVendaDataVencimento.toDateString() ===
           new Date(dueDate).toDateString()
         : true;
 
       const isvendaTypeValid = vendaType
-        ? marketing.contrato === vendaType
+        ? posVenda.contrato === vendaType
         : true;
       const isvendasPersonValid = vendasPerson
-        ? marketing.operador === vendasPerson
+        ? posVenda.operador === vendasPerson
         : true;
 
       return (
@@ -250,7 +261,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
 
     if (showConcluidas) {
       filteredClients = filteredClients.filter(
-        (marketing) => !marketing.servicosConcluidos
+        (marketing) => !marketing.posVendaConcuida
       );
     }
 
@@ -278,53 +289,6 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
     setModalExcel(false);
   };
 
-  const handleSyncClients = async () => {
-    setSyncLoading(true);
-    try {
-      const vendasCollection = collection(db, "vendas");
-      const vendasSnapshot = await getDocs(vendasCollection);
-      const vendasList = vendasSnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as venda[];
-
-      const syncedvendas = vendasList.filter(
-        (venda) => venda.posVendaConcuida
-      );
-
-      const batch = writeBatch(db);
-      for (const venda of syncedvendas) {
-        const marketingDocRef = doc(db, "marketings", venda.id);
-        batch.set(marketingDocRef, venda, { merge: true });
-      }
-
-      await batch.commit();
-
-      const marketingsSnapshot = await getDocs(collection(db, "marketings"));
-      const marketingsList = marketingsSnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as Marketing[];
-
-      setMarketings(marketingsList);
-      setTotalMarketings(marketingsList.length);
-
-      // await fetch("https://crm-plataform-app-6t3u.vercel.app/sync-marketing", {
-      //   method: "POST",
-      // });
-      console.log("Vendas com posVendaConcuida true:", syncedvendas);
-
-      toast.success("Sincronização concluída!");
-    } catch (error) {
-      console.error("Erro ao sincronizar clientes:", error);
-      toast.error("Erro na sincronização!");
-    } finally {
-      setSyncLoading(false);
-    }
-  };
-
-
-  
   const toggleConcluido = () => {
     setShowConcluidas(!showConcluidas);
   };
@@ -348,6 +312,35 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
       .replace(/(\d{2})\.(\d{3})\.(\d{3})\/(\d{4})(\d)/, "$1.$2.$3/$4-$5")
       .substring(0, 18);
   };
+
+  useEffect(() => {
+    const fetchPosVenda = async () => {
+      setLoading(true);
+      try {
+        const posVendaCollection = collection(db, "posVendas");
+        const posVendaSnapshot = await getDocs(posVendaCollection);
+        const posVendaList = posVendaSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as PosVenda[];
+
+        setPosVenda(posVendaList);
+        setTotalPosVenda(posVendaList.length);
+
+        const totalRealizados = posVendaList.filter(
+          (posVenda) => posVenda.posVendaConcuida
+        ).length;
+        setTotalRealizadosPosVenda(totalRealizados);
+      } catch (error) {
+        console.error("Erro ao buscar marketings:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPosVenda();
+  }, [setTotalPosVenda, setTotalRealizadosPosVenda]);
+
   return (
     <div className="list-dashboard">
       {modalExcel && (
@@ -391,7 +384,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
       )}
       <div className="header-list">
         <div className="header-content">
-          <h2>Marketing</h2>
+          <h2>Pós Venda</h2>
           <div className="search-container">
             <FontAwesomeIcon icon={faSearch} className="search-icon" />
             <input
@@ -421,6 +414,27 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
               <FontAwesomeIcon icon={faFilter} color="#fff" />
             </button>
 
+            <button
+              className="planilha-btn"
+              onClick={handleSyncClients}
+              disabled={syncLoading}
+              data-tooltip-id="tooltip-sync"
+              data-tooltip-content={
+                syncLoading ? "Sincronizando..." : "Sincronizar clientes"
+              }
+            >
+              <FontAwesomeIcon icon={faSync} color="#fff" spin={syncLoading} />
+            </button>
+
+            {/* <button
+              className="filtros-btn"
+              onClick={syncVendasParaPosVenda}
+              data-tooltip-id="tooltip-filter"
+              data-tooltip-content="Aplicar filtros"
+            >
+              <FontAwesomeIcon icon={faBalanceScaleLeft} color="#fff" />
+            </button> */}
+
             {showConcluidas ? (
               <button
                 className="remove-btn"
@@ -440,18 +454,6 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                 <FontAwesomeIcon icon={faBars} color="#fff" />
               </button>
             )}
-
-            <button
-              className="planilha-btn"
-              onClick={handleSyncClients}
-              disabled={syncLoading}
-              data-tooltip-id="tooltip-sync"
-              data-tooltip-content={
-                syncLoading ? "Sincronizando..." : "Sincronizar clientes"
-              }
-            >
-              <FontAwesomeIcon icon={faSync} color="#fff" spin={syncLoading} />
-            </button>
 
             {userId === adminUserId && (
               <button
@@ -505,75 +507,71 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                 <th>Nome</th>
                 <th>Email</th>
                 <th>Operador</th>
-                <th>Monitor</th>
+                <th>Operador Pós Venda</th>
                 <th></th>
               </tr>
             </thead>
             <tbody>
-              {currentClients.map((marketing) => (
-                <tr key={marketing.id}>
+              {currentClients.map((posVenda) => (
+                <tr key={posVenda.id}>
                   <td
-                    className={
-                      selectedItems.has(marketing.id) ? "selected" : ""
-                    }
+                    className={selectedItems.has(posVenda.id) ? "selected" : ""}
                   >
                     <input
                       type="checkbox"
-                      checked={selectedItems.has(marketing.id)}
-                      onChange={() => handleCheckboxChange(marketing.id)}
+                      checked={selectedItems.has(posVenda.id)}
+                      onChange={() => handleCheckboxChange(posVenda.id)}
                       className="checkbox-table"
                     />
                   </td>
                   <td
-                    className={
-                      selectedItems.has(marketing.id) ? "selected" : ""
-                    }
+                    className={selectedItems.has(posVenda.id) ? "selected" : ""}
                   >
-                    {marketing.cnpj
-                      ? formatCNPJ(marketing.cnpj)
-                      : marketing.cpf
-                      ? formatCPF(marketing.cpf)
-                      : marketing.cnpj || marketing.cpf}
+                    {posVenda.cnpj
+                      ? formatCNPJ(posVenda.cnpj)
+                      : posVenda.cpf
+                      ? formatCPF(posVenda.cpf)
+                      : posVenda.cnpj || posVenda.cpf}
                   </td>
                   <td
                     className={`${
-                      selectedItems.has(marketing.id) ? "selected" : ""
+                      selectedItems.has(posVenda.id) ? "selected" : ""
                     } ${
-                      marketing.servicosConcluidos ? "servicos-realizados" : ""
+                      posVenda.posVendaConcuida ? "servicos-realizados" : ""
                     }`}
                   >
-                    {marketing.responsavel}
+                    {posVenda.responsavel}
                   </td>
                   <td
                     className={`${
-                      selectedItems.has(marketing.id) ? "selected" : ""
+                      selectedItems.has(posVenda.id) ? "selected" : ""
                     } ${
-                      marketing.servicosConcluidos ? "servicos-realizados" : ""
+                      posVenda.posVendaConcuida ? "servicos-realizados" : ""
                     }`}
                   >
-                    {marketing.email1 || marketing.email2}
+                    {posVenda.email1 || posVenda.email2}
                   </td>
                   <td
                     className={`${
-                      selectedItems.has(marketing.id) ? "selected" : ""
+                      selectedItems.has(posVenda.id) ? "selected" : ""
                     } ${
-                      marketing.servicosConcluidos ? "servicos-realizados" : ""
+                      posVenda.posVendaConcuida ? "servicos-realizados" : ""
                     }`}
                   >
-                    {marketing.operador.replace(/\./g, " ")}
+                    {posVenda.operador.replace(/\./g, " ")}
                   </td>
                   <td
                     className={`${
-                      selectedItems.has(marketing.id) ? "selected" : ""
+                      selectedItems.has(posVenda.id) ? "selected" : ""
                     } ${
-                      marketing.servicosConcluidos ? "servicos-realizados" : ""
+                      posVenda.posVendaConcuida ? "servicos-realizados" : ""
                     }`}
                   >
-                    {marketing.nomeMonitor}
+                    {posVenda.operadorPosVenda}
                   </td>
                   <td className="icon-container">
                     <Link
-                      to={`/contrato/${marketing.id}`}
+                      to={`/contrato/${posVenda.id}`}
                       data-tooltip-id="tooltip-view-contract"
                       data-tooltip-content="Visualizar contrato"
                     >
@@ -584,16 +582,16 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                     </Link>
 
                     <Link
-                      to={`/fichamarketing/${marketing.id}`}
-                      data-tooltip-id="tooltip-marketing-file"
-                      data-tooltip-content="Ficha de marketing"
+                      to={`/fichaposVenda/${posVenda.id}`}
+                      data-tooltip-id="tooltip-posVenda-file"
+                      data-tooltip-content="Ficha de posVenda"
                     >
                       <FontAwesomeIcon
                         icon={faTableList}
                         className="icon-spacing text-dark"
                       />
                     </Link>
-                    <Link to={`/fichaboleto/${marketing.id}`}>
+                    <Link to={`/fichaboleto/${posVenda.id}`}>
                       <FontAwesomeIcon
                         icon={faMoneyCheckDollar}
                         className="icon-spacing text-dark"
@@ -614,7 +612,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                       className="custom-tooltip"
                     />
                     <Tooltip
-                      id="tooltip-marketing-file"
+                      id="tooltip-posVenda-file"
                       place="top"
                       className="custom-tooltip"
                     />

@@ -11,7 +11,7 @@ interface PrivateRouteProps {
 
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ element, requiredCargo }) => {
   const { user, loading, cargo } = useAuth();
-  const adminId = "9CfoYP8HtPg7nymfGzrn8GE2NOR2";
+  const adminId = process.env.REACT_APP_ADMIN_USER_ID;
   const supervisorId ="wWLmbV9TIUemmTkcMUSAQ4xGlju2"
   const graziId ="nQwF9Uxh0lez9ETIOmP2gCgM0pf2"
   const [modalOpen, setModalOpen] = useState(false); // Estado para controlar o modal

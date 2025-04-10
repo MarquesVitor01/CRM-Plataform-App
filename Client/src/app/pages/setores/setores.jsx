@@ -9,6 +9,7 @@ import {
   faBullhorn,
   faDollarSign,
   faMoneyBillWave,
+  faHeadset,
 } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "../../context/AuthContext";
 
@@ -20,7 +21,7 @@ export const Setores = () => {
   };
 
   const { cargo, userId } = useAuth();
-  const adminId = "9CfoYP8HtPg7nymfGzrn8GE2NOR2";
+  const adminId = process.env.REACT_APP_ADMIN_USER_ID;
   const supervisorId = "wWLmbV9TIUemmTkcMUSAQ4xGlju2";
   const graziId = "nQwF9Uxh0lez9ETIOmP2gCgM0pf2";
   return (
@@ -77,7 +78,24 @@ export const Setores = () => {
           </div>
         )}
 
-        {(cargo === "marketing" || userId === adminId || userId === supervisorId) && (
+        {(cargo === "Pós Venda" ||
+          userId === adminId ||
+          userId === supervisorId) && (
+          <div className="sector col-10 col-md-4 col-lg-3">
+            <div className="sector-content">
+              <FontAwesomeIcon icon={faHeadset} className="sector-icon" />
+              <h2>Pós Venda</h2>
+              <p>Clique aqui para verificar o pós venda.</p>
+              <Link to="/pos-venda" className="btn-sector btn btn-primary">
+                Verificar Pós Venda
+              </Link>
+            </div>
+          </div>
+        )}
+
+        {(cargo === "marketing" ||
+          userId === adminId ||
+          userId === supervisorId) && (
           <div className="sector col-10 col-md-4 col-lg-3">
             <div className="sector-content">
               <FontAwesomeIcon icon={faBullhorn} className="sector-icon" />
@@ -103,7 +121,9 @@ export const Setores = () => {
           </div>
         )}
 
-        {(cargo === "cobranca" || userId === adminId || userId === supervisorId) && (
+        {(cargo === "cobranca" ||
+          userId === adminId ||
+          userId === supervisorId) && (
           <div className="sector col-10 col-md-4 col-lg-3">
             <div className="sector-content">
               <FontAwesomeIcon icon={faMoneyBillWave} className="sector-icon" />

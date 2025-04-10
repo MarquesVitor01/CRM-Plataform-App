@@ -143,20 +143,21 @@ export const FinanceiroForm: React.FC<FinanceiroFormProps> = ({ form: initialFor
               name="encaminharCliente"
               value={form.encaminharCliente}
               onChange={handleInputChange}
+              required
             >
               <option value="">Selecione uma opção</option>
               <option value="sim">Sim</option>
               <option value="nao">Não</option>
             </select>
 
-            <label className="form-label">Selecione ou digite um operador:</label>
+            {/* <label className="form-label">Selecione ou digite um operador:</label>
             <Select
               options={cobranca}
               value={form.operadorSelecionado}
               onChange={handleSelectChange}
               isClearable
               isSearchable
-            />
+            /> */}
           </div>
 
           <div className="d-flex gap-3 mx-auto">
