@@ -13,6 +13,7 @@ import {
   faClock,
   faBan,
   faUser,
+  faHeadset,
 } from "@fortawesome/free-solid-svg-icons";
 import "./navbar.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -28,7 +29,8 @@ export const Navbar = () => {
   const [script1, setScript1] = useState(false);
   const [script2, setScript2] = useState(false);
   const { nome, avatar, cargo, userId } = useAuth();
-  const adminId = "9CfoYP8HtPg7nymfGzrn8GE2NOR2";
+  const adminId = process.env.REACT_APP_ADMIN_USER_ID;
+
   const supervisorId ="wWLmbV9TIUemmTkcMUSAQ4xGlju2"
   const graziId ="nQwF9Uxh0lez9ETIOmP2gCgM0pf2"
 
@@ -132,6 +134,7 @@ export const Navbar = () => {
                 </Link>
               </li>
             )}
+            
             {(cargo === "monitoria" || userId === adminId || userId === supervisorId) && (
               <li className="nav-item">
                 <Link
@@ -141,6 +144,18 @@ export const Navbar = () => {
                 >
                   <FontAwesomeIcon icon={faTachometerAlt} />
                   <span>Monitoria</span>
+                </Link>
+              </li>
+            )}
+            {(cargo === "posVenda" || userId === adminId || userId === supervisorId) && (
+              <li className="nav-item">
+                <Link
+                  className="nav-link icon-tooltip"
+                  to="/pos-venda"
+                  data-tooltip="Pós Venda"
+                >
+                  <FontAwesomeIcon icon={faHeadset} />
+                  <span>Pós Venda</span>
                 </Link>
               </li>
             )}

@@ -73,7 +73,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
 
   const auth = getAuth();
   const userId = auth.currentUser?.uid;
-  const adminUserId = "9CfoYP8HtPg7nymfGzrn8GE2NOR2";
+  const adminUserId = process.env.REACT_APP_ADMIN_USER_ID;
   const SupervisorUserId = "wWLmbV9TIUemmTkcMUSAQ4xGlju2";
   const graziId ="nQwF9Uxh0lez9ETIOmP2gCgM0pf2"
 

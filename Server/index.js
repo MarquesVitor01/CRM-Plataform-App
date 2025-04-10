@@ -26,6 +26,7 @@ app.use("/generate-boleto-cnpj", boletoCnpj);
 app.use("/generate-boleto-cpf", boletoCpf);
 app.use("/v1/charge", chargeRoutes);
 app.use("/sync-marketing", syncMarketing);
+app.use("/sync-posVenda", pos);
 app.use("/api", sendMessageRoute);
 app.use("/buscar_cnpj", buscarCnpj);
 

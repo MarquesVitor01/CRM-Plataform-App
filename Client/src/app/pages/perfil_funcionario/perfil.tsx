@@ -58,7 +58,7 @@ export const Perfil: React.FC = () => {
   const [newPassword, setNewPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
-  const adminUserId = "9CfoYP8HtPg7nymfGzrn8GE2NOR2";
+  const adminUserId = process.env.REACT_APP_ADMIN_USER_ID;
 
   useEffect(() => {
     const loadPerfilData = async () => {
