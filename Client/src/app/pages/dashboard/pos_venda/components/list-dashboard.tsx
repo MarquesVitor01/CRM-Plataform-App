@@ -83,7 +83,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
   const itemsPerPage = 5;
   const [loading, setLoading] = useState<boolean>(true);
   const [modalExclusao, setModalExclusao] = useState(false);
-
+  const [activeSearchTerm, setActiveSearchTerm] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [syncLoading, setSyncLoading] = useState<boolean>(false);
   const [filters, setFilters] = useState({
@@ -210,7 +210,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
 
   const applyFilters = () => {
     let filteredClients = posVenda.filter((posVenda) => {
-      const lowerCaseTerm = searchTerm.toLowerCase();
+      const lowerCaseTerm = activeSearchTerm.toLowerCase();
       const matchesSearchTerm =
         (posVenda.cnpj &&
           posVenda.cnpj.toLowerCase().includes(lowerCaseTerm)) ||
@@ -266,6 +266,11 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
     }
 
     return filteredClients;
+  };
+
+  const handleSearchClick = () => {
+    setActiveSearchTerm(searchTerm);
+    setCurrentPage(1); // Resetar para a primeira página ao realizar nova pesquisa
   };
 
   const filteredClients = applyFilters();
@@ -386,13 +391,26 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
         <div className="header-content">
           <h2>Pós Venda</h2>
           <div className="search-container">
-            <FontAwesomeIcon icon={faSearch} className="search-icon" />
+            <button
+              className="search-button"
+              onClick={handleSearchClick}
+              data-tooltip-id="search-tooltip"
+              data-tooltip-content="Pesquisar"
+            >
+              <FontAwesomeIcon icon={faSearch} className="search-icon" />
+              <Tooltip
+                id="search-tooltip"
+                place="top"
+                className="custom-tooltip"
+              />
+            </button>
             <input
               type="text"
               placeholder="Pesquisar..."
               className="search-input"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyPress={(e) => e.key === "Enter" && handleSearchClick()}
             />
           </div>
           <div className="selects-container">

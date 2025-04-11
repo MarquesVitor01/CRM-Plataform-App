@@ -11,6 +11,11 @@ import { useAuth } from "../../context/AuthContext";
 import { InfoAdicionais } from "./Components/InfoAdicionais";
 import { Button, Modal } from "react-bootstrap";
 
+interface Parcela {
+  valor: string;
+  dataVencimento: string;
+}
+
 export const Add = () => {
   const userId = auth.currentUser?.uid;
   const { nome, cargo } = useAuth();
@@ -62,6 +67,7 @@ export const Add = () => {
     valorExtenso: ""
   });
 
+  const [parcelasArray, setParcelasArray] = useState<Parcela[]>([]);
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -90,6 +96,52 @@ export const Add = () => {
     fetchSenha();
   }, []);
 
+  // Calcula as parcelas quando valorVenda, parcelas ou dataVencimento mudam
+  useEffect(() => {
+    const calcularParcelas = () => {
+      const valorVenda = parseFloat(form.valorVenda || "0");
+      const parcelas = parseInt(form.parcelas || "1");
+      const dataVencimento = form.dataVencimento;
+
+      if (!isNaN(valorVenda)) {
+        if (parcelas === 1) {
+          setForm(prev => ({
+            ...prev,
+            valorParcelado: Math.round(valorVenda).toString()
+          }));
+          setParcelasArray([{
+            valor: Math.round(valorVenda).toString(),
+            dataVencimento: dataVencimento
+          }]);
+        } else {
+          const valorParcela = Math.round(valorVenda / parcelas);
+          setForm(prev => ({
+            ...prev,
+            valorParcelado: valorParcela.toString()
+          }));
+
+          const novasParcelas: Parcela[] = [];
+          if (dataVencimento) {
+            const dataBase = new Date(dataVencimento);
+            
+            for (let i = 0; i < parcelas; i++) {
+              const dataParcela = new Date(dataBase);
+              dataParcela.setMonth(dataBase.getMonth() + i);
+              
+              novasParcelas.push({
+                valor: valorParcela.toString(),
+                dataVencimento: dataParcela.toISOString().split('T')[0]
+              });
+            }
+          }
+          setParcelasArray(novasParcelas);
+        }
+      }
+    };
+
+    calcularParcelas();
+  }, [form.valorVenda, form.parcelas, form.dataVencimento]);
+
   const handleSenhaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSenha(e.target.value);
     setErroSenha("");
@@ -110,6 +162,7 @@ export const Add = () => {
         const dadosAtualizados = {
           ...form,
           nomeAutorizado,
+          parcelasDetalhadas: parcelasArray
         };
 
         try {
@@ -155,24 +208,6 @@ export const Add = () => {
     setForm((prev) => {
       const updatedForm = { ...prev, [name]: value };
 
-      if (name === "valorVenda" || name === "parcelas") {
-        const valorVenda = parseFloat(
-          name === "valorVenda" ? value : prev.valorVenda || "0"
-        );
-        const parcelas = parseInt(
-          name === "parcelas" ? value : prev.parcelas || "1"
-        );
-
-        if (!isNaN(valorVenda) && parcelas > 0) {
-          if (parcelas === 1) {
-            updatedForm.valorParcelado = Math.round(valorVenda).toString();
-          } else {
-            updatedForm.valorParcelado = Math.round(
-              valorVenda / parcelas
-            ).toString();
-          }
-        }
-      }
       if (name === "email1" || name === "email2") {
         updatedForm[name] = value.replace(/\s+/g, "");
       }
@@ -218,6 +253,11 @@ export const Add = () => {
     setError(null);
 
     try {
+      const dadosParaSalvar = {
+        ...form,
+        parcelasDetalhadas: parcelasArray
+      };
+
       const clienteRef = doc(db, "vendas", form.numeroContrato);
       const docSnap = await getDoc(clienteRef);
 
@@ -225,7 +265,7 @@ export const Add = () => {
         setNovoId(`${form.numeroContrato}_${Date.now()}`);
         handleModalShow();
       } else {
-        await setDoc(clienteRef, form);
+        await setDoc(clienteRef, dadosParaSalvar);
         toast.success("Cliente salvo com sucesso!");
         setRedirect(true);
       }
@@ -263,7 +303,34 @@ export const Add = () => {
             />
           )}
           {step === 2 && (
-            <InfoAdicionais form={form} handleInputChange={handleInputChange} />
+            <>
+              <InfoAdicionais form={form} handleInputChange={handleInputChange} />
+              <div className="parcelas-container mt-3">
+                <h4>Detalhes das Parcelas</h4>
+                {parcelasArray.length > 0 ? (
+                  <table className="table">
+                    <thead>
+                      <tr>
+                        <th>Parcela</th>
+                        <th>Valor</th>
+                        <th>Vencimento</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {parcelasArray.map((parcela, index) => (
+                        <tr key={index}>
+                          <td>{index + 1}</td>
+                          <td>R$ {parcela.valor}</td>
+                          <td>{parcela.dataVencimento}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                ) : (
+                  <p>Informe o valor e a data de vencimento para calcular as parcelas</p>
+                )}
+              </div>
+            </>
           )}
 
           <div className="mt-4">
@@ -346,25 +413,6 @@ export const Add = () => {
             disabled={!senhaHabilitada}
           />
           {erroSenha && <p className="text-danger mt-2">{erroSenha}</p>}
-
-          {/* {senha === senhaCorreta && (
-            <div>
-              <input
-                type="password"
-                placeholder="Nova Senha"
-                value={novaSenha}
-                onChange={handleNovaSenhaChange}
-                className="form-control mt-3"
-              />
-              <button
-                type="button"
-                className="btn btn-warning mt-3"
-                onClick={handleTrocarSenha}
-              >
-                Trocar Senha
-              </button>
-            </div>
-          )} */}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleModalClose}>

@@ -1,6 +1,15 @@
 import React, { useEffect, useState } from "react";
 import Select from "react-select";
 
+// Estende a interface original para incluir parcelas, se existirem
+interface ParcelaDetalhada {
+  valor: string;
+  dataVencimento: string;
+  // Novos campos para pagamento individual da parcela:
+  valorPago?: string;
+  dataPagamento?: string;
+}
+
 interface Form {
   valorPago: string;
   acordo: string;
@@ -9,6 +18,8 @@ interface Form {
   encaminharCliente: string;
   operadorSelecionado: { value: string; label: string } | null;
   comprovante: string;
+  // Opcionalmente, as parcelas detalhadas podem vir do objeto
+  parcelasDetalhadas?: ParcelaDetalhada[];
 }
 
 interface FinanceiroFormProps {
@@ -25,7 +36,11 @@ export const FinanceiroForm: React.FC<FinanceiroFormProps> = ({ form: initialFor
     encaminharCliente: "",
     operadorSelecionado: null,
     comprovante: "",
+    parcelasDetalhadas: [] // inicia como array vazio, se não informado
   });
+
+  // Estado para controlar cada parcela com seus respectivos campos de pagamento
+  const [parcelas, setParcelas] = useState<ParcelaDetalhada[]>([]);
 
   const cobranca = [
     { value: "miguel", label: "Miguel" },
@@ -36,11 +51,34 @@ export const FinanceiroForm: React.FC<FinanceiroFormProps> = ({ form: initialFor
     window.history.back();
   };
 
+  // Inicializa o formulário e as parcelas, se houver dados iniciais
   useEffect(() => {
     if (initialForm) {
       setForm(initialForm);
+      if (initialForm.parcelasDetalhadas) {
+        // Preenche cada parcela garantindo que os campos de pagamento existam
+        const parcelasIniciais = initialForm.parcelasDetalhadas.map((p) => ({
+          ...p,
+          valorPago: p.valorPago || "",
+          dataPagamento: p.dataPagamento || "",
+        }));
+        setParcelas(parcelasIniciais);
+      }
     }
   }, [initialForm]);
+
+  // Atualiza o final "valorPago" sempre que os pagamentos das parcelas mudarem.
+  useEffect(() => {
+    const total = parcelas.reduce((acc, parcela) => {
+      // Converte para número e soma (se o valor não for numérico, considera zero)
+      const valor = parseFloat(parcela.valorPago || "0");
+      return acc + (isNaN(valor) ? 0 : valor);
+    }, 0);
+    setForm((prevForm) => ({
+      ...prevForm,
+      valorPago: total.toFixed(2),
+    }));
+  }, [parcelas]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
@@ -58,8 +96,26 @@ export const FinanceiroForm: React.FC<FinanceiroFormProps> = ({ form: initialFor
     }));
   };
 
+  // Trata as alterações nos campos de cada parcela
+  const handleParcelaChange = (
+    index: number,
+    field: "valorPago" | "dataPagamento",
+    value: string
+  ) => {
+    const updatedParcelas = parcelas.map((parcela, i) =>
+      i === index ? { ...parcela, [field]: value } : parcela
+    );
+    setParcelas(updatedParcelas);
+    // Se desejar também refletir esta mudança no objeto form, pode atualizar a propriedade parcelasDetalhadas
+    setForm((prevForm) => ({
+      ...prevForm,
+      parcelasDetalhadas: updatedParcelas,
+    }));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // Ao submeter, o "valorPago" do formulário já é a soma dos pagamentos das parcelas.
     onSubmit(form);
   };
 
@@ -67,8 +123,9 @@ export const FinanceiroForm: React.FC<FinanceiroFormProps> = ({ form: initialFor
     <div className="row">
       <div className="card card-cob d-flex justify-content-center p-4">
         <form onSubmit={handleSubmit}>
+          {/* Campo de Valor Pago: Esse campo é atualizado automaticamente */}
           <label htmlFor="valorInput" className="form-label">
-            Valor Pago:
+            Valor Pago (Total das Parcelas):
           </label>
           <input
             type="text"
@@ -76,23 +133,8 @@ export const FinanceiroForm: React.FC<FinanceiroFormProps> = ({ form: initialFor
             id="valorInput"
             className="form-control mb-3"
             value={form.valorPago}
-            onChange={handleInputChange}
+            readOnly
           />
-
-          {/* <label htmlFor="acordoCobrança" className="form-label">
-            Possui acordo com a cobrança?
-          </label>
-          <select
-            className="form-select mb-3"
-            id="acordoCobrança"
-            name="acordo"
-            value={form.acordo}
-            onChange={handleInputChange}
-          >
-            <option value="">Selecione uma opção</option>
-            <option value="sim">Sim</option>
-            <option value="nao">Não</option>
-          </select> */}
 
           <label htmlFor="rePagamento" className="form-label">
             O cliente realizou o pagamento?
@@ -111,7 +153,7 @@ export const FinanceiroForm: React.FC<FinanceiroFormProps> = ({ form: initialFor
           </select>
 
           <label htmlFor="dataPagamento" className="form-label">
-            Data do Pagamento:
+            Data do Pagamento (Geral):
           </label>
           <input
             type="date"
@@ -136,7 +178,9 @@ export const FinanceiroForm: React.FC<FinanceiroFormProps> = ({ form: initialFor
           <hr className="w-50 mx-auto" />
 
           <div className="encaminheCob">
-            <label htmlFor="">Deseja encaminhar para a cobrança?</label>
+            <label htmlFor="encaminharCliente">
+              Deseja encaminhar para a cobrança?
+            </label>
             <select
               className="form-select mb-3"
               id="encaminharCliente"
@@ -149,16 +193,44 @@ export const FinanceiroForm: React.FC<FinanceiroFormProps> = ({ form: initialFor
               <option value="sim">Sim</option>
               <option value="nao">Não</option>
             </select>
-
-            {/* <label className="form-label">Selecione ou digite um operador:</label>
-            <Select
-              options={cobranca}
-              value={form.operadorSelecionado}
-              onChange={handleSelectChange}
-              isClearable
-              isSearchable
-            /> */}
           </div>
+
+          {/* Se existirem parcelas detalhadas, renderiza os inputs para o pagamento de cada parcela */}
+          {parcelas && parcelas.length > 0 && (
+            <div className="parcelas-section mt-4">
+              <h5 className="text-center">Parcelas do Contrato</h5>
+              {parcelas.map((parcela, index) => (
+                <div key={index} className="card card-parcelas p-3 mb-3">
+                  <p>
+                    <strong>Parcela {index + 1}</strong> - Valor Original: {parcela.valor} | Vencimento:{" "}
+                    {parcela.dataVencimento}
+                  </p>
+                  <div className="mb-2">
+                    <label className="form-label">Valor Pago da Parcela:</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={parcela.valorPago}
+                      onChange={(e) =>
+                        handleParcelaChange(index, "valorPago", e.target.value)
+                      }
+                    />
+                  </div>
+                  <div>
+                    <label className="form-label">Data do Pagamento da Parcela:</label>
+                    <input
+                      type="date"
+                      className="form-control"
+                      value={parcela.dataPagamento}
+                      onChange={(e) =>
+                        handleParcelaChange(index, "dataPagamento", e.target.value)
+                      }
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
 
           <div className="d-flex gap-3 mx-auto">
             <button type="button" className="btn btn-danger mt-4" onClick={sairFicha}>
