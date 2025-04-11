@@ -64,59 +64,83 @@ export const FichaFinanceiro: React.FC = () => {
   return (
     <div className="financeiro">
       <div className="container">
-        <div className="row align-items-center gap-3">
-          <div className="col-md-6">
-            <div className="card card-cob p-4">
+        <div className="row align-items-center">
+          <div className="col-md-4">
+            <div className="card p-4">
               <h2 className="text-center">Informações Gerais</h2>
               <p>
                 <strong>CNPJ:</strong> {clientData.cnpj || clientData.cpf}
               </p>
               <p>
-                <strong>Telefone:</strong> {clientData.telefone || clientData.celular}
+                <strong>Telefone:</strong>{" "}
+                {clientData.telefone || clientData.celular}
               </p>
               <p>
-                <strong>Vencimento:</strong> {clientData.dataVencimento || "Não informado"}
+                <strong>Vencimento:</strong>{" "}
+                {clientData.dataVencimento || "Não informado"}
               </p>
               <p>
-                <strong>Valor original da venda:</strong> {clientData.valorVenda || "Não informado"}
-              </p>
-              <p>
-                <strong>Valor Pago:</strong> {clientData.valorPago || "Não informado"}
+                <strong>Valor original da venda:</strong>{" "}
+                {clientData.valorVenda
+                  ? `R$ ${(Number(clientData.valorVenda) / 100)
+                      .toFixed(2)
+                      .replace(".", ",")}`
+                  : "Não informado"}
               </p>
 
-              {(clientData.operadorSelecionado && clientData.acordo) && (
+              <p>
+                <strong>Valor Pago:</strong>{" "}
+                {clientData.valorPago || "Não informado"}
+              </p>
+
+              {clientData.operadorSelecionado && clientData.acordo && (
                 <>
                   <p>
-                    <strong>Possui acordo com a cobrança:</strong> {clientData.acordo}
+                    <strong>Possui acordo com a cobrança:</strong>{" "}
+                    {clientData.acordo}
                   </p>
                   <p>
-                    <strong>Cobrador:</strong> {clientData.operadorSelecionado.label}
+                    <strong>Cobrador:</strong>{" "}
+                    {clientData.operadorSelecionado.label}
                   </p>
                 </>
               )}
             </div>
 
-            {clientData.parcelasDetalhadas && clientData.parcelasDetalhadas.length > 0 && (
-              <div className="card card-parcelas mt-4 p-4">
-                <h2 className="text-center mb-4">Parcelas do Contrato</h2>
-                <div className="parcelas-grid">
-                  {clientData.parcelasDetalhadas.map((parcela: Parcela, index: number) => (
-                    <div key={index} className="parcela-box">
-                      <div className="parcela-header">
-                        <h5>Parcela {index + 1}</h5>
-                      </div>
-                      <div className="parcela-body">
-                        <p><strong>Valor:</strong> R$ {parcela.valor}</p>
-                        <p><strong>Vencimento:</strong> {parcela.dataVencimento}</p>
-                      </div>
+            {clientData.parcelasDetalhadas &&
+              clientData.parcelasDetalhadas.length > 0 && (
+                <div className="scroll-container">
+                  <div className="card card-parcelas p-4">
+                    <h2 className="text-center mb-4">Parcelas do Contrato</h2>
+                    <div className="parcelas-grid">
+                      {clientData.parcelasDetalhadas.map(
+                        (parcela: Parcela, index: number) => (
+                          <div key={index} className="parcela-box">
+                            <div className="parcela-header">
+                              <h5>Parcela {index + 1}</h5>
+                            </div>
+                            <div className="parcela-body">
+                              <p>
+                              <strong>Valor:</strong> R$ {(Number(parcela.valor) / 100).toFixed(2).replace(".", ",")}
+                              </p>
+                              <p>
+                                <strong>Vencimento:</strong>{" "}
+                                {parcela.dataVencimento}
+                              </p>
+                            </div>
+                          </div>
+                        )
+                      )}
                     </div>
-                  ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
           </div>
-          <div className="col-md-5">
-            <FinanceiroForm form={clientData} onSubmit={handleFianceiroSubmit} />
+          <div className="col-md-8">
+            <FinanceiroForm
+              form={clientData}
+              onSubmit={handleFianceiroSubmit}
+            />
           </div>
         </div>
       </div>

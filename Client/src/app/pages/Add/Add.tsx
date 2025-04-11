@@ -64,7 +64,7 @@ export const Add = () => {
     grupo: "",
     parcelaRecorrente: "1990",
     diaData: "",
-    valorExtenso: ""
+    valorExtenso: "",
   });
 
   const [parcelasArray, setParcelasArray] = useState<Parcela[]>([]);
@@ -105,32 +105,34 @@ export const Add = () => {
 
       if (!isNaN(valorVenda)) {
         if (parcelas === 1) {
-          setForm(prev => ({
+          setForm((prev) => ({
             ...prev,
-            valorParcelado: Math.round(valorVenda).toString()
+            valorParcelado: Math.round(valorVenda).toString(),
           }));
-          setParcelasArray([{
-            valor: Math.round(valorVenda).toString(),
-            dataVencimento: dataVencimento
-          }]);
+          setParcelasArray([
+            {
+              valor: Math.round(valorVenda).toString(),
+              dataVencimento: dataVencimento,
+            },
+          ]);
         } else {
           const valorParcela = Math.round(valorVenda / parcelas);
-          setForm(prev => ({
+          setForm((prev) => ({
             ...prev,
-            valorParcelado: valorParcela.toString()
+            valorParcelado: valorParcela.toString(),
           }));
 
           const novasParcelas: Parcela[] = [];
           if (dataVencimento) {
             const dataBase = new Date(dataVencimento);
-            
+
             for (let i = 0; i < parcelas; i++) {
               const dataParcela = new Date(dataBase);
               dataParcela.setMonth(dataBase.getMonth() + i);
-              
+
               novasParcelas.push({
                 valor: valorParcela.toString(),
-                dataVencimento: dataParcela.toISOString().split('T')[0]
+                dataVencimento: dataParcela.toISOString().split("T")[0],
               });
             }
           }
@@ -162,7 +164,7 @@ export const Add = () => {
         const dadosAtualizados = {
           ...form,
           nomeAutorizado,
-          parcelasDetalhadas: parcelasArray
+          parcelasDetalhadas: parcelasArray,
         };
 
         try {
@@ -255,7 +257,7 @@ export const Add = () => {
     try {
       const dadosParaSalvar = {
         ...form,
-        parcelasDetalhadas: parcelasArray
+        parcelasDetalhadas: parcelasArray,
       };
 
       const clienteRef = doc(db, "vendas", form.numeroContrato);
@@ -304,30 +306,44 @@ export const Add = () => {
           )}
           {step === 2 && (
             <>
-              <InfoAdicionais form={form} handleInputChange={handleInputChange} />
+              <InfoAdicionais
+                form={form}
+                handleInputChange={handleInputChange}
+              />
               <div className="parcelas-container mt-3">
                 <h4>Detalhes das Parcelas</h4>
                 {parcelasArray.length > 0 ? (
-                  <table className="table">
-                    <thead>
-                      <tr>
-                        <th>Parcela</th>
-                        <th>Valor</th>
-                        <th>Vencimento</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {parcelasArray.map((parcela, index) => (
-                        <tr key={index}>
-                          <td>{index + 1}</td>
-                          <td>R$ {parcela.valor}</td>
-                          <td>{parcela.dataVencimento}</td>
+                  <div className="scroll-tabela">
+                    <table className="table table-striped">
+                      <thead>
+                        <tr>
+                          <th>Parcela</th>
+                          <th>Valor</th>
+                          <th>Vencimento</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        {parcelasArray.map((parcela, index) => (
+                          <tr key={index}>
+                            <td>{index + 1}</td>
+                            <td>
+                              R${" "}
+                              {Number(parcela.valor).toLocaleString("pt-BR", {
+                                minimumFractionDigits: 2,
+                              })}
+                            </td>
+
+                            <td>{parcela.dataVencimento}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 ) : (
-                  <p>Informe o valor e a data de vencimento para calcular as parcelas</p>
+                  <p>
+                    Informe o valor e a data de vencimento para calcular as
+                    parcelas
+                  </p>
                 )}
               </div>
             </>
