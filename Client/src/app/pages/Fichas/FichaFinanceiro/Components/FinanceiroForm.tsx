@@ -76,8 +76,12 @@ export const FinanceiroForm: React.FC<FinanceiroFormProps> = ({ form: initialFor
     }, 0);
     setForm((prevForm) => ({
       ...prevForm,
-      valorPago: total.toFixed(2),
+      valorPago: (Number(total) / 100).toLocaleString("pt-BR", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }),
     }));
+    
   }, [parcelas]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -209,7 +213,6 @@ export const FinanceiroForm: React.FC<FinanceiroFormProps> = ({ form: initialFor
     </div>
   </div>
 
-  {/* Coluna das parcelas */}
   <div className="col-12 col-lg-6">
     <ListaDeParcelas
       parcelas={parcelas}

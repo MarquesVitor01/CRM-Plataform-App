@@ -21,6 +21,25 @@ const ListaDeParcelas: React.FC<ListaDeParcelasProps> = ({
 }) => {
   if (!parcelas || parcelas.length === 0) return null;
 
+  const handleInputValorPago = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => {
+    const input = e.target.value;
+    const somenteNumeros = input.replace(/\D/g, ""); 
+    handleParcelaChange(index, "valorPago", somenteNumeros); 
+  };
+  
+  const formatarValorMonetario = (valor: string) => {
+    const numero = Number(valor) / 100;
+    return numero.toLocaleString("pt-BR", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  };
+  
+  
+
   return (
     <div className="scroll-container">
       <div className="row gy-2">
@@ -33,8 +52,9 @@ const ListaDeParcelas: React.FC<ListaDeParcelasProps> = ({
                   <strong>Parcela {index + 1}</strong>
                 </h6>
                 <p className="mb-3">
-                <strong>Valor:</strong> R$ {(Number(parcela.valor) / 100).toFixed(2).replace(".", ",")}
-                <br />
+                  <strong>Valor:</strong> R${" "}
+                  {(Number(parcela.valor) / 100).toFixed(2).replace(".", ",")}
+                  <br />
                   <strong>Vencimento:</strong> {parcela.dataVencimento}
                 </p>
 
@@ -43,10 +63,8 @@ const ListaDeParcelas: React.FC<ListaDeParcelasProps> = ({
                   <input
                     type="text"
                     className="form-control"
-                    value={parcela.valorPago}
-                    onChange={(e) =>
-                      handleParcelaChange(index, "valorPago", e.target.value)
-                    }
+                    value={formatarValorMonetario(parcela.valorPago || "")}
+                    onChange={(e) => handleInputValorPago(e, index)}
                   />
                 </div>
 

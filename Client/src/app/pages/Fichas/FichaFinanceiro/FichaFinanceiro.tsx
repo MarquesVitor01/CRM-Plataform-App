@@ -121,7 +121,10 @@ export const FichaFinanceiro: React.FC = () => {
                             </div>
                             <div className="parcela-body">
                               <p>
-                              <strong>Valor:</strong> R$ {(Number(parcela.valor) / 100).toFixed(2).replace(".", ",")}
+                                <strong>Valor:</strong> R${" "}
+                                {(Number(parcela.valor) / 100)
+                                  .toFixed(2)
+                                  .replace(".", ",")}
                               </p>
                               <p>
                                 <strong>Vencimento:</strong>{" "}
