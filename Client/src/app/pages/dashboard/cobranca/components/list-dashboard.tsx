@@ -54,6 +54,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
     salesPerson: "",
     cobPerson: "",
   });
+  const [activeSearchTerm, setActiveSearchTerm] = useState<string>("");
 
   useEffect(() => {
     const fetchFinanceiros = async () => {
@@ -96,7 +97,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
 
   const applyFilters = () => {
     let filteredClients = financeiros.filter((financeiro) => {
-      const lowerCaseTerm = searchTerm.toLowerCase();
+      const lowerCaseTerm = activeSearchTerm.toLowerCase();
       const matchesSearchTerm =
         (financeiro.cnpj &&
           financeiro.cnpj.toLowerCase().includes(lowerCaseTerm)) ||
@@ -159,6 +160,10 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
     return filteredClients;
   };
 
+  const handleSearchClick = () => {
+    setActiveSearchTerm(searchTerm);
+    setCurrentPage(1); // Resetar para a primeira página ao realizar nova pesquisa
+  };
   const filteredClients = applyFilters();
   const totalPages = Math.ceil(filteredClients.length / itemsPerPage);
   const currentClients = filteredClients.slice(
@@ -213,13 +218,26 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
         <div className="header-content">
           <h2>Cobrança</h2>
           <div className="search-container">
-            <FontAwesomeIcon icon={faSearch} className="search-icon" />
+            <button
+              className="search-button"
+              onClick={handleSearchClick}
+              data-tooltip-id="search-tooltip"
+              data-tooltip-content="Pesquisar"
+            >
+              <FontAwesomeIcon icon={faSearch} className="search-icon" />
+              <Tooltip
+                id="search-tooltip"
+                place="top"
+                className="custom-tooltip"
+              />
+            </button>
             <input
               type="text"
               placeholder="Pesquisar..."
               className="search-input"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyPress={(e) => e.key === "Enter" && handleSearchClick()} 
             />
           </div>
           <div className="selects-container">

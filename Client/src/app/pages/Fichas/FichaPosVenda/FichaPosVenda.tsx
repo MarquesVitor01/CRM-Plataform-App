@@ -42,7 +42,7 @@ export const FichaPosVenda: React.FC = () => {
   const handleMarketingSubmit = async (data: any) => {
     try {
       if (id) {
-        const docRef = doc(db, "vendas", id);
+        const docRef = doc(db, "posVendas", id);
         await updateDoc(docRef, data);
         setClientData(data);
         console.log("Dados atualizados com sucesso!");

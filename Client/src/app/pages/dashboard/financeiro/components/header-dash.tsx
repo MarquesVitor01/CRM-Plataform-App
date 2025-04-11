@@ -34,7 +34,7 @@ export const HeaderDash: React.FC<HeaderDashProps> = ({ totalFinanceiros, totalP
                   <p>{totalCancelados}</p>
                 </div>
                 <div className="col-md-3 info-item">
-                  <h3>Total Negativados</h3>
+                  <h3>Total Inadimpletes</h3>
                   <p>{totalNegativados}</p>
                 </div>
               </div>

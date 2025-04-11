@@ -70,13 +70,13 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
     salesPerson: "",
     saleGroup: "",
   });
+  const [activeSearchTerm, setActiveSearchTerm] = useState<string>("");
 
   const auth = getAuth();
   const userId = auth.currentUser?.uid;
   const adminUserId = process.env.REACT_APP_ADMIN_USER_ID;
   const SupervisorUserId = "wWLmbV9TIUemmTkcMUSAQ4xGlju2";
-  const graziId ="nQwF9Uxh0lez9ETIOmP2gCgM0pf2"
-
+  const graziId = "nQwF9Uxh0lez9ETIOmP2gCgM0pf2";
 
   useEffect(() => {
     const fetchVendas = async () => {
@@ -90,7 +90,9 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
         })) as Venda[];
 
         const filteredVendas =
-          userId === adminUserId || userId === SupervisorUserId || userId === graziId
+          userId === adminUserId ||
+          userId === SupervisorUserId ||
+          userId === graziId
             ? vendasList
             : vendasList.filter((venda) => venda.createdBy === userId);
 
@@ -151,7 +153,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
 
   const applyFilters = () => {
     const filteredClients = vendas.filter((venda) => {
-      const lowerCaseTerm = searchTerm.toLowerCase();
+      const lowerCaseTerm = activeSearchTerm.toLowerCase();
       const matchesSearchTerm =
         (venda.cnpj && venda.cnpj.toLowerCase().includes(lowerCaseTerm)) ||
         (venda.cpf && venda.cpf.toLowerCase().includes(lowerCaseTerm)) ||
@@ -199,6 +201,11 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
     });
 
     return filteredClients;
+  };
+
+  const handleSearchClick = () => {
+    setActiveSearchTerm(searchTerm);
+    setCurrentPage(1); // Resetar para a primeira página ao realizar nova pesquisa
   };
 
   const filteredClients = applyFilters();
@@ -366,17 +373,26 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
           <h2>Vendas</h2>
 
           <div className="search-container">
-            <FontAwesomeIcon
-              icon={faSearch}
-              className="search-icon"
-              data-tip="Pesquisar"
-            />
+            <button
+              className="search-button"
+              onClick={handleSearchClick}
+              data-tooltip-id="search-tooltip"
+              data-tooltip-content="Pesquisar"
+            >
+              <FontAwesomeIcon icon={faSearch} className="search-icon" />
+              <Tooltip
+                id="search-tooltip"
+                place="top"
+                className="custom-tooltip"
+              />
+            </button>
             <input
               type="text"
               placeholder="Pesquisar..."
               className="search-input"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyPress={(e) => e.key === "Enter" && handleSearchClick()} 
             />
           </div>
 
@@ -395,7 +411,9 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
               />
             </Link>
 
-            {(userId === adminUserId || userId === SupervisorUserId || userId === graziId) && (
+            {(userId === adminUserId ||
+              userId === SupervisorUserId ||
+              userId === graziId) && (
               <button
                 onClick={openModalExclusao}
                 className="remove-btn"

@@ -89,7 +89,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
     salesPerson: "",
     saleGroup: "",
   });
-
+  const [activeSearchTerm, setActiveSearchTerm] = useState<string>("");
   const [showCancelados, setShowCancelados] = useState(false);
   const [showNegativos, setShowNegativos] = useState(false);
 
@@ -136,7 +136,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
 
   const applyFilters = () => {
     let filteredClients = financeiros.filter((marketing) => {
-      const lowerCaseTerm = searchTerm.toLowerCase();
+      const lowerCaseTerm = activeSearchTerm.toLowerCase();
       const matchesSearchTerm =
         (marketing.cnpj &&
           marketing.cnpj.toLowerCase().includes(lowerCaseTerm)) ||
@@ -200,6 +200,10 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
       );
     }
     return filteredClients;
+  };
+  const handleSearchClick = () => {
+    setActiveSearchTerm(searchTerm);
+    setCurrentPage(1); // Resetar para a primeira página ao realizar nova pesquisa
   };
 
   const filteredClients = applyFilters();
@@ -339,13 +343,26 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
         <div className="header-content">
           <h2>Financeiro</h2>
           <div className="search-container">
-            <FontAwesomeIcon icon={faSearch} className="search-icon" />
+            <button
+              className="search-button"
+              onClick={handleSearchClick}
+              data-tooltip-id="search-tooltip"
+              data-tooltip-content="Pesquisar"
+            >
+              <FontAwesomeIcon icon={faSearch} className="search-icon" />
+              <Tooltip
+                id="search-tooltip"
+                place="top"
+                className="custom-tooltip"
+              />
+            </button>
             <input
               type="text"
               placeholder="Pesquisar..."
               className="search-input"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyPress={(e) => e.key === "Enter" && handleSearchClick()} 
             />
           </div>
           <div className="selects-container">
@@ -383,7 +400,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                 className="remove-btn"
                 onClick={toggleNegativo}
                 data-tooltip-id="tooltip-remove-negativo"
-                data-tooltip-content="Remover negativos"
+                data-tooltip-content="Remover inadimpletes"
               >
                 <FontAwesomeIcon icon={faX} color="#fff" />
               </button>
@@ -392,7 +409,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                 className="concluido-btn"
                 onClick={toggleNegativo}
                 data-tooltip-id="tooltip-add-negativo"
-                data-tooltip-content="Mostrar negativos"
+                data-tooltip-content="Mostrar inadimpletes"
               >
                 <FontAwesomeIcon icon={faMinus} color="#fff" />
               </button>

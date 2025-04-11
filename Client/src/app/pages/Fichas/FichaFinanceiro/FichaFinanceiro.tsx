@@ -5,6 +5,11 @@ import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../../firebase/firebaseConfig";
 import { useNavigate, useParams } from "react-router-dom";
 
+interface Parcela {
+  valor: string;
+  dataVencimento: string;
+}
+
 export const FichaFinanceiro: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [clientData, setClientData] = useState<any>(null);
@@ -90,6 +95,25 @@ export const FichaFinanceiro: React.FC = () => {
                 </>
               )}
             </div>
+
+            {clientData.parcelasDetalhadas && clientData.parcelasDetalhadas.length > 0 && (
+              <div className="card card-parcelas mt-4 p-4">
+                <h2 className="text-center mb-4">Parcelas do Contrato</h2>
+                <div className="parcelas-grid">
+                  {clientData.parcelasDetalhadas.map((parcela: Parcela, index: number) => (
+                    <div key={index} className="parcela-box">
+                      <div className="parcela-header">
+                        <h5>Parcela {index + 1}</h5>
+                      </div>
+                      <div className="parcela-body">
+                        <p><strong>Valor:</strong> R$ {parcela.valor}</p>
+                        <p><strong>Vencimento:</strong> {parcela.dataVencimento}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
           <div className="col-md-5">
             <FinanceiroForm form={clientData} onSubmit={handleFianceiroSubmit} />
