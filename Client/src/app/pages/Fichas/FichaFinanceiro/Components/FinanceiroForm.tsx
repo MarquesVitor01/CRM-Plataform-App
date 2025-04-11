@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import Select from "react-select";
+import ListaDeParcelas from "./ListaDeParcelas";
 
 // Estende a interface original para incluir parcelas, se existirem
 interface ParcelaDetalhada {
   valor: string;
   dataVencimento: string;
-  // Novos campos para pagamento individual da parcela:
   valorPago?: string;
   dataPagamento?: string;
 }
@@ -120,128 +120,103 @@ export const FinanceiroForm: React.FC<FinanceiroFormProps> = ({ form: initialFor
   };
 
   return (
-    <div className="row">
-      <div className="card card-cob d-flex justify-content-center p-4">
-        <form onSubmit={handleSubmit}>
-          {/* Campo de Valor Pago: Esse campo é atualizado automaticamente */}
-          <label htmlFor="valorInput" className="form-label">
-            Valor Pago (Total das Parcelas):
-          </label>
-          <input
-            type="text"
-            name="valorPago"
-            id="valorInput"
-            className="form-control mb-3"
-            value={form.valorPago}
-            readOnly
-          />
+    <div className="row gx-4 gy-4">
+  {/* Coluna do formulário */}
+  <div className="col-12 col-lg-6">
+    <div className="card p-4 h-100 shadow-sm">
+      <form onSubmit={handleSubmit}>
+        <label htmlFor="valorInput" className="form-label">
+          Valor Pago (Total das Parcelas):
+        </label>
+        <input
+          type="text"
+          name="valorPago"
+          id="valorInput"
+          className="form-control mb-3"
+          value={form.valorPago}
+          readOnly
+        />
 
-          <label htmlFor="rePagamento" className="form-label">
-            O cliente realizou o pagamento?
+        <label htmlFor="rePagamento" className="form-label">
+          O cliente realizou o pagamento?
+        </label>
+        <select
+          className="form-select mb-3"
+          id="rePagamento"
+          name="rePagamento"
+          value={form.rePagamento}
+          onChange={handleInputChange}
+        >
+          <option value="">Selecione uma opção</option>
+          <option value="sim">Sim</option>
+          <option value="nao">Não</option>
+          <option value="cancelado">Cancelado</option>
+        </select>
+
+        <label htmlFor="dataPagamento" className="form-label">
+          Data do Pagamento (Geral):
+        </label>
+        <input
+          type="date"
+          name="dataPagamento"
+          id="dataPagamento"
+          className="form-control mb-3"
+          value={form.dataPagamento}
+          onChange={handleInputChange}
+        />
+
+        <label htmlFor="comprovante" className="form-label">
+          Comprovante do Pagamento:
+        </label>
+        <input
+          type="text"
+          name="comprovante"
+          id="comprovante"
+          className="form-control mb-3"
+          value={form.comprovante}
+          onChange={handleInputChange}
+        />
+
+        <hr className="w-50 mx-auto" />
+
+        <div className="encaminheCob">
+          <label htmlFor="encaminharCliente">
+            Deseja encaminhar para a cobrança?
           </label>
           <select
             className="form-select mb-3"
-            id="rePagamento"
-            name="rePagamento"
-            value={form.rePagamento}
+            id="encaminharCliente"
+            name="encaminharCliente"
+            value={form.encaminharCliente}
             onChange={handleInputChange}
+            required
           >
             <option value="">Selecione uma opção</option>
             <option value="sim">Sim</option>
             <option value="nao">Não</option>
-            <option value="cancelado">Cancelado</option>
           </select>
+        </div>
 
-          <label htmlFor="dataPagamento" className="form-label">
-            Data do Pagamento (Geral):
-          </label>
-          <input
-            type="date"
-            name="dataPagamento"
-            id="dataPagamento"
-            className="form-control mb-3"
-            value={form.dataPagamento}
-            onChange={handleInputChange}
-          />
-
-          <label htmlFor="comprovante" className="form-label">
-            Comprovante do Pagamento:
-          </label>
-          <input
-            type="text"
-            name="comprovante"
-            id="comprovante"
-            className="form-control mb-3"
-            value={form.comprovante}
-            onChange={handleInputChange}
-          />
-          <hr className="w-50 mx-auto" />
-
-          <div className="encaminheCob">
-            <label htmlFor="encaminharCliente">
-              Deseja encaminhar para a cobrança?
-            </label>
-            <select
-              className="form-select mb-3"
-              id="encaminharCliente"
-              name="encaminharCliente"
-              value={form.encaminharCliente}
-              onChange={handleInputChange}
-              required
-            >
-              <option value="">Selecione uma opção</option>
-              <option value="sim">Sim</option>
-              <option value="nao">Não</option>
-            </select>
-          </div>
-
-          {/* Se existirem parcelas detalhadas, renderiza os inputs para o pagamento de cada parcela */}
-          {parcelas && parcelas.length > 0 && (
-            <div className="parcelas-section mt-4">
-              <h5 className="text-center">Parcelas do Contrato</h5>
-              {parcelas.map((parcela, index) => (
-                <div key={index} className="card card-parcelas p-3 mb-3">
-                  <p>
-                    <strong>Parcela {index + 1}</strong> - Valor Original: {parcela.valor} | Vencimento:{" "}
-                    {parcela.dataVencimento}
-                  </p>
-                  <div className="mb-2">
-                    <label className="form-label">Valor Pago da Parcela:</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={parcela.valorPago}
-                      onChange={(e) =>
-                        handleParcelaChange(index, "valorPago", e.target.value)
-                      }
-                    />
-                  </div>
-                  <div>
-                    <label className="form-label">Data do Pagamento da Parcela:</label>
-                    <input
-                      type="date"
-                      className="form-control"
-                      value={parcela.dataPagamento}
-                      onChange={(e) =>
-                        handleParcelaChange(index, "dataPagamento", e.target.value)
-                      }
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          <div className="d-flex gap-3 mx-auto">
-            <button type="button" className="btn btn-danger mt-4" onClick={sairFicha}>
-              Sair
-            </button>
-            <button type="submit" className="btn btn-primary mt-4">
-              Salvar
-            </button>
-          </div>
-        </form>
-      </div>
+        <div className="d-flex gap-3 justify-content-center">
+          <button type="button" className="btn btn-danger mt-4" onClick={sairFicha}>
+            Sair
+          </button>
+          <button type="submit" className="btn btn-primary mt-4">
+            Salvar
+          </button>
+        </div>
+      </form>
     </div>
+  </div>
+
+  {/* Coluna das parcelas */}
+  <div className="col-12 col-lg-6">
+    <ListaDeParcelas
+      parcelas={parcelas}
+      handleParcelaChange={handleParcelaChange}
+    />
+  </div>
+</div>
+
   );
 };
