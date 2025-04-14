@@ -88,7 +88,7 @@ export const FichaMarketing: React.FC = () => {
             <FontAwesomeIcon icon={faLeftLong} />
           </button>
           <div className="row">
-            <div className="col-md-6">
+            <div className="col-md-3">
               <div className="card mb-4 p-4">
                 <h2 className="text-center">Informações do Cliente</h2>
                 <p>
@@ -121,7 +121,7 @@ export const FichaMarketing: React.FC = () => {
                 </p>
               </div>
             </div>
-            <div className="col-md-6">
+            <div className="col-md-9">
               <MarketingForm
                 form={clientData}
                 onSubmit={handleMarketingSubmit}

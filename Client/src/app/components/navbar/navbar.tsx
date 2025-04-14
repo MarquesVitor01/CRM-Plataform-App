@@ -122,18 +122,19 @@ export const Navbar = () => {
                 </Link>
               </li>
             )}
-            {(cargo === "vendas" || userId === adminId || userId === graziId) && (
-              <li className="nav-item">
-                <Link
-                  className="nav-link icon-tooltip"
-                  to="/cancelados"
-                  data-tooltip="Cancelados"
-                >
-                  <FontAwesomeIcon icon={faBan} />
-                  <span>Cancelados</span>
-                </Link>
-              </li>
-            )}
+            {(cargo !== "marketing" && (cargo === "vendas" || userId === adminId || userId === graziId)) && (
+  <li className="nav-item">
+    <Link
+      className="nav-link icon-tooltip"
+      to="/cancelados"
+      data-tooltip="Cancelados"
+    >
+      <FontAwesomeIcon icon={faBan} />
+      <span>Cancelados</span>
+    </Link>
+  </li>
+)}
+
             
             {(cargo === "monitoria" || userId === adminId || userId === supervisorId) && (
               <li className="nav-item">
