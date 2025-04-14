@@ -99,50 +99,102 @@ export const Add = () => {
   // Calcula as parcelas quando valorVenda, parcelas ou dataVencimento mudam
   useEffect(() => {
     const calcularParcelas = () => {
-      const valorVenda = parseFloat(form.valorVenda || "0");
-      const parcelas = parseInt(form.parcelas || "1");
       const dataVencimento = form.dataVencimento;
+      const contratoRecorrente = form.contrato === "Recorencia";
 
-      if (!isNaN(valorVenda)) {
-        if (parcelas === 1) {
-          setForm((prev) => ({
-            ...prev,
-            valorParcelado: Math.round(valorVenda).toString(),
-          }));
-          setParcelasArray([
-            {
-              valor: Math.round(valorVenda).toString(),
-              dataVencimento: dataVencimento,
-            },
-          ]);
-        } else {
-          const valorParcela = Math.round(valorVenda / parcelas);
-          setForm((prev) => ({
-            ...prev,
-            valorParcelado: valorParcela.toString(),
-          }));
+      if (contratoRecorrente && dataVencimento) {
+        const novasParcelas: Parcela[] = [];
+        const valorRecorrente = parseFloat(form.parcelaRecorrente || "0");
+        const valorPrimeiraParcela = parseFloat(form.valorVenda || "0");
 
-          const novasParcelas: Parcela[] = [];
-          if (dataVencimento) {
-            const dataBase = new Date(dataVencimento);
+        const dataBase = new Date(dataVencimento);
+        const diaDoMes = dataBase.getDate();
 
-            for (let i = 0; i < parcelas; i++) {
-              const dataParcela = new Date(dataBase);
-              dataParcela.setMonth(dataBase.getMonth() + i);
+        // Primeira parcela com valor cheio
+        novasParcelas.push({
+          valor: Math.round(valorPrimeiraParcela).toString(),
+          dataVencimento: dataBase.toISOString().split("T")[0],
+        });
 
-              novasParcelas.push({
-                valor: valorParcela.toString(),
-                dataVencimento: dataParcela.toISOString().split("T")[0],
-              });
-            }
+        // Demais parcelas (11) com valor recorrente
+        for (let i = 1; i < 12; i++) {
+          const dataParcela = new Date(dataBase);
+          dataParcela.setMonth(dataBase.getMonth() + i);
+
+          // Ajustar se o mês seguinte não tiver o mesmo dia (ex: fevereiro)
+          if (dataParcela.getDate() !== diaDoMes) {
+            dataParcela.setDate(0); // último dia do mês anterior
           }
-          setParcelasArray(novasParcelas);
+
+          novasParcelas.push({
+            valor: Math.round(valorRecorrente).toString(),
+            dataVencimento: dataParcela.toISOString().split("T")[0],
+          });
+        }
+
+        setParcelasArray(novasParcelas);
+        setForm((prev) => ({
+          ...prev,
+          valorParcelado: Math.round(valorRecorrente).toString(),
+          parcelas: "12", // atualiza para refletir na UI se necessário
+        }));
+      } else {
+        const valorVenda = parseFloat(form.valorVenda || "0");
+        const parcelas = parseInt(form.parcelas || "1");
+
+        if (!isNaN(valorVenda)) {
+          if (parcelas === 1) {
+            setForm((prev) => ({
+              ...prev,
+              valorParcelado: Math.round(valorVenda).toString(),
+            }));
+            setParcelasArray([
+              {
+                valor: Math.round(valorVenda).toString(),
+                dataVencimento: dataVencimento,
+              },
+            ]);
+          } else {
+            const valorParcela = Math.round(valorVenda / parcelas);
+            setForm((prev) => ({
+              ...prev,
+              valorParcelado: valorParcela.toString(),
+            }));
+
+            const novasParcelas: Parcela[] = [];
+            if (dataVencimento) {
+              const dataBase = new Date(dataVencimento);
+              const diaDoMes = dataBase.getDate();
+
+              for (let i = 0; i < parcelas; i++) {
+                const dataParcela = new Date(dataBase);
+                dataParcela.setMonth(dataBase.getMonth() + i);
+
+                if (dataParcela.getDate() !== diaDoMes) {
+                  dataParcela.setDate(0); // último dia do mês anterior
+                }
+
+                novasParcelas.push({
+                  valor: valorParcela.toString(),
+                  dataVencimento: dataParcela.toISOString().split("T")[0],
+                });
+              }
+            }
+
+            setParcelasArray(novasParcelas);
+          }
         }
       }
     };
 
     calcularParcelas();
-  }, [form.valorVenda, form.parcelas, form.dataVencimento]);
+  }, [
+    form.valorVenda,
+    form.parcelas,
+    form.dataVencimento,
+    form.contrato,
+    form.parcelaRecorrente,
+  ]);
 
   const handleSenhaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSenha(e.target.value);

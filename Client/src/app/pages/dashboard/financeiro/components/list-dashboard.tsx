@@ -1,3 +1,4 @@
+/* eslint-disable no-mixed-operators */
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -21,6 +22,11 @@ import { toast, ToastContainer } from "react-toastify";
 import * as XLSX from "xlsx";
 import { Tooltip } from "react-tooltip";
 
+interface Parcela {
+  valor: string;
+  dataVencimento: string;
+}
+
 interface Marketing {
   id: string;
   cnpj: string;
@@ -38,6 +44,7 @@ interface Marketing {
   encaminharCliente: string;
   rePagamento: string;
   account: string;
+  parcelasDetalhadas?: Parcela[]; // Adicione esta linha
 }
 
 interface Sale {
@@ -58,6 +65,7 @@ interface Sale {
   operadorSelecionado: { value: string; label: string } | null;
   account: string;
   valorPago: string
+  parcelasDetalhadas?: Parcela[]; // Adicione esta linha
 }
 
 interface ListDashboardProps {
@@ -152,27 +160,35 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
           marketing.operador.toLowerCase().includes(lowerCaseTerm));
       marketing.account &&
         marketing.account.toLowerCase().includes(lowerCaseTerm);
-
+  
       const { startDate, endDate, dueDate, saleType, salesPerson, saleGroup } =
         filters;
-
+  
       const marketingData = new Date(marketing.data);
       const isStartDateValid = startDate
         ? marketingData.toDateString() === new Date(startDate).toDateString()
         : true;
-
+  
       const isDateInRange =
         startDate && endDate
           ? marketingData >= new Date(startDate) &&
             marketingData <= new Date(endDate)
           : isStartDateValid;
-
-      const marketingDataVencimento = new Date(marketing.dataVencimento);
+  
+      // Verifica a data de vencimento principal ou nas parcelas
       const isDueDateValid = dueDate
-        ? marketingDataVencimento.toDateString() ===
-          new Date(dueDate).toDateString()
+        ? marketing.dataVencimento &&
+          new Date(marketing.dataVencimento).toDateString() ===
+            new Date(dueDate).toDateString() ||
+          (marketing.parcelasDetalhadas &&
+            marketing.parcelasDetalhadas.some(
+              (parcela) =>
+                parcela.dataVencimento &&
+                new Date(parcela.dataVencimento).toDateString() ===
+                  new Date(dueDate).toDateString()
+            ))
         : true;
-
+  
       const isSaleTypeValid = saleType ? marketing.contrato === saleType : true;
       const isSalesPersonValid = salesPerson
         ? marketing.operador === salesPerson
