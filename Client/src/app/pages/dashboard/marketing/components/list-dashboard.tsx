@@ -13,6 +13,9 @@ import {
   faBars,
   faMoneyCheckDollar,
   faTrashAlt,
+  faCheck,
+  faExclamation,
+  faList,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { ModalExcel } from "./modalExcel";
@@ -45,6 +48,13 @@ interface Marketing {
   monitoriaConcluidaYes: boolean;
   servicosConcluidos: boolean;
   createdBy: string;
+  cartaApresentacao: any;
+  certificado: any;
+  fotosAdicionadas: any;
+  telefone: any;
+  endereco: any;
+  redeSocial: any;
+  semRedeSocial: any;
 }
 
 interface venda {
@@ -82,6 +92,9 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
   const [activeSearchTerm, setActiveSearchTerm] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [syncLoading, setSyncLoading] = useState<boolean>(false);
+  const [showConcluidos, setShowConcluidos] = useState(false);
+  const [showIncompletos, setShowIncompletos] = useState(false);
+
   const [filters, setFilters] = useState({
     startDate: "",
     endDate: "",
@@ -346,6 +359,41 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
       .replace(/(\d{2})\.(\d{3})\.(\d{3})\/(\d{4})(\d)/, "$1.$2.$3/$4-$5")
       .substring(0, 18);
   };
+
+  const isChecklistConcluido = (marketing: Marketing) => {
+    return (
+      marketing.cartaApresentacao &&
+      marketing.certificado &&
+      marketing.fotosAdicionadas &&
+      marketing.telefone &&
+      marketing.endereco &&
+      (marketing.redeSocial || marketing.semRedeSocial)
+    );
+  };
+
+  const toggleConcluidos = () => {
+    setShowConcluidos(!showConcluidos);
+    setShowIncompletos(false); // evitar conflitos
+  };
+
+  const toggleIncompletos = () => {
+    setShowIncompletos(!showIncompletos);
+    setShowConcluidos(false);
+  };
+
+  const mostrarTodos = () => {
+    setShowConcluidos(false);
+    setShowIncompletos(false);
+  };
+
+  const filteredClientss = currentClients.filter((marketing) => {
+    const completo = isChecklistConcluido(marketing);
+
+    if (showConcluidos) return completo;
+    if (showIncompletos) return !completo;
+    return true;
+  });
+
   return (
     <div className="list-dashboard">
       {modalExcel && (
@@ -432,25 +480,31 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
               <FontAwesomeIcon icon={faFilter} color="#fff" />
             </button>
 
-            {showConcluidas ? (
-              <button
-                className="remove-btn"
-                onClick={toggleConcluido}
-                data-tooltip-id="tooltip-close"
-                data-tooltip-content="Fechar concluídas"
-              >
-                <FontAwesomeIcon icon={faX} color="#fff" />
-              </button>
-            ) : (
-              <button
-                className="clear-btn"
-                onClick={toggleConcluido}
-                data-tooltip-id="tooltip-view-all"
-                data-tooltip-content="Ver todas"
-              >
-                <FontAwesomeIcon icon={faBars} color="#fff" />
-              </button>
-            )}
+            <button
+              className="btn-concluidos"
+              onClick={toggleConcluidos}
+              data-tooltip-id="tooltip-concluidos"
+              data-tooltip-content={
+                showConcluidos
+                  ? "Fechar concluídos"
+                  : "Mostrar apenas concluídos"
+              }
+            >
+              <FontAwesomeIcon icon={faCheck} />
+            </button>
+
+            <button
+              className="btn-incompletos"
+              onClick={toggleIncompletos}
+              data-tooltip-id="tooltip-incompletos"
+              data-tooltip-content={
+                showIncompletos
+                  ? "Fechar incompletos"
+                  : "Mostrar apenas incompletos"
+              }
+            >
+              <FontAwesomeIcon icon={faExclamation} />
+            </button>
 
             <button
               className="planilha-btn"
@@ -479,7 +533,21 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                 />
               </button>
             )}
-
+            <Tooltip
+              id="tooltip-concluidos"
+              place="top"
+              className="custom-tooltip"
+            />
+            <Tooltip
+              id="tooltip-incompletos"
+              place="top"
+              className="custom-tooltip"
+            />
+            <Tooltip
+              id="tooltip-todos"
+              place="top"
+              className="custom-tooltip"
+            />
             {/* Tooltips */}
             <Tooltip id="tooltip-add" place="top" className="custom-tooltip" />
             <Tooltip
@@ -521,117 +589,142 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
               </tr>
             </thead>
             <tbody>
-              {currentClients.map((marketing) => (
-                <tr key={marketing.id}>
-                  <td
-                    className={
-                      selectedItems.has(marketing.id) ? "selected" : ""
-                    }
-                  >
-                    <input
-                      type="checkbox"
-                      checked={selectedItems.has(marketing.id)}
-                      onChange={() => handleCheckboxChange(marketing.id)}
-                      className="checkbox-table"
-                    />
-                  </td>
-                  <td
-                    className={
-                      selectedItems.has(marketing.id) ? "selected" : ""
-                    }
-                  >
-                    {marketing.cnpj
-                      ? formatCNPJ(marketing.cnpj)
-                      : marketing.cpf
-                      ? formatCPF(marketing.cpf)
-                      : marketing.cnpj || marketing.cpf}
-                  </td>
-                  <td
-                    className={`${
-                      selectedItems.has(marketing.id) ? "selected" : ""
-                    } ${
-                      marketing.servicosConcluidos ? "servicos-realizados" : ""
-                    }`}
-                  >
-                    {marketing.responsavel}
-                  </td>
-                  <td
-                    className={`${
-                      selectedItems.has(marketing.id) ? "selected" : ""
-                    } ${
-                      marketing.servicosConcluidos ? "servicos-realizados" : ""
-                    }`}
-                  >
-                    {marketing.email1 || marketing.email2}
-                  </td>
-                  <td
-                    className={`${
-                      selectedItems.has(marketing.id) ? "selected" : ""
-                    } ${
-                      marketing.servicosConcluidos ? "servicos-realizados" : ""
-                    }`}
-                  >
-                    {marketing.operador.replace(/\./g, " ")}
-                  </td>
-                  <td
-                    className={`${
-                      selectedItems.has(marketing.id) ? "selected" : ""
-                    } ${
-                      marketing.servicosConcluidos ? "servicos-realizados" : ""
-                    }`}
-                  >
-                    {marketing.nomeMonitor}
-                  </td>
-                  <td className="icon-container">
-                    <Link
-                      to={`/contrato/${marketing.id}`}
-                      data-tooltip-id="tooltip-view-contract"
-                      data-tooltip-content="Visualizar contrato"
-                    >
-                      <FontAwesomeIcon
-                        icon={faEye}
-                        className="icon-spacing text-dark"
-                      />
-                    </Link>
+              {filteredClientss.map((marketing) => {
+                const checklistCompleto = isChecklistConcluido(marketing);
+                const serviçoIniciado =
+                  checklistCompleto || marketing.servicosConcluidos;
 
-                    <Link
-                      to={`/fichamarketing/${marketing.id}`}
-                      data-tooltip-id="tooltip-marketing-file"
-                      data-tooltip-content="Ficha de marketing"
+                return (
+                  <tr
+                    key={marketing.id}
+                    className={`
+          ${
+            serviçoIniciado
+              ? checklistCompleto
+                ? "servicos-realizados"
+                : "servicos-incompletos"
+              : ""
+          }
+        `}
+                  >
+                    <td
+                      className={
+                        selectedItems.has(marketing.id) ? "selected" : ""
+                      }
                     >
-                      <FontAwesomeIcon
-                        icon={faTableList}
-                        className="icon-spacing text-dark"
+                      <input
+                        type="checkbox"
+                        checked={selectedItems.has(marketing.id)}
+                        onChange={() => handleCheckboxChange(marketing.id)}
+                        className="checkbox-table"
                       />
-                    </Link>
-                    <Link to={`/fichaboleto/${marketing.id}`}>
-                      <FontAwesomeIcon
-                        icon={faMoneyCheckDollar}
-                        className="icon-spacing text-dark"
-                        data-tooltip-id="tooltip-boleto"
-                        data-tooltip-content="Ver ficha de boleto"
-                      />
+                    </td>
+                    <td
+                      className={
+                        selectedItems.has(marketing.id) ? "selected" : ""
+                      }
+                    >
+                      {marketing.cnpj
+                        ? formatCNPJ(marketing.cnpj)
+                        : marketing.cpf
+                        ? formatCPF(marketing.cpf)
+                        : marketing.cnpj || marketing.cpf}
+                    </td>
+                    <td
+                      className={`${
+                        selectedItems.has(marketing.id) ? "selected" : ""
+                      } ${
+                        marketing.servicosConcluidos
+                          ? "servicos-realizados"
+                          : ""
+                      }`}
+                    >
+                      {marketing.responsavel}
+                    </td>
+                    <td
+                      className={`${
+                        selectedItems.has(marketing.id) ? "selected" : ""
+                      } ${
+                        marketing.servicosConcluidos
+                          ? "servicos-realizados"
+                          : ""
+                      }`}
+                    >
+                      {marketing.email1 || marketing.email2}
+                    </td>
+                    <td
+                      className={`${
+                        selectedItems.has(marketing.id) ? "selected" : ""
+                      } ${
+                        marketing.servicosConcluidos
+                          ? "servicos-realizados"
+                          : ""
+                      }`}
+                    >
+                      {marketing.operador.replace(/\./g, " ")}
+                    </td>
+                    <td
+                      className={`${
+                        selectedItems.has(marketing.id) ? "selected" : ""
+                      } ${
+                        marketing.servicosConcluidos
+                          ? "servicos-realizados"
+                          : ""
+                      }`}
+                    >
+                      {marketing.nomeMonitor}
+                    </td>
+                    <td className="icon-container">
+                      <Link
+                        to={`/contrato/${marketing.id}`}
+                        data-tooltip-id="tooltip-view-contract"
+                        data-tooltip-content="Visualizar contrato"
+                      >
+                        <FontAwesomeIcon
+                          icon={faEye}
+                          className="icon-spacing text-dark"
+                        />
+                      </Link>
+
+                      <Link
+                        to={`/fichamarketing/${marketing.id}`}
+                        data-tooltip-id="tooltip-marketing-file"
+                        data-tooltip-content="Ficha de marketing"
+                      >
+                        <FontAwesomeIcon
+                          icon={faTableList}
+                          className="icon-spacing text-dark"
+                        />
+                      </Link>
+                      <Link to={`/fichaboleto/${marketing.id}`}>
+                        <FontAwesomeIcon
+                          icon={faMoneyCheckDollar}
+                          className="icon-spacing text-dark"
+                          data-tooltip-id="tooltip-boleto"
+                          data-tooltip-content="Ver ficha de boleto"
+                        />
+                        <Tooltip
+                          id="tooltip-boleto"
+                          place="top"
+                          className="custom-tooltip"
+                        />
+                      </Link>
+
+                      {/* Tooltips */}
                       <Tooltip
-                        id="tooltip-boleto"
+                        id="tooltip-view-contract"
                         place="top"
                         className="custom-tooltip"
                       />
-                    </Link>
-
-                    {/* Tooltips */}
-                    <Tooltip
-                      id="tooltip-view-contract"
-                      place="top"
-                      className="custom-tooltip"
-                    />
-                    <Tooltip
-                      id="tooltip-marketing-file"
-                      place="top"
-                      className="custom-tooltip"
-                    />
-                  </td>
-                </tr>
-              ))}
+                      <Tooltip
+                        id="tooltip-marketing-file"
+                        place="top"
+                        className="custom-tooltip"
+                      />
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
 

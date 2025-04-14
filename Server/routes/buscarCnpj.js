@@ -23,7 +23,7 @@ router.get("/", async (req, res) => {
             `https://api.casadosdados.com.br/v4/cnpj/${cnpj}`,
             {
                 headers: {
-                    "api-key": process.env.API_TOKEN_CASAS_DOS_DADOS,
+                    "api-key": "116d8cf2ca9a3b046f22784c57e521ee28a096b90012baddacd5cc5301cea292f26b4c1f5cfffdd44349eba95e1eb9ffcba920c8be1a38a9b43f0ad8a39a51cd",
                 },
             }
         );

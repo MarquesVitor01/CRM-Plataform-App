@@ -183,6 +183,31 @@ tbody tr:last-of-type td {
     background-color: #112f92;
 }
 
+.btn-concluidos {
+    background-color: #007b9e;
+    color: white;
+    border: none;
+    border-radius: 15px;
+    padding: 10px 15px !important;
+    transition: 0.2s ease;
+  }
+  
+  .btn-concluidos:hover {
+    background-color: #006286;
+  }
+  
+  .btn-incompletos {
+    background-color: #ff6b35;
+    color: white;
+    border: none;
+    border-radius: 15px;
+    padding: 10px 20px !important;
+    transition: 0.2s ease;
+  }
+  
+  .btn-incompletos:hover {
+    background-color: #e65d2e;
+  }
 
 .remove-btn {
     background-color: #dc3545; 
@@ -373,5 +398,10 @@ tbody tr:last-of-type td {
 .servicos-realizados {
     border-bottom: 3px solid #12268d!important;
     color: #12268d!important;
+}
+  
+.servicos-incompletos {
+    border-bottom: 3px solid #d87a00!important;
+    color: #d87a00!important;
 }
   
