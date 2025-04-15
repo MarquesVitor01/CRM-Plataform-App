@@ -26,6 +26,7 @@ import { Cancelados } from "../pages/dashboard/cancelados/Cancelados";
 import { FichaCancelamento } from "../pages/Fichas/FichaCancelamento/FichaCancelamento";
 import { PosVenda } from "../pages/dashboard/pos_venda/PosVenda";
 import { FichaPosVenda } from "../pages/Fichas/FichaPosVenda/FichaPosVenda";
+import { Assinatura } from "../pages/Assinatura/Assinatura";
 
 
 export const LocalRoutes: React.FC = () => {
@@ -47,6 +48,7 @@ export const LocalRoutes: React.FC = () => {
           <Route path="/relatorio" element={<PrivateRoute element={<Relatorio />} />} />
           <Route path="/add" element={<PrivateRoute element={<Add />} />} />
           <Route path="/contrato/:id" element={<PrivateRoute element={<Contrato />} />} />
+          <Route path="/assinatura/:id" element={<PrivateRoute element={<Assinatura />} />} />
           <Route path="/editcontrato/:id" element={<PrivateRoute element={<EditContrato />} />} />
           <Route path="/comprovantes/:id" element={<PrivateRoute element={<Comprovantes />} />} />
           <Route path="/fichamonitoria/:id" element={<PrivateRoute element={<FichaMonitoria />} requiredCargo="monitoria" />} />
