@@ -31,8 +31,8 @@ export const Navbar = () => {
   const { nome, avatar, cargo, userId } = useAuth();
   const adminId = process.env.REACT_APP_ADMIN_USER_ID;
 
-  const supervisorId ="wWLmbV9TIUemmTkcMUSAQ4xGlju2"
-  const graziId ="nQwF9Uxh0lez9ETIOmP2gCgM0pf2"
+  const supervisorId = "wWLmbV9TIUemmTkcMUSAQ4xGlju2";
+  const graziId = "nQwF9Uxh0lez9ETIOmP2gCgM0pf2";
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
@@ -110,7 +110,9 @@ export const Navbar = () => {
                 <span>Home</span>
               </Link>
             </li>
-            {(cargo === "vendas" || userId === adminId || userId === graziId) && (
+            {(cargo === "vendas" ||
+              userId === adminId ||
+              userId === graziId) && (
               <li className="nav-item">
                 <Link
                   className="nav-link icon-tooltip"
@@ -122,21 +124,25 @@ export const Navbar = () => {
                 </Link>
               </li>
             )}
-            {(cargo !== "marketing" && (cargo === "vendas" || userId === adminId || userId === graziId)) && (
-  <li className="nav-item">
-    <Link
-      className="nav-link icon-tooltip"
-      to="/cancelados"
-      data-tooltip="Cancelados"
-    >
-      <FontAwesomeIcon icon={faBan} />
-      <span>Cancelados</span>
-    </Link>
-  </li>
-)}
+            {cargo !== "marketing" &&
+              (cargo === "vendas" ||
+                userId === adminId ||
+                userId === graziId) && (
+                <li className="nav-item">
+                  <Link
+                    className="nav-link icon-tooltip"
+                    to="/cancelados"
+                    data-tooltip="Cancelados"
+                  >
+                    <FontAwesomeIcon icon={faBan} />
+                    <span>Cancelados</span>
+                  </Link>
+                </li>
+              )}
 
-            
-            {(cargo === "monitoria" || userId === adminId || userId === supervisorId) && (
+            {(cargo === "monitoria" ||
+              userId === adminId ||
+              userId === supervisorId) && (
               <li className="nav-item">
                 <Link
                   className="nav-link icon-tooltip"
@@ -148,19 +154,10 @@ export const Navbar = () => {
                 </Link>
               </li>
             )}
-            {(cargo === "posVenda" || userId === adminId || userId === supervisorId) && (
-              <li className="nav-item">
-                <Link
-                  className="nav-link icon-tooltip"
-                  to="/pos-venda"
-                  data-tooltip="Pós Venda"
-                >
-                  <FontAwesomeIcon icon={faHeadset} />
-                  <span>Pós Venda</span>
-                </Link>
-              </li>
-            )}
-            {(cargo === "marketing" || userId === adminId || userId === supervisorId) && (
+
+            {(cargo === "marketing" ||
+              userId === adminId ||
+              userId === supervisorId) && (
               <li className="nav-item">
                 <Link
                   className="nav-link icon-tooltip"
@@ -172,7 +169,21 @@ export const Navbar = () => {
                 </Link>
               </li>
             )}
-            {(cargo === "financeiro" || userId === adminId ) && (
+            {(cargo === "posVenda" ||
+              userId === adminId ||
+              userId === supervisorId) && (
+              <li className="nav-item">
+                <Link
+                  className="nav-link icon-tooltip"
+                  to="/pos-venda"
+                  data-tooltip="Pós Venda"
+                >
+                  <FontAwesomeIcon icon={faHeadset} />
+                  <span>Pós Venda</span>
+                </Link>
+              </li>
+            )}
+            {(cargo === "financeiro" || userId === adminId) && (
               <li className="nav-item">
                 <Link
                   className="nav-link icon-tooltip"
@@ -184,7 +195,9 @@ export const Navbar = () => {
                 </Link>
               </li>
             )}
-            {(cargo === "cobranca" || userId === adminId || userId === supervisorId) && (
+            {(cargo === "cobranca" ||
+              userId === adminId ||
+              userId === supervisorId) && (
               <li className="nav-item">
                 <Link
                   className="nav-link icon-tooltip"
