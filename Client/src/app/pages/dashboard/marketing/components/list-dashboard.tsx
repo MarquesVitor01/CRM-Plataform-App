@@ -296,14 +296,16 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
   const handleSyncClients = async () => {
     setSyncLoading(true);
     try {
-      const vendasCollection = collection(db, "posVendas");
+      const vendasCollection = collection(db, "vendas");
       const vendasSnapshot = await getDocs(vendasCollection);
       const vendasList = vendasSnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       })) as venda[];
 
-      const syncedvendas = vendasList.filter((venda) => venda.posVendaConcuida);
+      const syncedvendas = vendasList.filter(
+        (venda) => venda.monitoriaConcluidaYes
+      );
 
       const batch = writeBatch(db);
       for (const venda of syncedvendas) {
@@ -597,15 +599,6 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                 return (
                   <tr
                     key={marketing.id}
-                    className={`
-          ${
-            serviçoIniciado
-              ? checklistCompleto
-                ? "servicos-realizados"
-                : "servicos-incompletos"
-              : ""
-          }
-        `}
                   >
                     <td
                       className={
@@ -620,9 +613,15 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                       />
                     </td>
                     <td
-                      className={
+                      className={`${
                         selectedItems.has(marketing.id) ? "selected" : ""
-                      }
+                      } ${
+                        serviçoIniciado
+                          ? checklistCompleto
+                            ? "servicos-realizados"
+                            : "servicos-incompletos"
+                          : ""
+                      }`}
                     >
                       {marketing.cnpj
                         ? formatCNPJ(marketing.cnpj)

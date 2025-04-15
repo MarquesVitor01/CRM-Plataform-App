@@ -261,7 +261,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({ setTotalVendas, se
               {currentClients.map((venda: Venda) => (
                 <tr key={venda.id}>
                   <td></td>
-                  <td className={`${selectedItems.has(venda.id) ? "selected" : ""}`}>
+                  <td className={`${selectedItems.has(venda.id) ? "selected" : ""} ${venda.monitoriaConcluidaYes ? "concluida" : ""}`}>
                     {venda.cnpj ? formatCNPJ(venda.cnpj) : venda.cpf ? formatCPF(venda.cpf) : venda.cnpj || venda.cpf}
                   </td>
                   <td className={`${selectedItems.has(venda.id) ? "selected" : ""} ${venda.monitoriaConcluidaYes ? "concluida" : ""}`}>

@@ -45,6 +45,7 @@ interface Marketing {
   rePagamento: string;
   account: string;
   parcelasDetalhadas?: Parcela[]; // Adicione esta linha
+  posVendaConcuida: boolean;
 }
 
 interface Sale {
@@ -64,8 +65,9 @@ interface Sale {
   dataPagamento: string;
   operadorSelecionado: { value: string; label: string } | null;
   account: string;
-  valorPago: string
-  parcelasDetalhadas?: Parcela[]; // Adicione esta linha
+  valorPago: string;
+  parcelasDetalhadas?: Parcela[];
+  posVendaConcuida: boolean;
 }
 
 interface ListDashboardProps {
@@ -160,26 +162,26 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
           marketing.operador.toLowerCase().includes(lowerCaseTerm));
       marketing.account &&
         marketing.account.toLowerCase().includes(lowerCaseTerm);
-  
+
       const { startDate, endDate, dueDate, saleType, salesPerson, saleGroup } =
         filters;
-  
+
       const marketingData = new Date(marketing.data);
       const isStartDateValid = startDate
         ? marketingData.toDateString() === new Date(startDate).toDateString()
         : true;
-  
+
       const isDateInRange =
         startDate && endDate
           ? marketingData >= new Date(startDate) &&
             marketingData <= new Date(endDate)
           : isStartDateValid;
-  
+
       // Verifica a data de vencimento principal ou nas parcelas
       const isDueDateValid = dueDate
-        ? marketing.dataVencimento &&
-          new Date(marketing.dataVencimento).toDateString() ===
-            new Date(dueDate).toDateString() ||
+        ? (marketing.dataVencimento &&
+            new Date(marketing.dataVencimento).toDateString() ===
+              new Date(dueDate).toDateString()) ||
           (marketing.parcelasDetalhadas &&
             marketing.parcelasDetalhadas.some(
               (parcela) =>
@@ -188,7 +190,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                   new Date(dueDate).toDateString()
             ))
         : true;
-  
+
       const isSaleTypeValid = saleType ? marketing.contrato === saleType : true;
       const isSalesPersonValid = salesPerson
         ? marketing.operador === salesPerson
@@ -241,14 +243,14 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
   const handleSyncClients = async () => {
     setSyncLoading(true);
     try {
-      const salesCollection = collection(db, "marketings");
+      const salesCollection = collection(db, "posVendas");
       const salesSnapshot = await getDocs(salesCollection);
       const salesList = salesSnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       })) as Sale[];
 
-      const syncedSales = salesList.filter((sale) => sale.servicosConcluidos);
+      const syncedSales = salesList.filter((sale) => sale.posVendaConcuida);
       const batch = writeBatch(db);
       for (const sale of syncedSales) {
         const marketingDocRef = doc(db, "financeiros", sale.id);
@@ -297,7 +299,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
       "encaminharCliente",
       "operadorSelecionado",
       "account",
-      "valorPago"
+      "valorPago",
     ];
 
     const filteredData = clientsToDownload.map((financeiro) => {
@@ -378,7 +380,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
               className="search-input"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              onKeyPress={(e) => e.key === "Enter" && handleSearchClick()} 
+              onKeyPress={(e) => e.key === "Enter" && handleSearchClick()}
             />
           </div>
           <div className="selects-container">
@@ -516,9 +518,13 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                 <tr key={marketing.id}>
                   <td></td>
                   <td
-                    className={
+                    className={`${
                       selectedItems.has(marketing.id) ? "selected" : ""
-                    }
+                    } ${
+                      marketing.encaminharCliente === "sim"
+                        ? "cobranca-encaminhado"
+                        : ""
+                    }`}
                   >
                     {marketing.cnpj
                       ? formatCNPJ(marketing.cnpj)
