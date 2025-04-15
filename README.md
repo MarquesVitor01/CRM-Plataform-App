@@ -1,8 +1,6 @@
 # CRM Inteligente 🚀  
 **Gestão Completa de Vendas com Automação e Setores Integrados**
 
-![CRM Dashboard]("https://img.freepik.com/vetores-gratis/ilustracao-de-crm-de-design-plano-desenhado-a-mao_23-2149383345.jpg?ga=GA1.1.1209274903.1711375421&semt=ais_hybrid&w=740")
-
 ---
 
 ## Sobre o Projeto
