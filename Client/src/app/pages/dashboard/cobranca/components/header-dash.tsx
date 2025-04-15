@@ -22,10 +22,6 @@ export const HeaderDash: React.FC<HeaderDashProps> = ({ totalFinanceiros }) => {
                   <h3>Total de Clientes</h3>
                   <p>{totalFinanceiros}</p> 
                 </div>
-                <div className="col-md-6 info-item">
-                  <h3>Total Realizados</h3>
-                  <p>1</p>
-                </div>
               </div>
             </div>
           </div>
