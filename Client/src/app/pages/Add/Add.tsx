@@ -40,6 +40,7 @@ export const Add = () => {
     estado: "",
     cidade: "",
     validade: "",
+    dataVigencia: "",
     observacoes: "",
     fixo: "",
     celular: "",
@@ -96,6 +97,36 @@ export const Add = () => {
     fetchSenha();
   }, []);
 
+
+  const calcularDataVigencia = (data: string, validade: string): string => {
+    const dataObj = new Date(data);
+    let mesesAdicionar = 0;
+  
+    switch (validade) {
+      case "Mensal":
+        mesesAdicionar = 1;
+        break;
+      case "Trimestral":
+        mesesAdicionar = 3;
+        break;
+      case "Semestral":
+        mesesAdicionar = 6;
+        break;
+      case "Anual":
+        mesesAdicionar = 12;
+        break;
+      default:
+        return "";
+    }
+  
+    dataObj.setMonth(dataObj.getMonth() + mesesAdicionar);
+  
+    const nomeMes = dataObj.toLocaleString("pt-BR", { month: "long" });
+    const ano = dataObj.getFullYear();
+  
+    return `${nomeMes.toLowerCase()}/${ano}`;
+  };
+  
   // Calcula as parcelas quando valorVenda, parcelas ou dataVencimento mudam
   useEffect(() => {
     const calcularParcelas = () => {
@@ -258,29 +289,39 @@ export const Add = () => {
     >
   ) => {
     const { name, value } = e.target;
-
+  
     setForm((prev) => {
       const updatedForm = { ...prev, [name]: value };
-
+  
       if (name === "email1" || name === "email2") {
         updatedForm[name] = value.replace(/\s+/g, "");
       }
-
+  
       if (name === "celular" || name === "whatsapp") {
         updatedForm[name] = value.replace(/\D/g, "").slice(0, 13);
       }
-
+  
       if (name === "fixo") {
         updatedForm[name] = value.replace(/\D/g, "").slice(0, 10);
       }
-
+  
       if ((name === "cpf" || name === "cnpj") && value.length >= 6) {
         updatedForm.numeroContrato = value.slice(0, 6);
       }
-
+  
+      // Atualiza a dataVigencia se 'validade' ou 'data' forem alterados
+      if (name === "validade" || name === "data") {
+        const validade = name === "validade" ? value : updatedForm.validade;
+        const data = name === "data" ? value : updatedForm.data;
+        if (validade && data) {
+          updatedForm.dataVigencia = calcularDataVigencia(data, validade);
+        }
+      }
+  
       return updatedForm;
     });
   };
+  
 
   const handleSelectChange = (selectedOption: any) => {
     setForm({ ...form, operador: selectedOption.value });
