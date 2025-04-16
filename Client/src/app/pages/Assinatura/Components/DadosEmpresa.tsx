@@ -66,46 +66,49 @@ export const DadosEmpresa: React.FC = () => {
   return (
     clientData && (
       <div className="dados-empresa p-4 my-1 upper">
-        <h5 className="text-center font-weight-bold">
+        <h6 className="text-center">
           AUTORIZAÇÃO PARA DIVULGAÇÃO DAS FOTOS E VIDEOS E ASSESSORIA <br /> EM
-          MARKETING DIGITAL REALIZADA PELA EMPRESA <br /> G MAPS CONTACT CENTER LTDA -
-          CNPJ: 40.407.753/0001-30
-        </h5>
+          MARKETING DIGITAL REALIZADA PELA EMPRESA <br /> G MAPS CONTACT CENTER
+          LTDA - CNPJ: 40.407.753/0001-30
+        </h6>
         <div className="info-assinatura">
-          <div className="col-md-6 mb-1">
-            <p>
-              <strong>NOME FANTASIA:</strong> {clientData.nomeFantasia}
-            </p>
-            <p>
-              <strong>CNPJ/CPF:</strong>{" "}
-              {clientData.cnpj
-                ? formatCNPJ(clientData.cnpj)
-                : clientData.cpf
-                ? formatCPF(clientData.cpf)
-                : ""}
-            </p>
-            <p>
-              <strong>CEP:</strong> {clientData.cep}
-            </p>
-            <div className="">
-              <p>
-                <strong>NOME DO RESPONSÁVEL:</strong> {clientData.responsavel}
-              </p>
-            </div>
-            <div className="">
-              <p>
-                <strong>CARGO:</strong> {clientData.cargo}
-              </p>
-            </div>
-            <p>
-              <strong>TELEFONE:</strong>{" "}
-              {clientData.fixo ? formatFixo(clientData.fixo) : ""}
-            </p>
-            <p>
-              <strong>CELULAR:</strong>{" "}
-              {clientData.celular ? formatCelular(clientData.celular) : ""}
-            </p>
-          </div>
+          <span>
+            <strong>DATA DA ADESÃO:</strong>{" "}
+            {new Date(clientData.data + "T00:00:00").toLocaleDateString(
+              "pt-BR"
+            )}
+          </span>
+          <span>
+            <strong>EU: </strong>
+            <span>{clientData.responsavel}</span>
+          </span>
+          <span>
+            <strong>RESPONSÁVEL PELA EMPRESA:</strong> {clientData.nomeFantasia}
+          </span>
+          <span>
+            {clientData.cnpj ? (
+              <>
+                <strong>CNPJ: </strong>
+                <span>{formatCNPJ(clientData.cnpj)}</span>
+              </>
+            ) : (
+              <>
+                <strong>CPF: </strong>
+                <span>{formatCPF(clientData.cpf)}</span>
+              </>
+            )}
+          </span>
+
+          <span>
+            <strong>TELEFONE:</strong> {formatCelular(clientData.celular)}
+          </span>
+          <span>
+            <strong>CARGO:</strong> {clientData.cargo}
+          </span>
+          <small>
+            ESCANEIE O QRCODE PARA VERIFICAR E CONFERIR A PÁGINA OU CLIQUE NO
+            LINK.
+          </small>
         </div>
       </div>
     )
