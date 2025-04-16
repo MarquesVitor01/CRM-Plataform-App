@@ -40,7 +40,7 @@ export const Header: React.FC = () => {
 
   return (
     clientData && (
-      <div className="header-assinatura text-center upper">
+      <div className="header-assinatura text-center">
         <img
           src="/img/logo_contrato_maps.jpg"
           alt="Logo"

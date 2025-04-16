@@ -46,11 +46,18 @@ export const Infoqr: React.FC = () => {
     clientData && (
       <div className="bonus text-center">
         <div className="qrcode-container">
-            {clientData.linkGoogle && (
-              <div className="qrcode-assinatura">
-                <QRCodeSVG value={clientData.linkGoogle} size={90} />
-              </div>
-            )}
+          {clientData.linkGoogle && (
+            <div className="qrcode-assinatura">
+              <QRCodeSVG value={clientData.linkGoogle} size={90} />
+              <p>
+                LINK DA PÁGINA:{" "}
+                <a href={clientData.linkGoogle} target="_blank" rel="noopener noreferrer">
+  {clientData.linkGoogle}
+</a>
+
+              </p>{" "}
+            </div>
+          )}
         </div>
       </div>
     )
