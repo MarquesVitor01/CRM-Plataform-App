@@ -102,27 +102,33 @@ export const Assinatura: FC = () => {
       setDesconto("");
       return;
     }
+
     while (valor.length < 3) {
       valor = "0" + valor;
     }
+
     const centavos = valor.slice(-2);
     let reais = valor.slice(0, -2).replace(/^0+/, "");
 
     if (reais === "") reais = "0";
-    const reaisFormatado = reais.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
+    const reaisFormatado = reais.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     const formatado = `${reaisFormatado},${centavos}`;
+
     setDesconto(formatado);
   };
 
   const handleAtualizarDesconto = async () => {
     if (id && desconto) {
       const docRef = doc(db, "vendas", id);
+
+      const valorLimpo = desconto.replace(/\D/g, "");
+
       try {
         await updateDoc(docRef, {
-          desconto: desconto,
+          desconto: valorLimpo,
         });
-        setDescontoAtualizado(desconto);
+        setDescontoAtualizado(desconto); 
         console.log("Desconto atualizado no Firestore");
         toast.success(`Desconto aplicado de R$${desconto}`);
       } catch (error) {
@@ -161,7 +167,7 @@ export const Assinatura: FC = () => {
                 id="desconto"
                 className="form-control w-25 mx-auto"
                 placeholder="Ex: 1500 para R$ 15,00"
-                value={desconto}
+                value={formatValor(desconto)}
                 onChange={handleDescontoChange}
                 style={{
                   maxWidth: "120px",
@@ -183,10 +189,12 @@ export const Assinatura: FC = () => {
         </div>
         <div className="btns-sections my-3" id="btn-baixar-pdf">
           <button className="btn btn-danger" onClick={downloadPDF}>
-            <FontAwesomeIcon icon={faFilePdf} /><span className="ms-1">Baixar PDF</span> 
+            <FontAwesomeIcon icon={faFilePdf} />
+            <span className="ms-1">Baixar PDF</span>
           </button>
           <button className="btn btn-primary" onClick={handleAtualizarDesconto}>
-            <FontAwesomeIcon icon={faFloppyDisk} /> <span className="ms-1">Atualizar</span> 
+            <FontAwesomeIcon icon={faFloppyDisk} />{" "}
+            <span className="ms-1">Atualizar</span>
           </button>
         </div>
       </div>
