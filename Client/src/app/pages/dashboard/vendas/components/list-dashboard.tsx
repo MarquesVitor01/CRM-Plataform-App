@@ -559,20 +559,6 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                       />
                     </Link>
 
-                    <Link to={`/assinatura/${venda.id}`}>
-                      <FontAwesomeIcon
-                        icon={faPrint}
-                        className="icon-spacing text-dark"
-                        data-tooltip-id="tooltip-assinatura"
-                        data-tooltip-content="Visualizar Assinatura"
-                      />
-                      <Tooltip
-                        id="tooltip-assinatura"
-                        place="top"
-                        className="custom-tooltip"
-                      />
-                    </Link>
-
                     <Link to={`/fichaboleto/${venda.id}`}>
                       <FontAwesomeIcon
                         icon={faMoneyCheckDollar}

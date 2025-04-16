@@ -71,7 +71,7 @@ export const DadosEmpresa: React.FC = () => {
           MARKETING DIGITAL REALIZADA PELA EMPRESA <br /> G MAPS CONTACT CENTER
           LTDA - CNPJ: 40.407.753/0001-30
         </h6>
-        <div className="info-assinatura">
+        <div className="info-assinatura pt-3">
           <span>
             <strong>DATA DA ADESÃO:</strong>{" "}
             {new Date(clientData.data + "T00:00:00").toLocaleDateString(

@@ -14,6 +14,7 @@ import {
   faMoneyCheckDollar,
   faTrashAlt,
   faBalanceScaleLeft,
+  faPrint,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { ModalExcel } from "./modalExcel";
@@ -611,6 +612,19 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                       <FontAwesomeIcon
                         icon={faTableList}
                         className="icon-spacing text-dark"
+                      />
+                    </Link>
+                    <Link to={`/assinatura/${posVenda.id}`}>
+                      <FontAwesomeIcon
+                        icon={faPrint}
+                        className="icon-spacing text-dark"
+                        data-tooltip-id="tooltip-assinatura"
+                        data-tooltip-content="Visualizar Assinatura"
+                      />
+                      <Tooltip
+                        id="tooltip-assinatura"
+                        place="top"
+                        className="custom-tooltip"
                       />
                     </Link>
                     <Link to={`/fichaboleto/${posVenda.id}`}>

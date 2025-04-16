@@ -138,6 +138,7 @@ export const Assinatura: FC = () => {
   };
 
   return (
+    clientData && (
     <div className="bg-assinatura">
       <div className="bg-infos-contrato" id="assinatura">
         <Header />
@@ -145,15 +146,15 @@ export const Assinatura: FC = () => {
         <Infoqr />
 
         <div>
-          <p className="text-center">
+          <p className="text-uppercase text-center">
             <FontAwesomeIcon icon={faCheck} /> DECLARO TER RECEBIDO ATRAVÉS DA
             LIGAÇÃO TODAS INFORMAÇÕES REFERENTES AO MEU PLANO CONTRATADO
             CONFORME GRAVAÇÃO DO ATENDIMENTO QUE MEU PLANO ESCOLHIDO É O ANUAL
-            COM VIGÊNCIA ATÉ MAIO / 2026, E QUE O VALOR É DE
-            {/* <b> R$  {formatValor(clientData.valorVenda)}</b> CUJO VENCIMENTO FICOU
+            COM VIGÊNCIA ATÉ {clientData.dataVigencia}, E QUE O VALOR É DE
+            <b> R$  {formatValor(clientData.valorVenda)}</b> CUJO VENCIMENTO FICOU
         PARA O DIA{" "}
         <b>
-          {new Date(clientData.dataVencimento + "T00:00:00").toLocaleDateString("pt-BR")}</b> */}
+          {new Date(clientData.dataVencimento + "T00:00:00").toLocaleDateString("pt-BR")}</b>
             .
           </p>
 
@@ -180,7 +181,7 @@ export const Assinatura: FC = () => {
             </span>
           </p>
 
-          <div className="assinatura-section">
+          <div className="assinatura-section pt-3">
             <p className="text-center">
               <strong>Assinatura:</strong>
             </p>
@@ -201,5 +202,6 @@ export const Assinatura: FC = () => {
 
       <ToastContainer />
     </div>
+    )
   );
 };
