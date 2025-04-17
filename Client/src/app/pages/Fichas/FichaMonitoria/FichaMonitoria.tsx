@@ -10,6 +10,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "googleapis/build/src/apis/storage";
 import { storage as firebaseStorage } from "../../../firebase/firebaseConfig";
+import ConfirmModal from "../components/ConfirmModal";
 interface ClientData {
   googleInfoYes: boolean;
   googleInfoNo: boolean;
@@ -45,6 +46,9 @@ export const FichaMonitoria: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [clientData, setClientData] = useState<ClientData | null>(null);
   const [step, setStep] = useState(0);
+  const [showModalConfirmAdd, setShowModalConfirmAdd] = useState(false);
+  const [pendingMarketingCopy, setPendingMarketingCopy] = useState(false);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -125,35 +129,8 @@ export const FichaMonitoria: React.FC = () => {
       const marketingSnap = await getDoc(marketingRef);
 
       if (marketingSnap.exists()) {
-        const confirmAdd = window.confirm(
-          "Este cliente já existe na coleção 'marketings'. Deseja adicionar como uma nova cópia?"
-        );
-
-        if (confirmAdd) {
-          // Encontra o próximo número de cópia disponível
-          let copyNumber = 1;
-          let newId = `${id}_copia${copyNumber}`;
-          let newDocRef = doc(db, "marketings", newId);
-
-          // Verifica se a cópia já existe
-          while ((await getDoc(newDocRef)).exists()) {
-            copyNumber++;
-            newId = `${id}_copia${copyNumber}`;
-            newDocRef = doc(db, "marketings", newId);
-          }
-
-          // Adiciona o documento com o novo ID
-          await setDoc(newDocRef, {
-            ...clientData,
-            origem: "monitoria",
-            dataAdicionado: new Date().toISOString(),
-            originalId: id, // Mantém referência ao ID original
-            isCopy: true,
-            copyNumber: copyNumber,
-          });
-
-          console.log(`Cliente adicionado como cópia com ID: ${newId}`);
-        }
+        setPendingMarketingCopy(true); // ativa a lógica pendente
+        setShowModalConfirmAdd(true); // mostra o modal
       } else {
         // Se não existe, adiciona normalmente
         await setDoc(marketingRef, {
@@ -167,6 +144,42 @@ export const FichaMonitoria: React.FC = () => {
       console.error("Erro ao adicionar cliente aos marketings: ", error);
     }
   };
+
+  const handleConfirmAddDuplicate = async () => {
+    setShowModalConfirmAdd(false);
+
+    try {
+      let copyNumber = 1;
+      let newId = `${id}_copia${copyNumber}`;
+      let newDocRef = doc(db, "marketings", newId);
+
+      while ((await getDoc(newDocRef)).exists()) {
+        copyNumber++;
+        newId = `${id}_copia${copyNumber}`;
+        newDocRef = doc(db, "marketings", newId);
+      }
+
+      await setDoc(newDocRef, {
+        ...clientData,
+        origem: "monitoria",
+        dataAdicionado: new Date().toISOString(),
+        originalId: id,
+        isCopy: true,
+        copyNumber: copyNumber,
+      });
+
+      console.log(`Cliente adicionado como cópia com ID: ${newId}`);
+      setPendingMarketingCopy(false);
+    } catch (error) {
+      console.error("Erro ao duplicar cliente em marketing: ", error);
+    }
+  };
+
+  const handleCancelAddDuplicate = () => {
+    setShowModalConfirmAdd(false);
+    setPendingMarketingCopy(false);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     updateClientData();
@@ -258,6 +271,13 @@ export const FichaMonitoria: React.FC = () => {
           )}
         </div>
       </form>
+      <ConfirmModal
+        show={showModalConfirmAdd}
+        title="Duplicar cliente"
+        message="Este cliente já está na lista de markeging. Deseja fazer uma cópia dele?"
+        onCancel={handleCancelAddDuplicate}
+        onConfirm={handleConfirmAddDuplicate}
+      />
     </div>
   );
 };

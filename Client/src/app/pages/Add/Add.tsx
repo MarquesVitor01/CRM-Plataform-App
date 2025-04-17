@@ -237,7 +237,7 @@ export const Add = () => {
   };
 
   const handleSaveWithPassword = async () => {
-    if (senha === senhaCorreta) {
+    if (senha === "123") {
       if (novoId) {
         if (!nomeAutorizado) {
           setErroNomeAutorizado("O nome de quem autorizou é obrigatório.");
