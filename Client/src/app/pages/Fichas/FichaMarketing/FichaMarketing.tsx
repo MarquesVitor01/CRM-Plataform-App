@@ -5,15 +5,28 @@ import "./Styles/FichaMarketing.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFilePdf, faLeftLong } from "@fortawesome/free-solid-svg-icons";
 import { useParams } from "react-router-dom";
-import { collection, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  setDoc,
+  updateDoc,
+  where,
+} from "firebase/firestore";
 import { db } from "../../../firebase/firebaseConfig";
 import axios from "axios";
 import { jsPDF } from "jspdf";
+import ConfirmModal from "../components/ConfirmModal";
 
 export const FichaMarketing: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [clientData, setClientData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [showModalConfirm, setShowModalConfirm] = useState(false);
+  const [pendingData, setPendingData] = useState<any>(null);
+  const [pendingId, setPendingId] = useState<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -52,48 +65,54 @@ export const FichaMarketing: React.FC = () => {
           const posVendasSnap = await getDoc(posVendasRef);
 
           if (!posVendasSnap.exists()) {
-            // Se não existir, adiciona com o ID original
             await setDoc(posVendasRef, {
               ...data,
               dataAdicionado: new Date().toISOString(),
             });
             console.log("Cliente adicionado à coleção posVendas!");
+            navigate("/marketing");
           } else {
-            // Se já existir, exibe confirmação e duplica com novo ID
-            const confirmDuplicate = window.confirm(
-              "Este cliente já está na coleção pós-vendas. Deseja criar uma cópia com novo ID?"
-            );
-
-            if (confirmDuplicate) {
-              // Busca todas as cópias com prefixo id_copia
-              const querySnapshot = await getDocs(
-                query(
-                  collection(db, "posVendas"),
-                  where("__name__", ">=", `${id}_copia`),
-                  where("__name__", "<", `${id}_copia~`)
-                )
-              );
-
-              const copiaCount = querySnapshot.size;
-              const newId = `${id}_copia${copiaCount + 1}`;
-
-              await setDoc(doc(db, "posVendas", newId), {
-                ...data,
-                dataAdicionado: new Date().toISOString(),
-                idOriginal: id,
-              });
-
-              console.log(`Cópia criada com ID: ${newId}`);
-            } else {
-              console.log("Nenhuma ação tomada.");
-            }
+            setPendingData(data);
+            setPendingId(id);
+            setShowModalConfirm(true);
           }
+        } else {
+          navigate("/marketing");
         }
-
-        navigate("/marketing");
       }
     } catch (error) {
       console.error("Erro ao atualizar os dados de marketing: ", error);
+    }
+  };
+
+  const handleConfirmDuplicate = async () => {
+    if (!pendingData || !pendingId) return;
+
+    try {
+      const querySnapshot = await getDocs(
+        query(
+          collection(db, "posVendas"),
+          where("__name__", ">=", `${pendingId}_copia`),
+          where("__name__", "<", `${pendingId}_copia~`)
+        )
+      );
+
+      const copiaCount = querySnapshot.size;
+      const newId = `${pendingId}_copia${copiaCount + 1}`;
+
+      await setDoc(doc(db, "posVendas", newId), {
+        ...pendingData,
+        dataAdicionado: new Date().toISOString(),
+        idOriginal: pendingId,
+      });
+
+      console.log(`Cópia criada com ID: ${newId}`);
+      setShowModalConfirm(false);
+      setPendingData(null);
+      setPendingId(null);
+      navigate("/marketing");
+    } catch (error) {
+      console.error("Erro ao criar cópia na coleção posVendas:", error);
     }
   };
 
@@ -173,6 +192,13 @@ export const FichaMarketing: React.FC = () => {
             </div>
           </div>
         </div>
+          <ConfirmModal
+          show={showModalConfirm}
+          title="Duplicar cliente"
+          message="Este cliente já está na lista de pós-vendas. Deseja fazer uma cópia dele?"
+          onCancel={() => setShowModalConfirm(false)}
+          onConfirm={handleConfirmDuplicate}
+        />
       </div>
     )
   );

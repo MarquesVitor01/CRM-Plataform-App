@@ -9,11 +9,14 @@ import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../../firebase/firebaseConfig";
 import axios from "axios";
 import { jsPDF } from "jspdf";
+import ConfirmModal from "../components/ConfirmModal";
 
 export const FichaPosVenda: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [clientData, setClientData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [showModalConfirm, setShowModalConfirm] = useState(false);
+  const [pendingFinanceiroData, setPendingFinanceiroData] = useState<any>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -65,41 +68,41 @@ export const FichaPosVenda: React.FC = () => {
       const financeirosSnap = await getDoc(financeirosRef);
 
       if (financeirosSnap.exists()) {
-        // Se já existe, pede confirmação para adicionar como cópia
-        const confirmacao = window.confirm(
-          "Este cliente já existe na coleção financeiros. Deseja adicionar como uma nova cópia?"
-        );
-
-        if (confirmacao) {
-          // Encontra o próximo número de cópia disponível
-          let copyNumber = 1;
-          let newId = `${id}_copia${copyNumber}`;
-          let newDocRef = doc(db, "financeiros", newId);
-
-          while ((await getDoc(newDocRef)).exists()) {
-            copyNumber++;
-            newId = `${id}_copia${copyNumber}`;
-            newDocRef = doc(db, "financeiros", newId);
-          }
-
-          // Adiciona o documento com o novo ID
-          await setDoc(newDocRef, {
-            ...data,
-            originalId: id, // Mantém referência ao ID original
-            isCopy: true,
-            copyNumber: copyNumber,
-          });
-
-          console.log(`Cliente adicionado como cópia com ID: ${newId}`);
-        }
+        // Em vez de window.confirm, mostramos o modal
+        setPendingFinanceiroData(data);
+        setShowModalConfirm(true);
       } else {
-        // Se não existe, adiciona normalmente
         await setDoc(financeirosRef, data);
         console.log("Cliente adicionado à coleção financeiros");
       }
     } catch (error) {
       console.error("Erro ao adicionar cliente aos financeiros: ", error);
     }
+  };
+
+  const handleConfirmDuplicateFinanceiro = async () => {
+    if (!pendingFinanceiroData) return;
+
+    let copyNumber = 1;
+    let newId = `${id}_copia${copyNumber}`;
+    let newDocRef = doc(db, "financeiros", newId);
+
+    while ((await getDoc(newDocRef)).exists()) {
+      copyNumber++;
+      newId = `${id}_copia${copyNumber}`;
+      newDocRef = doc(db, "financeiros", newId);
+    }
+
+    await setDoc(newDocRef, {
+      ...pendingFinanceiroData,
+      originalId: id,
+      isCopy: true,
+      copyNumber: copyNumber,
+    });
+
+    console.log(`Cliente adicionado como cópia com ID: ${newId}`);
+    setShowModalConfirm(false);
+    setPendingFinanceiroData(null);
   };
 
   const sairFicha = () => {
@@ -438,6 +441,16 @@ Em caso de dúvidas, estou a disposição ou entre em contato com a central de a
             </div>
           </div>
         </div>
+        <ConfirmModal
+          show={showModalConfirm}
+          title="Duplicar Cliente"
+          onCancel={() => {
+            setShowModalConfirm(false);
+            setPendingFinanceiroData(null);
+          }}
+          onConfirm={handleConfirmDuplicateFinanceiro}
+          message="Este cliente já está na lista de financeiro. Deseja fazer uma cópia dele?"
+        />
       </div>
     )
   );
