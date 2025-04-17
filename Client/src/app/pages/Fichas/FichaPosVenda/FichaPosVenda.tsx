@@ -5,7 +5,7 @@ import "./Styles/FichaMarketing.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFilePdf, faLeftLong } from "@fortawesome/free-solid-svg-icons";
 import { useParams } from "react-router-dom";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../../firebase/firebaseConfig";
 import axios from "axios";
 import { jsPDF } from "jspdf";
@@ -46,10 +46,59 @@ export const FichaPosVenda: React.FC = () => {
         await updateDoc(docRef, data);
         setClientData(data);
         console.log("Dados atualizados com sucesso!");
+
+        // Verifica se a venda foi concluída
+        if (data.posVendaConcuida) {
+          await adicionarClienteFinanceiro(data);
+        }
+
         navigate("/pos-venda");
       }
     } catch (error) {
       console.error("Erro ao atualizar os dados de marketing: ", error);
+    }
+  };
+
+  const adicionarClienteFinanceiro = async (data: any) => {
+    try {
+      const financeirosRef = doc(db, "financeiros", id!);
+      const financeirosSnap = await getDoc(financeirosRef);
+
+      if (financeirosSnap.exists()) {
+        // Se já existe, pede confirmação para adicionar como cópia
+        const confirmacao = window.confirm(
+          "Este cliente já existe na coleção financeiros. Deseja adicionar como uma nova cópia?"
+        );
+
+        if (confirmacao) {
+          // Encontra o próximo número de cópia disponível
+          let copyNumber = 1;
+          let newId = `${id}_copia${copyNumber}`;
+          let newDocRef = doc(db, "financeiros", newId);
+
+          while ((await getDoc(newDocRef)).exists()) {
+            copyNumber++;
+            newId = `${id}_copia${copyNumber}`;
+            newDocRef = doc(db, "financeiros", newId);
+          }
+
+          // Adiciona o documento com o novo ID
+          await setDoc(newDocRef, {
+            ...data,
+            originalId: id, // Mantém referência ao ID original
+            isCopy: true,
+            copyNumber: copyNumber,
+          });
+
+          console.log(`Cliente adicionado como cópia com ID: ${newId}`);
+        }
+      } else {
+        // Se não existe, adiciona normalmente
+        await setDoc(financeirosRef, data);
+        console.log("Cliente adicionado à coleção financeiros");
+      }
+    } catch (error) {
+      console.error("Erro ao adicionar cliente aos financeiros: ", error);
     }
   };
 

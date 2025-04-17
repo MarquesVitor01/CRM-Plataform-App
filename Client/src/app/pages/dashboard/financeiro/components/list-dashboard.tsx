@@ -442,7 +442,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
               <FontAwesomeIcon icon={faDownload} color="#fff" />
             </button>
 
-            <button
+            {/* <button
               className="remove-btn"
               onClick={handleSyncClients}
               disabled={syncLoading}
@@ -456,7 +456,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
               ) : (
                 <FontAwesomeIcon icon={faSync} color="#fff" />
               )}
-            </button>
+            </button> */}
 
             {/* Tooltips */}
             <Tooltip

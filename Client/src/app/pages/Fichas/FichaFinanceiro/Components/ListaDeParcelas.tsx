@@ -27,19 +27,18 @@ const ListaDeParcelas: React.FC<ListaDeParcelasProps> = ({
     index: number
   ) => {
     const input = e.target.value;
-    const somenteNumeros = input.replace(/\D/g, ""); 
-    handleParcelaChange(index, "valorPago", somenteNumeros); 
+    const onlyNumbers = input.replace(/\D/g, "");
+    handleParcelaChange(index, "valorPago", onlyNumbers);
   };
-  
+
   const formatarValorMonetario = (valor: string) => {
-    const numero = Number(valor) / 100;
-    return numero.toLocaleString("pt-BR", {
+    if (!valor) return "0,00";
+    const number = parseInt(valor, 10) / 100;
+    return number.toLocaleString("pt-BR", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     });
   };
-  
-  
 
   return (
     <div className="scroll-container">
@@ -85,17 +84,19 @@ const ListaDeParcelas: React.FC<ListaDeParcelasProps> = ({
                   />
                 </div>
                 <div className="mb-2">
-  <label className="form-label">Link do Comprovante (opcional):</label>
-  <input
-    type="text"
-    className="form-control"
-    placeholder="Cole aqui o link do comprovante"
-    value={parcela.link || ""}
-    onChange={(e) =>
-      handleParcelaChange(index, "link", e.target.value)
-    }
-  />
-</div>
+                  <label className="form-label">
+                    Link do Comprovante (opcional):
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Cole aqui o link do comprovante"
+                    value={parcela.link || ""}
+                    onChange={(e) =>
+                      handleParcelaChange(index, "link", e.target.value)
+                    }
+                  />
+                </div>
               </div>
             </div>
           </div>
