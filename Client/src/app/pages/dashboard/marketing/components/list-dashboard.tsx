@@ -508,7 +508,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
               <FontAwesomeIcon icon={faExclamation} />
             </button>
 
-            <button
+            {/* <button
               className="planilha-btn"
               onClick={handleSyncClients}
               disabled={syncLoading}
@@ -518,7 +518,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
               }
             >
               <FontAwesomeIcon icon={faSync} color="#fff" spin={syncLoading} />
-            </button>
+            </button> */}
 
             {userId === adminUserId && (
               <button

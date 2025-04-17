@@ -41,13 +41,9 @@ export const FinanceiroForm: React.FC<FinanceiroFormProps> = ({
     parcelasDetalhadas: [],
   });
 
-
   const [parcelas, setParcelas] = useState<ParcelaDetalhada[]>([]);
-
-  const cobranca = [
-    { value: "miguel", label: "Miguel" },
-    { value: "isa", label: "Isa" },
-  ];
+  const [isValorPagoManuallyEdited, setIsValorPagoManuallyEdited] =
+    useState(false);
   const handleParcelaChange = (
     index: number,
     field: "valorPago" | "dataPagamento" | "link",
@@ -82,18 +78,24 @@ export const FinanceiroForm: React.FC<FinanceiroFormProps> = ({
   }, [initialForm]);
 
   useEffect(() => {
-    const total = parcelas.reduce((acc, parcela) => {
-      const valor = parseFloat(parcela.valorPago || "0");
-      return acc + (isNaN(valor) ? 0 : valor);
-    }, 0);
-    setForm((prevForm) => ({
-      ...prevForm,
-      valorPago: (Number(total) / 100).toLocaleString("pt-BR", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      }),
-    }));
-  }, [parcelas]);
+    if (!isValorPagoManuallyEdited) {
+      // Se não houver parcelas, não calculamos automaticamente
+      if (!parcelas || parcelas.length === 0) return;
+
+      const total = parcelas.reduce((acc, parcela) => {
+        const valor = parseFloat(parcela.valorPago || "0");
+        return acc + (isNaN(valor) ? 0 : valor);
+      }, 0);
+
+      setForm((prevForm) => ({
+        ...prevForm,
+        valorPago: (Number(total) / 100).toLocaleString("pt-BR", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }),
+      }));
+    }
+  }, [parcelas, isValorPagoManuallyEdited]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -107,20 +109,90 @@ export const FinanceiroForm: React.FC<FinanceiroFormProps> = ({
     }));
   };
 
-  // const handleSelectChange = (selectedOption: { value: string; label: string } | null) => {
-  //   setForm((prevForm) => ({
-  //     ...prevForm,
-  //     operadorSelecionado: selectedOption,
-  //   }));
-  // };
+  const formatDisplayValue = (value: string): string => {
+    const onlyNumbers = value.replace(/\D/g, "");
+    const number = parseInt(onlyNumbers || "0", 10);
+    return (number / 100).toLocaleString("pt-BR", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  };
 
-  // Trata as alterações nos campos de cada parcela
+  const parseToPureNumber = (value: string): string => {
+    return value.replace(/\D/g, "") || "0";
+  };
+
+  const handleValorPagoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    const onlyNumbers = value.replace(/\D/g, "");
+
+    // Atualiza o estado com o valor formatado para exibição
+    setForm((prevForm) => ({
+      ...prevForm,
+      valorPago: formatDisplayValue(onlyNumbers),
+    }));
+    setIsValorPagoManuallyEdited(true);
+  };
+
+  // Substituir a função handleValorPagoBlur
+  const handleValorPagoBlur = () => {
+    if (form.valorPago) {
+      setForm((prevForm) => ({
+        ...prevForm,
+        valorPago: formatDisplayValue(form.valorPago),
+      }));
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(form);
+
+    const formToSubmit: Form = {
+      ...form,
+      valorPago: parseToPureNumber(form.valorPago), // Envia apenas números
+    };
+
+    if (!form.parcelasDetalhadas || form.parcelasDetalhadas.length === 0) {
+      delete formToSubmit.parcelasDetalhadas;
+    }
+
+    onSubmit(formToSubmit);
   };
 
+  // Atualizar o useEffect que carrega dados iniciais
+  useEffect(() => {
+    if (initialForm) {
+      const formData = { ...initialForm };
+
+      // Converte valorPago para formato de exibição
+      if (formData.valorPago) {
+        formData.valorPago = formatDisplayValue(formData.valorPago);
+      }
+
+      if (
+        !formData.parcelasDetalhadas ||
+        formData.parcelasDetalhadas.length === 0
+      ) {
+        delete formData.parcelasDetalhadas;
+      }
+
+      setForm(formData);
+
+      if (
+        initialForm.parcelasDetalhadas &&
+        initialForm.parcelasDetalhadas.length > 0
+      ) {
+        const parcelasIniciais = initialForm.parcelasDetalhadas.map((p) => ({
+          ...p,
+          valorPago: p.valorPago || "",
+          dataPagamento: p.dataPagamento || "",
+        }));
+        setParcelas(parcelasIniciais);
+      } else {
+        setParcelas([]);
+      }
+    }
+  }, [initialForm]);
   return (
     <div className="row gx-4 gy-4">
       <div className="col-12 col-lg-6">
@@ -133,10 +205,19 @@ export const FinanceiroForm: React.FC<FinanceiroFormProps> = ({
               type="text"
               name="valorPago"
               id="valorInput"
-              className="form-control mb-3"
+              className="form-control"
               value={form.valorPago}
-              readOnly
+              onChange={handleValorPagoChange}
+              onBlur={handleValorPagoBlur}
             />
+            {/* <button
+              type="button"
+              className="btn btn-outline-secondary"
+              onClick={resetToParcelasSum}
+              title="Usar soma das parcelas"
+            >
+              <i className="bi bi-calculator"></i>
+            </button> */}
 
             <label htmlFor="rePagamento" className="form-label">
               O cliente realizou o pagamento?

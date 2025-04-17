@@ -52,8 +52,8 @@ export const LocalRoutes: React.FC = () => {
           <Route path="/editcontrato/:id" element={<PrivateRoute element={<EditContrato />} />} />
           <Route path="/comprovantes/:id" element={<PrivateRoute element={<Comprovantes />} />} />
           <Route path="/fichamonitoria/:id" element={<PrivateRoute element={<FichaMonitoria />} requiredCargo="monitoria" />} />
-          <Route path="/fichamarketing/:id" element={<PrivateRoute element={<FichaMarketing />} requiredCargo="posVenda" />} />
-          <Route path="/fichaposvenda/:id" element={<PrivateRoute element={<FichaPosVenda />} requiredCargo="marketing" />} />
+          <Route path="/fichamarketing/:id" element={<PrivateRoute element={<FichaMarketing />} requiredCargo="marketing" />} />
+          <Route path="/fichaposvenda/:id" element={<PrivateRoute element={<FichaPosVenda />} requiredCargo="posVenda" />} />
           <Route path="/fichafinanceiro/:id" element={<PrivateRoute element={<FichaFinanceiro />} requiredCargo="financeiro" />} />
           <Route path="/fichacobranca/:id" element={<PrivateRoute element={<FichaCobranca />} requiredCargo="cobranca" />} />
           <Route path="/fichaboleto/:id" element={<PrivateRoute element={<FichaBoleto />} />} />
