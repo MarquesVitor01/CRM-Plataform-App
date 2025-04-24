@@ -71,7 +71,6 @@ export const FichaPosVenda: React.FC = () => {
         );
 
         if (confirmacao) {
-          // Encontra o próximo número de cópia disponível
           let copyNumber = 1;
           let newId = `${id}_copia${copyNumber}`;
           let newDocRef = doc(db, "financeiros", newId);
