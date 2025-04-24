@@ -46,51 +46,29 @@ export const FichaMarketing: React.FC = () => {
         await updateDoc(docRef, data);
         setClientData(data);
         console.log("Dados atualizados com sucesso!");
-
+  
         if (data.servicosConcluidos === true) {
           const posVendasRef = doc(db, "posVendas", id);
           const posVendasSnap = await getDoc(posVendasRef);
-
+  
           if (!posVendasSnap.exists()) {
-            // Se não existir, adiciona com o ID original
             await setDoc(posVendasRef, {
               ...data,
               dataAdicionado: new Date().toISOString(),
             });
             console.log("Cliente adicionado à coleção posVendas!");
           } else {
-            // Se já existir, exibe confirmação e duplica com novo ID
-            const confirmDuplicate = window.confirm(
-              "Este cliente já está na coleção pós-vendas. Deseja criar uma cópia com novo ID?"
-            );
-
-            if (confirmDuplicate) {
-              // Busca todas as cópias com prefixo id_copia
-              const querySnapshot = await getDocs(
-                query(
-                  collection(db, "posVendas"),
-                  where("__name__", ">=", `${id}_copia`),
-                  where("__name__", "<", `${id}_copia~`)
-                )
-              );
-
-              const copiaCount = querySnapshot.size;
-              const newId = `${id}_copia${copiaCount + 1}`;
-
-              await setDoc(doc(db, "posVendas", newId), {
-                ...data,
-                dataAdicionado: new Date().toISOString(),
-                idOriginal: id,
-              });
-
-              console.log(`Cópia criada com ID: ${newId}`);
-            } else {
-              console.log("Nenhuma ação tomada.");
-            }
+            await updateDoc(posVendasRef, {
+              ...data,
+              dataAtualizado: new Date().toISOString(), 
+            });
+            console.log("Dados atualizados na coleção posVendas!");
           }
+  
+          navigate("/marketing");
+        } else {
+          navigate("/marketing");
         }
-
-        navigate("/marketing");
       }
     } catch (error) {
       console.error("Erro ao atualizar os dados de marketing: ", error);

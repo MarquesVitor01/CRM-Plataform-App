@@ -4,7 +4,7 @@ import { FichaMonitoriaGrave } from "./Components/FichaMonitoriaGrave";
 import { FichaMonitoriaAuditoria } from "./Components/FichaMonitoriaAuditoria";
 import { FichaMonitoriaQualidade } from "./Components/fichaMonitoriaQualidade";
 import { FichaMonitoriaConfirmacao } from "./Components/FichaMonitoriaConfirmacao";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../../firebase/firebaseConfig";
 import { useNavigate, useParams } from "react-router-dom";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
@@ -119,43 +119,19 @@ export const FichaMonitoria: React.FC = () => {
 
   const adicionarClienteMarketing = async () => {
     if (!id || !clientData) return;
-
+  
     try {
       const marketingRef = doc(db, "marketings", id);
       const marketingSnap = await getDoc(marketingRef);
-
+  
       if (marketingSnap.exists()) {
-        const confirmAdd = window.confirm(
-          "Este cliente já existe na coleção 'marketings'. Deseja adicionar como uma nova cópia?"
-        );
-
-        if (confirmAdd) {
-          // Encontra o próximo número de cópia disponível
-          let copyNumber = 1;
-          let newId = `${id}_copia${copyNumber}`;
-          let newDocRef = doc(db, "marketings", newId);
-
-          // Verifica se a cópia já existe
-          while ((await getDoc(newDocRef)).exists()) {
-            copyNumber++;
-            newId = `${id}_copia${copyNumber}`;
-            newDocRef = doc(db, "marketings", newId);
-          }
-
-          // Adiciona o documento com o novo ID
-          await setDoc(newDocRef, {
-            ...clientData,
-            origem: "monitoria",
-            dataAdicionado: new Date().toISOString(),
-            originalId: id, // Mantém referência ao ID original
-            isCopy: true,
-            copyNumber: copyNumber,
-          });
-
-          console.log(`Cliente adicionado como cópia com ID: ${newId}`);
-        }
+        await updateDoc(marketingRef, {
+          ...clientData,
+          origem: "monitoria",
+          dataAtualizado: new Date().toISOString(), 
+        });
+        console.log("Cliente atualizado na coleção 'marketings'");
       } else {
-        // Se não existe, adiciona normalmente
         await setDoc(marketingRef, {
           ...clientData,
           origem: "monitoria",
@@ -164,9 +140,9 @@ export const FichaMonitoria: React.FC = () => {
         console.log("Cliente adicionado à coleção 'marketings'");
       }
     } catch (error) {
-      console.error("Erro ao adicionar cliente aos marketings: ", error);
-    }
-  };
+      console.error("Erro ao adicionar/atualizar cliente em 'marketings': ", error);
+    }
+  };
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     updateClientData();

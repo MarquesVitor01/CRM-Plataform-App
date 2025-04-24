@@ -17,7 +17,6 @@ export const HeaderDash: React.FC<HeaderDashProps> = ({ totalposvenda, totalReal
               <div className="col-md-6 bemvindo-text">
                 <h3>Olá, {nome}</h3>
               </div>
-
               <div className="header-info">
                 <div className="col-md-6 info-item">
                   <h3>Total de Clientes</h3>
