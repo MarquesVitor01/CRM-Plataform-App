@@ -1,29 +1,25 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { MarketingForm } from "./Components/PosVendaForm";
 import "./Styles/FichaMarketing.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFilePdf, faLeftLong } from "@fortawesome/free-solid-svg-icons";
+import { faLeftLong } from "@fortawesome/free-solid-svg-icons";
 import { useParams } from "react-router-dom";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../../firebase/firebaseConfig";
 import axios from "axios";
 import { jsPDF } from "jspdf";
-import ConfirmModal from "../components/ConfirmModal";
 
-export const FichaPosVenda: React.FC = () => {
+export const MsgMonitoria: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [clientData, setClientData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [showModalConfirm, setShowModalConfirm] = useState(false);
-  const [pendingFinanceiroData, setPendingFinanceiroData] = useState<any>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchClientData = async () => {
       try {
         if (id) {
-          const docRef = doc(db, "posVendas", id);
+          const docRef = doc(db, "vendas", id);
           const docSnap = await getDoc(docRef);
 
           if (docSnap.exists()) {
@@ -42,98 +38,6 @@ export const FichaPosVenda: React.FC = () => {
     fetchClientData();
   }, [id]);
 
-  const handleMarketingSubmit = async (data: any) => {
-    try {
-      if (id) {
-        const docRef = doc(db, "posVendas", id);
-        await updateDoc(docRef, data);
-        setClientData(data);
-        console.log("Dados atualizados com sucesso!");
-
-        // Verifica se a venda foi concluída
-        if (data.posVendaConcuida) {
-          await adicionarClienteFinanceiro(data);
-        }
-
-        navigate("/pos-venda");
-      }
-    } catch (error) {
-      console.error("Erro ao atualizar os dados de marketing: ", error);
-    }
-  };
-
-  const adicionarClienteFinanceiro = async (data: any) => {
-    try {
-      const financeirosRef = doc(db, "financeiros", id!);
-      const financeirosSnap = await getDoc(financeirosRef);
-
-      if (financeirosSnap.exists()) {
-<<<<<<< HEAD
-        // Em vez de window.confirm, mostramos o modal
-        setPendingFinanceiroData(data);
-        setShowModalConfirm(true);
-=======
-        // Se já existe, pede confirmação para adicionar como cópia
-        const confirmacao = window.confirm(
-          "Este cliente já existe na coleção financeiros. Deseja adicionar como uma nova cópia?"
-        );
-
-        if (confirmacao) {
-          let copyNumber = 1;
-          let newId = `${id}_copia${copyNumber}`;
-          let newDocRef = doc(db, "financeiros", newId);
-
-          while ((await getDoc(newDocRef)).exists()) {
-            copyNumber++;
-            newId = `${id}_copia${copyNumber}`;
-            newDocRef = doc(db, "financeiros", newId);
-          }
-
-          // Adiciona o documento com o novo ID
-          await setDoc(newDocRef, {
-            ...data,
-            originalId: id, // Mantém referência ao ID original
-            isCopy: true,
-            copyNumber: copyNumber,
-          });
-
-          console.log(`Cliente adicionado como cópia com ID: ${newId}`);
-        }
->>>>>>> c5eb22118d2695e4e83dcf119b22116ad1f550f0
-      } else {
-        await setDoc(financeirosRef, data);
-        console.log("Cliente adicionado à coleção financeiros");
-      }
-    } catch (error) {
-      console.error("Erro ao adicionar cliente aos financeiros: ", error);
-    }
-  };
-
-  const handleConfirmDuplicateFinanceiro = async () => {
-    if (!pendingFinanceiroData) return;
-
-    let copyNumber = 1;
-    let newId = `${id}_copia${copyNumber}`;
-    let newDocRef = doc(db, "financeiros", newId);
-
-    while ((await getDoc(newDocRef)).exists()) {
-      copyNumber++;
-      newId = `${id}_copia${copyNumber}`;
-      newDocRef = doc(db, "financeiros", newId);
-    }
-
-    await setDoc(newDocRef, {
-      ...pendingFinanceiroData,
-      originalId: id,
-      isCopy: true,
-      copyNumber: copyNumber,
-    });
-
-    console.log(`Cliente adicionado como cópia com ID: ${newId}`);
-    setShowModalConfirm(false);
-    setPendingFinanceiroData(null);
-  };
-
   const sairFicha = () => {
     window.history.back();
   };
@@ -147,9 +51,9 @@ export const FichaPosVenda: React.FC = () => {
 
   const formatDateToBrazilian = (dateString: string) => {
     const date = new Date(dateString);
-    date.setHours(date.getHours() + 3); // Ajuste para o horário de Brasília
+    date.setHours(date.getHours() + 3); 
     const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // meses começam do zero
+    const month = String(date.getMonth() + 1).padStart(2, "0"); 
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
   };
@@ -406,7 +310,7 @@ Em caso de dúvidas, estou a disposição ou entre em contato com a central de a
             <FontAwesomeIcon icon={faLeftLong} />
           </button>
           <div className="row">
-            <div className="col-md-6">
+            <div className="col-md-12">
               <div className="card mb-4 p-4">
                 <h2 className="text-center">Informações do Cliente</h2>
                 <p>
@@ -462,24 +366,8 @@ Em caso de dúvidas, estou a disposição ou entre em contato com a central de a
                   )}
               </div>
             </div>
-            <div className="col-md-6">
-              <MarketingForm
-                form={clientData}
-                onSubmit={handleMarketingSubmit}
-              />
-            </div>
           </div>
         </div>
-        <ConfirmModal
-          show={showModalConfirm}
-          title="Duplicar Cliente"
-          onCancel={() => {
-            setShowModalConfirm(false);
-            setPendingFinanceiroData(null);
-          }}
-          onConfirm={handleConfirmDuplicateFinanceiro}
-          message="Este cliente já está na lista de financeiro. Deseja fazer uma cópia dele?"
-        />
       </div>
     )
   );

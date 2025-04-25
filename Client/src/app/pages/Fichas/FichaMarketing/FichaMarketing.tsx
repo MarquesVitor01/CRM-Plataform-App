@@ -59,11 +59,11 @@ export const FichaMarketing: React.FC = () => {
         await updateDoc(docRef, data);
         setClientData(data);
         console.log("Dados atualizados com sucesso!");
-
+  
         if (data.servicosConcluidos === true) {
           const posVendasRef = doc(db, "posVendas", id);
           const posVendasSnap = await getDoc(posVendasRef);
-
+  
           if (!posVendasSnap.exists()) {
             await setDoc(posVendasRef, {
               ...data,
@@ -72,10 +72,21 @@ export const FichaMarketing: React.FC = () => {
             console.log("Cliente adicionado à coleção posVendas!");
             navigate("/marketing");
           } else {
+<<<<<<< HEAD
             setPendingData(data);
             setPendingId(id);
             setShowModalConfirm(true);
           }
+=======
+            await updateDoc(posVendasRef, {
+              ...data,
+              dataAtualizado: new Date().toISOString(), 
+            });
+            console.log("Dados atualizados na coleção posVendas!");
+          }
+  
+          navigate("/marketing");
+>>>>>>> c5eb22118d2695e4e83dcf119b22116ad1f550f0
         } else {
           navigate("/marketing");
         }

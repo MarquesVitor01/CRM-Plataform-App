@@ -4,7 +4,7 @@ import { FichaMonitoriaGrave } from "./Components/FichaMonitoriaGrave";
 import { FichaMonitoriaAuditoria } from "./Components/FichaMonitoriaAuditoria";
 import { FichaMonitoriaQualidade } from "./Components/fichaMonitoriaQualidade";
 import { FichaMonitoriaConfirmacao } from "./Components/FichaMonitoriaConfirmacao";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../../firebase/firebaseConfig";
 import { useNavigate, useParams } from "react-router-dom";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
@@ -123,16 +123,24 @@ export const FichaMonitoria: React.FC = () => {
 
   const adicionarClienteMarketing = async () => {
     if (!id || !clientData) return;
-
+  
     try {
       const marketingRef = doc(db, "marketings", id);
       const marketingSnap = await getDoc(marketingRef);
-
+  
       if (marketingSnap.exists()) {
+<<<<<<< HEAD
         setPendingMarketingCopy(true); // ativa a lógica pendente
         setShowModalConfirmAdd(true); // mostra o modal
+=======
+        await updateDoc(marketingRef, {
+          ...clientData,
+          origem: "monitoria",
+          dataAtualizado: new Date().toISOString(), 
+        });
+        console.log("Cliente atualizado na coleção 'marketings'");
+>>>>>>> c5eb22118d2695e4e83dcf119b22116ad1f550f0
       } else {
-        // Se não existe, adiciona normalmente
         await setDoc(marketingRef, {
           ...clientData,
           origem: "monitoria",
@@ -141,6 +149,7 @@ export const FichaMonitoria: React.FC = () => {
         console.log("Cliente adicionado à coleção 'marketings'");
       }
     } catch (error) {
+<<<<<<< HEAD
       console.error("Erro ao adicionar cliente aos marketings: ", error);
     }
   };
@@ -180,6 +189,11 @@ export const FichaMonitoria: React.FC = () => {
     setPendingMarketingCopy(false);
   };
 
+=======
+      console.error("Erro ao adicionar/atualizar cliente em 'marketings': ", error);
+    }
+  };
+>>>>>>> c5eb22118d2695e4e83dcf119b22116ad1f550f0
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     updateClientData();
