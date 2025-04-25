@@ -16,6 +16,7 @@ import {
   faCheck,
   faExclamation,
   faList,
+  faMarker,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { ModalExcel } from "./modalExcel";
@@ -710,8 +711,21 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                           className="custom-tooltip"
                         />
                       </Link>
+                      <Link to={`/fichamsgmarketing/${marketing.id}`}>
+                        <FontAwesomeIcon
+                          icon={faMarker}
+                          className="icon-spacing text-dark"
+                          data-tooltip-id="tooltip-msg"
+                          data-tooltip-content="Ver ficha de mensagem"
+                        />
+                        <Tooltip
+                          id="tooltip-msg"
+                          place="top"
+                          className="custom-tooltip"
+                        />
+                      </Link>
+                      
 
-                      {/* Tooltips */}
                       <Tooltip
                         id="tooltip-view-contract"
                         place="top"

@@ -27,6 +27,8 @@ import { FichaCancelamento } from "../pages/Fichas/FichaCancelamento/FichaCancel
 import { PosVenda } from "../pages/dashboard/pos_venda/PosVenda";
 import { FichaPosVenda } from "../pages/Fichas/FichaPosVenda/FichaPosVenda";
 import { Assinatura } from "../pages/Assinatura/Assinatura";
+import { MsgMonitoria } from "../pages/Fichas/MsgMonitoria/MsgMonitoria";
+import { MsgMkt } from "../pages/Fichas/MsgMkt/MsgMkt";
 
 
 export const LocalRoutes: React.FC = () => {
@@ -52,6 +54,8 @@ export const LocalRoutes: React.FC = () => {
           <Route path="/editcontrato/:id" element={<PrivateRoute element={<EditContrato />} />} />
           <Route path="/comprovantes/:id" element={<PrivateRoute element={<Comprovantes />} />} />
           <Route path="/fichamonitoria/:id" element={<PrivateRoute element={<FichaMonitoria />} requiredCargo="monitoria" />} />
+          <Route path="/fichamsgmonitoria/:id" element={<PrivateRoute element={<MsgMonitoria />} requiredCargo="monitoria" />} />
+          <Route path="/fichamsgmarketing/:id" element={<PrivateRoute element={<MsgMkt />} requiredCargo="marketing" />} />
           <Route path="/fichamarketing/:id" element={<PrivateRoute element={<FichaMarketing />} requiredCargo="marketing" />} />
           <Route path="/fichaposvenda/:id" element={<PrivateRoute element={<FichaPosVenda />} requiredCargo="posVenda" />} />
           <Route path="/fichafinanceiro/:id" element={<PrivateRoute element={<FichaFinanceiro />} requiredCargo="financeiro" />} />
