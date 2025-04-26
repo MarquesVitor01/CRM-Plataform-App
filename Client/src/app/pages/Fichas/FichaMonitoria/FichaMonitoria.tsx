@@ -102,11 +102,9 @@ export const FichaMonitoria: React.FC = () => {
         );
 
         if (Object.keys(updatedData).length) {
-          // Atualiza a ficha na coleção "vendas"
           const docRef = doc(db, "vendas", id);
           await setDoc(docRef, updatedData, { merge: true });
 
-          // Verifica se deve adicionar em "marketings"
           if (clientData.monitoriaConcluidaYes) {
             await adicionarClienteMarketing();
           }
@@ -123,24 +121,17 @@ export const FichaMonitoria: React.FC = () => {
 
   const adicionarClienteMarketing = async () => {
     if (!id || !clientData) return;
-  
+
     try {
       const marketingRef = doc(db, "marketings", id);
       const marketingSnap = await getDoc(marketingRef);
-  
+
       if (marketingSnap.exists()) {
-<<<<<<< HEAD
-        setPendingMarketingCopy(true); // ativa a lógica pendente
-        setShowModalConfirmAdd(true); // mostra o modal
-=======
-        await updateDoc(marketingRef, {
-          ...clientData,
-          origem: "monitoria",
-          dataAtualizado: new Date().toISOString(), 
-        });
-        console.log("Cliente atualizado na coleção 'marketings'");
->>>>>>> c5eb22118d2695e4e83dcf119b22116ad1f550f0
+        // Se já existe, ativa o modal de confirmação para criar uma cópia
+        setPendingMarketingCopy(true);
+        setShowModalConfirmAdd(true);
       } else {
+        // Se não existe, cria normalmente
         await setDoc(marketingRef, {
           ...clientData,
           origem: "monitoria",
@@ -149,7 +140,6 @@ export const FichaMonitoria: React.FC = () => {
         console.log("Cliente adicionado à coleção 'marketings'");
       }
     } catch (error) {
-<<<<<<< HEAD
       console.error("Erro ao adicionar cliente aos marketings: ", error);
     }
   };
@@ -157,11 +147,14 @@ export const FichaMonitoria: React.FC = () => {
   const handleConfirmAddDuplicate = async () => {
     setShowModalConfirmAdd(false);
 
+    if (!id || !clientData) return;
+
     try {
       let copyNumber = 1;
       let newId = `${id}_copia${copyNumber}`;
       let newDocRef = doc(db, "marketings", newId);
 
+      // Procura um ID disponível
       while ((await getDoc(newDocRef)).exists()) {
         copyNumber++;
         newId = `${id}_copia${copyNumber}`;
@@ -189,11 +182,6 @@ export const FichaMonitoria: React.FC = () => {
     setPendingMarketingCopy(false);
   };
 
-=======
-      console.error("Erro ao adicionar/atualizar cliente em 'marketings': ", error);
-    }
-  };
->>>>>>> c5eb22118d2695e4e83dcf119b22116ad1f550f0
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     updateClientData();

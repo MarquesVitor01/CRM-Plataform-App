@@ -70,23 +70,15 @@ export const FichaMarketing: React.FC = () => {
               dataAdicionado: new Date().toISOString(),
             });
             console.log("Cliente adicionado à coleção posVendas!");
-            navigate("/marketing");
           } else {
-<<<<<<< HEAD
-            setPendingData(data);
-            setPendingId(id);
-            setShowModalConfirm(true);
-          }
-=======
             await updateDoc(posVendasRef, {
               ...data,
-              dataAtualizado: new Date().toISOString(), 
+              dataAtualizado: new Date().toISOString(),
             });
             console.log("Dados atualizados na coleção posVendas!");
           }
   
           navigate("/marketing");
->>>>>>> c5eb22118d2695e4e83dcf119b22116ad1f550f0
         } else {
           navigate("/marketing");
         }
@@ -95,7 +87,7 @@ export const FichaMarketing: React.FC = () => {
       console.error("Erro ao atualizar os dados de marketing: ", error);
     }
   };
-
+  
   const handleConfirmDuplicate = async () => {
     if (!pendingData || !pendingId) return;
 
