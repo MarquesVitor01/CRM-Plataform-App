@@ -68,11 +68,9 @@ export const FichaPosVenda: React.FC = () => {
       const financeirosSnap = await getDoc(financeirosRef);
 
       if (financeirosSnap.exists()) {
-<<<<<<< HEAD
         // Em vez de window.confirm, mostramos o modal
         setPendingFinanceiroData(data);
         setShowModalConfirm(true);
-=======
         // Se já existe, pede confirmação para adicionar como cópia
         const confirmacao = window.confirm(
           "Este cliente já existe na coleção financeiros. Deseja adicionar como uma nova cópia?"
@@ -99,7 +97,6 @@ export const FichaPosVenda: React.FC = () => {
 
           console.log(`Cliente adicionado como cópia com ID: ${newId}`);
         }
->>>>>>> c5eb22118d2695e4e83dcf119b22116ad1f550f0
       } else {
         await setDoc(financeirosRef, data);
         console.log("Cliente adicionado à coleção financeiros");
