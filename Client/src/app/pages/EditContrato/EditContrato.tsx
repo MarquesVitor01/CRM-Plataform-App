@@ -145,12 +145,12 @@ export const EditContrato = () => {
           return;
         }
   
-        const colecoesParaAtualizar = ["vendas", "financeiros", "posVendas", "marketings", "cancelados"]; // adicione as coleções que quiser
+        const colecoesParaAtualizar = ["vendas", "financeiros", "posVendas", "marketings"];
   
         const updatePromises = colecoesParaAtualizar.map(async (colecao) => {
           await setDoc(doc(db, colecao, id), {
             ...updatedData,
-            dataAtualizado: new Date().toISOString(), // adiciona data de atualização
+            dataAtualizado: new Date().toISOString(),
           }, { merge: true });
           console.log(`Atualizado com sucesso em ${colecao}`);
         });
