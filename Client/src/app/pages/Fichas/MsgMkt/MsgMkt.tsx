@@ -235,10 +235,11 @@ Em caso de dúvidas, estou a disposição!`,
               <div className="bg-infos-mktservice" id="assinatura">
                 <div className="box-avaliacoes">
                   <p className="text-uppercase text-center ">
-                    Certificamos <br />
-                    que o comércio <span>{clientData.nomeFantasia}</span>: Está em dia com a atualização da sua página
-                    no Google Maps e conta com suporte da G MAPS CONTACT CENTER
-                    LTDA até {clientData.dataVigencia} .
+                    Certificamos que o comércio:{" "}
+                    <span>{clientData.nomeFantasia}</span> <br />
+                    Está em dia com a atualização da sua página no Google Maps e
+                    conta com suporte da G MAPS CONTACT CENTER LTDA até{" "}
+                    {clientData.dataVigencia} .
                   </p>
                 </div>
                 <Infoqr />

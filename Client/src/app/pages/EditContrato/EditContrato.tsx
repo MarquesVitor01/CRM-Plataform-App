@@ -139,15 +139,27 @@ export const EditContrato = () => {
             ([_, value]) => value !== "" && value !== null && value !== undefined
           )
         );
-
+  
         if (Object.keys(updatedData).length === 0) {
           console.error("Nenhum campo válido para atualizar.");
           return;
         }
-
-        await setDoc(doc(db, "vendas", id), updatedData, { merge: true });
-        toast.success("Dados do cliente atualizados com sucesso!");
+  
+        const colecoesParaAtualizar = ["vendas", "financeiros", "posVendas", "marketings", "cancelados"]; // adicione as coleções que quiser
+  
+        const updatePromises = colecoesParaAtualizar.map(async (colecao) => {
+          await setDoc(doc(db, colecao, id), {
+            ...updatedData,
+            dataAtualizado: new Date().toISOString(), // adiciona data de atualização
+          }, { merge: true });
+          console.log(`Atualizado com sucesso em ${colecao}`);
+        });
+  
+        await Promise.all(updatePromises);
+  
+        toast.success("Dados atualizados em todas as coleções!");
         setTimeout(() => navigate(-1), 2000);
+  
       } catch (error) {
         console.error("Erro ao atualizar os dados do cliente: ", error);
         toast.error("Erro ao atualizar os dados do cliente.");
@@ -156,6 +168,7 @@ export const EditContrato = () => {
       console.log("ID ou clientData não disponível.");
     }
   };
+  
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

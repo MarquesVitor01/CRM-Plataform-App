@@ -145,7 +145,7 @@ Conforme conversamos via ligação, já iniciamos o processo de atualização de
 
 Seu plano *${clientData.validade}* de R$ ${formatValor(
             clientData.valorVenda
-          )} a ser pago em via boleto, ficou com o vencimento para o dia ${formatDateToBrazilian(
+          )} a ser pago via boleto, ficou com o vencimento para o dia ${formatDateToBrazilian(
             clientData.dataVencimento
           )}.
 
