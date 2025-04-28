@@ -127,7 +127,6 @@ export const Add = () => {
     return `${nomeMes.toLowerCase()}/${ano}`;
   };
   
-  // Calcula as parcelas quando valorVenda, parcelas ou dataVencimento mudam
   useEffect(() => {
     const calcularParcelas = () => {
       const dataVencimento = form.dataVencimento;
