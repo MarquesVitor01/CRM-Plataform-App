@@ -147,18 +147,16 @@ export const Assinatura: FC = () => {
 
         <div>
           <p className="text-uppercase text-center">
-            <FontAwesomeIcon icon={faCheck} /> DECLARO TER RECEBIDO ATRAVÉS DA
-            LIGAÇÃO TODAS INFORMAÇÕES REFERENTES AO MEU PLANO CONTRATADO
-            CONFORME GRAVAÇÃO DO ATENDIMENTO QUE MEU PLANO ESCOLHIDO É O ANUAL
-            COM VIGÊNCIA ATÉ {clientData.dataVigencia}, E QUE O VALOR É DE
-            <b> R$  {formatValor(clientData.valorVenda)}</b> CUJO VENCIMENTO FICOU
-        PARA O DIA{" "}
+            <FontAwesomeIcon icon={faCheck} /> DECLARO TER RECEBIDO ATRAVÉS DA LIGAÇÃO TODAS INFORMÇÕES REFERENTE AO MEU PLANO CONTRATADO CONFORME GRAVAÇÃO DO ATENDIMENTO.
+            MEU PLANO ESCOLHIDO É O {clientData.validade} {" "}
+            COM VIGÊNCIA ATÉ {clientData.dataVigencia}, O VALOR DO SERVIÇO CONTRATADO É DE
+            <b> R$  {formatValor(clientData.valorVenda)}</b> CUJO VENCIMENTO FICOU PARA O DIA{" "}
         <b>
           {new Date(clientData.dataVencimento + "T00:00:00").toLocaleDateString("pt-BR")}</b>
             .
           </p>
 
-          <p className="text-center">
+          {/* <p className="text-center">
             CIENTE QUE AO EFETUAR O PAGAMENTO ATÉ O DIA DO VENCIMENTO CONFORME
             MENCIONADO ACIMA IREI RECEBER UM DESCONTO DE{" "}
             <span className="fw-bold">
@@ -179,6 +177,10 @@ export const Assinatura: FC = () => {
                 }}
               />
             </span>
+          </p> */}
+
+          <p className="text-center">
+          AUTORIZO QUE A EMPRESA CONTRATADA REALIZE TODA ASSESSORIA PARA OTIMIZAÇÃO DO PERIL EM MINHA PÁGINA DO GOOGLE MAPS, CIENTE DE TODAS INFORMAÇÕES PRESENTES NESTE DOCUMENTO.
           </p>
 
           <div className="assinatura-section pt-3">
@@ -193,10 +195,10 @@ export const Assinatura: FC = () => {
             <FontAwesomeIcon icon={faFilePdf} />
             <span className="ms-1">Baixar PDF</span>
           </button>
-          <button className="btn btn-primary" onClick={handleAtualizarDesconto}>
+          {/* <button className="btn btn-primary" onClick={handleAtualizarDesconto}>
             <FontAwesomeIcon icon={faFloppyDisk} />{" "}
             <span className="ms-1">Atualizar</span>
-          </button>
+          </button> */}
         </div>
       </div>
 
