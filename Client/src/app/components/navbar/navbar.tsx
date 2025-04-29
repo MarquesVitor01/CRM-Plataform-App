@@ -270,6 +270,14 @@ export const Navbar = () => {
         </Link>
         <Link
           to={
+            "https://docs.google.com/document/d/1cCxj3vQeqw_SoSEoju06jXmNXVSu_ihT/edit?usp=drive_link&ouid=114547810317616624468&rtpof=true&sd=true"
+          }
+          className="btn btn-primary"
+        >
+          Ramos
+        </Link>
+        <Link
+          to={
             "https://drive.google.com/file/d/1nud0aITvgfJcJ9293hDm3Jr0WuqyhKaz/view?usp=sharing"
           }
           className="btn btn-primary"
