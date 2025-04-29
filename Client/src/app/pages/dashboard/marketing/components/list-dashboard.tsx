@@ -137,8 +137,9 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
   const userId = auth.currentUser?.uid;
   const adminUserId = process.env.REACT_APP_ADMIN_USER_ID;
   const SupervisorUserId = "wWLmbV9TIUemmTkcMUSAQ4xGlju2";
-  const dayUserId = "FW0ja9Yy6kZk7wCarZNxFLMN6rO2"
-  const karolUserId = "WNo2z6dmS0Yt6pm5QWhV6m82RI92"
+  const dayUserId = "FW0ja9Yy6kZk7wCarZNxFLMN6rO2";
+  const yagoUserID = "yNaaWSn5xoae7leYOO90HwKByuj2";
+  const karolUserId = "WNo2z6dmS0Yt6pm5QWhV6m82RI92";
 
   useEffect(() => {
     const fetchVendas = async () => {
@@ -152,7 +153,11 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
         })) as Marketing[];
 
         const filteredVendas =
-          userId === adminUserId || userId === SupervisorUserId || userId === dayUserId ||  userId === karolUserId
+          userId === adminUserId ||
+          userId === SupervisorUserId ||
+          userId === dayUserId ||
+          userId === yagoUserID ||
+          userId === karolUserId
             ? marketingsList
             : marketingsList.filter(
                 (marketing) => marketing.createdBy === userId
@@ -169,6 +174,9 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
 
     fetchVendas();
   }, [setTotalMarketings, userId]);
+
+  console.log("Yago esperado:", yagoUserID);
+  console.log("User logado:", userId);
 
   const handleCheckboxChange = (id: string) => {
     setSelectedItems((prevSelectedItems) => {
@@ -600,9 +608,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                   checklistCompleto || marketing.servicosConcluidos;
 
                 return (
-                  <tr
-                    key={marketing.id}
-                  >
+                  <tr key={marketing.id}>
                     <td
                       className={
                         selectedItems.has(marketing.id) ? "selected" : ""
@@ -724,7 +730,6 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                           className="custom-tooltip"
                         />
                       </Link>
-                      
 
                       <Tooltip
                         id="tooltip-view-contract"

@@ -50,7 +50,7 @@ export const MsgMkt: React.FC = () => {
       const celularComCodigo = `55${clientData.celular.replace(/^55/, "")}`;
 
       const response = await axios.post(
-        "https://crm-plataform-app-6t3u.vercel.app/api/enviar-texto",
+        "https://crm-plataform-app-6t3u.vercel.app/api/enviar-texto-mkt",
         {
           phone: celularComCodigo,
           message: `Segue o link de sua página no Google Maps:
