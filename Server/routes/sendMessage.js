@@ -27,7 +27,7 @@ router.post("/enviar-texto-mkt", async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            message: "Mensagem enviada com sucesso",
+            message: "Mensagem enviada com sucesso de marketing ",
             data: response.data
         });
 
