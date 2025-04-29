@@ -62,7 +62,7 @@ export const MsgMonitoria: React.FC = () => {
       const celularComCodigo = `55${clientData.celular.replace(/^55/, "")}`;
 
       const response = await axios.post(
-        "https://crm-plataform-app-6t3u.vercel.app/api/enviar-texto",
+        "https://crm-plataform-app-6t3u.vercel.app/api/enviar-texto-monitoria",
         {
           phone: celularComCodigo,
           message: `Olá,  ${clientData.responsavel}
@@ -134,7 +134,7 @@ Em caso de dúvidas, estou a disposição ou entre em contato com a central de a
       const celularComCodigo = `55${clientData.celular.replace(/^55/, "")}`;
 
       const response = await axios.post(
-        "https://crm-plataform-app-6t3u.vercel.app/api/enviar-texto",
+        "https://crm-plataform-app-6t3u.vercel.app/api/enviar-texto-monitoria",
         {
           phone: celularComCodigo,
           message: `Olá,  ${clientData.responsavel}
@@ -203,7 +203,7 @@ Em caso de dúvidas, estou a disposição ou entre em contato com a central de a
       const celularComCodigo = `55${clientData.celular.replace(/^55/, "")}`;
 
       const response = await axios.post(
-        "https://crm-plataform-app-6t3u.vercel.app/api/enviar-texto",
+        "https://crm-plataform-app-6t3u.vercel.app/api/enviar-texto-monitoria",
         {
           phone: celularComCodigo,
           message: `Olá,  ${clientData.responsavel}
@@ -277,7 +277,7 @@ Em caso de dúvidas, estou a disposição ou entre em contato com a central de a
   //     const celularComCodigo = `55${clientData.celular.replace(/^55/, "")}`;
 
   //     const response = await axios.post(
-  //       "https://crm-plataform-app-6t3u.vercel.app/api/enviar-texto",
+  //       "https://crm-plataform-app-6t3u.vercel.app/api/enviar-texto-monitoria",
   //       {
   //         phone: celularComCodigo,
   //         message: `https://youtube.com/shorts/_EgS6OVUgEA`,
