@@ -69,6 +69,7 @@ Em caso de dúvidas, estou a disposição!`,
       );
       if (response.data.success) {
         alert("Mensagem enviada com sucesso!");
+        console.log("mensagem enviada")
       } else {
         alert("Falha ao enviar a mensagem.");
       }
