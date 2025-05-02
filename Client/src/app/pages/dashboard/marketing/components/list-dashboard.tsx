@@ -29,6 +29,7 @@ import {
   setDoc,
   deleteDoc,
   getDoc,
+  getFirestore,
 } from "firebase/firestore";
 import { toast, ToastContainer } from "react-toastify";
 import { Tooltip } from "react-tooltip";
@@ -95,6 +96,8 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
   const [syncLoading, setSyncLoading] = useState<boolean>(false);
   const [showConcluidos, setShowConcluidos] = useState(false);
   const [showIncompletos, setShowIncompletos] = useState(false);
+  const [cargo, setCargo] = useState<string | null>(null);
+
 
   const [filters, setFilters] = useState({
     startDate: "",
@@ -104,6 +107,9 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
     vendasPerson: "",
   });
   const [showConcluidas, setShowConcluidas] = useState(false);
+
+  const auth = getAuth();
+  const db = getFirestore();
 
   useEffect(() => {
     const fetchMarketings = async () => {
@@ -133,36 +139,63 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
     fetchMarketings();
   }, [setTotalMarketings, setTotalRealizados]);
 
-  const auth = getAuth();
-  const userId = auth.currentUser?.uid;
-  const adminUserId = process.env.REACT_APP_ADMIN_USER_ID;
-  const SupervisorUserId = "wWLmbV9TIUemmTkcMUSAQ4xGlju2";
-  const dayUserId = "FW0ja9Yy6kZk7wCarZNxFLMN6rO2";
-  const yagoUserID = "yNaaWSn5xoae7leYOO90HwKByuj2";
-  const karolUserId = "WNo2z6dmS0Yt6pm5QWhV6m82RI92";
+  async function getUserCargo() {
+    const userId = auth.currentUser?.uid;
+
+    if (!userId) {
+      console.log("Usuário não está logado.");
+      return null;
+    }
+
+    try {
+      const userDocRef = doc(db, "usuarios", userId);
+      const userDocSnap = await getDoc(userDocRef);
+
+      if (userDocSnap.exists()) {
+        const userData = userDocSnap.data();
+        const cargo = userData.cargo;
+        console.log("Cargo do usuário:", cargo);
+        return cargo;
+      } else {
+        console.log("Documento do usuário não encontrado.");
+        return null;
+      }
+    } catch (error) {
+      console.error("Erro ao buscar cargo do usuário:", error);
+      return null;
+    }
+  }
 
   useEffect(() => {
     const fetchVendas = async () => {
       setLoading(true);
       try {
+        const cargo = await getUserCargo();
+        if (!cargo) {
+          console.warn("Cargo não encontrado para o usuário.");
+          setMarketings([]);
+          setTotalMarketings(0);
+          return;
+        }
+  
         const marketingsCollection = collection(db, "marketings");
         const marketingsSnapshot = await getDocs(marketingsCollection);
         const marketingsList = marketingsSnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         })) as Marketing[];
-
-        const filteredVendas =
-          userId === adminUserId ||
-          userId === SupervisorUserId ||
-          userId === dayUserId ||
-          userId === yagoUserID ||
-          userId === karolUserId
-            ? marketingsList
-            : marketingsList.filter(
-                (marketing) => marketing.createdBy === userId
-              );
-
+  
+        const isAdmin =
+          cargo === "adm" ||
+          cargo === "supervisor" ||
+          cargo === "marketing";
+          console.log("isAdmin:", isAdmin);
+        const filteredVendas = isAdmin
+          ? marketingsList
+          : marketingsList.filter(
+              (marketing) => marketing.createdBy === auth.currentUser?.uid
+            );
+  
         setMarketings(filteredVendas);
         setTotalMarketings(filteredVendas.length);
       } catch (error) {
@@ -170,13 +203,12 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
       } finally {
         setLoading(false);
       }
+      
     };
-
+  
     fetchVendas();
-  }, [setTotalMarketings, userId]);
-
-  console.log("Yago esperado:", yagoUserID);
-  console.log("User logado:", userId);
+  }, [setTotalMarketings, auth]);
+  
 
   const handleCheckboxChange = (id: string) => {
     setSelectedItems((prevSelectedItems) => {
@@ -531,7 +563,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
               <FontAwesomeIcon icon={faSync} color="#fff" spin={syncLoading} />
             </button> */}
 
-            {userId === adminUserId && (
+           {cargo === "adm" && (
               <button
                 onClick={openModalExclusao}
                 className="remove-btn"

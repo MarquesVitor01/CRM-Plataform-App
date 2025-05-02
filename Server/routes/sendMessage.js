@@ -37,7 +37,7 @@ router.post("/enviar-texto-mkt", async (req, res) => {
     }
 });
 
-router.post("/enviar-texto-monitoria", async (req, res) => {
+router.post("/enviar-texto-vendas", async (req, res) => {
     try {
         const { phone, message } = req.body;
 
