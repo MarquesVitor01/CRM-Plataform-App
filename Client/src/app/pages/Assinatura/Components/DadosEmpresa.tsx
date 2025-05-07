@@ -105,6 +105,9 @@ export const DadosEmpresa: React.FC = () => {
           <span>
             <strong>CARGO:</strong> {clientData.cargo}
           </span>
+          <span>
+            <strong>E-MAIL:</strong> {clientData.email1}
+          </span>
           <small>
             ESCANEIE O QRCODE PARA VERIFICAR E CONFERIR A PÁGINA OU CLIQUE NO
             LINK.
