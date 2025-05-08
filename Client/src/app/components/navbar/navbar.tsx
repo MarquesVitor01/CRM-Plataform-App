@@ -126,6 +126,7 @@ export const Navbar = () => {
             )}
             {cargo !== "marketing" &&
               (cargo === "vendas" ||
+                cargo === "supervisor" ||
                 userId === adminId ||
                 userId === graziId) && (
                 <li className="nav-item">
