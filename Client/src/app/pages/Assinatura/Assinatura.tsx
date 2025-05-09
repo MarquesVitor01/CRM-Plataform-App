@@ -128,7 +128,7 @@ export const Assinatura: FC = () => {
         await updateDoc(docRef, {
           desconto: valorLimpo,
         });
-        setDescontoAtualizado(desconto); 
+        setDescontoAtualizado(desconto);
         console.log("Desconto atualizado no Firestore");
         toast.success(`Desconto aplicado de R$${desconto}`);
       } catch (error) {
@@ -139,24 +139,44 @@ export const Assinatura: FC = () => {
 
   return (
     clientData && (
-    <div className="bg-assinatura">
-      <div className="bg-infos-contrato" id="assinatura">
-        <Header />
-        <DadosEmpresa />
-        <Infoqr />
+      <div className="bg-assinatura">
+        <div className="bg-infos-contrato" id="assinatura">
+          <Header />
+          <DadosEmpresa />
+          <Infoqr />
 
-        <div>
-          <p className="text-uppercase text-center">
-            <FontAwesomeIcon icon={faCheck} /> DECLARO TER RECEBIDO ATRAVÉS DA LIGAÇÃO TODAS INFORMÇÕES REFERENTE AO MEU PLANO CONTRATADO CONFORME GRAVAÇÃO DO ATENDIMENTO.
-            MEU PLANO ESCOLHIDO É O {clientData.validade} {" "}
-            COM VIGÊNCIA ATÉ {clientData.dataVigencia}, O VALOR DO SERVIÇO CONTRATADO É DE
-            <b> R$  {formatValor(clientData.valorVenda)}</b> CUJO VENCIMENTO FICOU PARA O DIA{" "}
-        <b>
-          {new Date(clientData.dataVencimento + "T00:00:00").toLocaleDateString("pt-BR")}</b>
-            .
-          </p>
+          <div>
+            <p className="text-uppercase text-center">
+              <FontAwesomeIcon icon={faCheck} /> DECLARO TER RECEBIDO ATRAVÉS DA
+              LIGAÇÃO TODAS INFORMÇÕES REFERENTE AO MEU PLANO CONTRATADO
+              CONFORME GRAVAÇÃO DO ATENDIMENTO. MEU PLANO ESCOLHIDO É O{" "}
+              {clientData.validade} COM VIGÊNCIA ATÉ {clientData.dataVigencia},{" "}
+              {clientData.parcelas <= 1
+                ? `O VALOR DO SERVIÇO CONTRATADO É DE
+               R$ ${formatValor(clientData.valorVenda)} CUJO VENCIMENTO
+              FICOU PARA O DIA
+              
+                ${new Date(
+                  clientData.dataVencimento + "T00:00:00"
+                ).toLocaleDateString("pt-BR")}
+              
+              .`
+                : `O VALOR DO SERVIÇO CONTRATADO É DE
+               R$ ${formatValor(clientData.valorVenda)} DIVIDIDO EM ${
+                    clientData.parcelas
+                  } PARCELAS DE R$ ${formatValor(clientData.valorParcelado)}, CUJO PRIMEIRO VENCIMENTO
+              FICOU PARA O DIA
+              
+                ${new Date(
+                  clientData.dataVencimento + "T00:00:00"
+                ).toLocaleDateString("pt-BR")}
+              
+              E OS OUTROS VENCIMENTOS PARA O DIA ${
+                clientData.diaData
+              } SUBSEQUENTE DOS PRÓXIMOS MESES.`}
+            </p>
 
-          {/* <p className="text-center">
+            {/* <p className="text-center">
             CIENTE QUE AO EFETUAR O PAGAMENTO ATÉ O DIA DO VENCIMENTO CONFORME
             MENCIONADO ACIMA IREI RECEBER UM DESCONTO DE{" "}
             <span className="fw-bold">
@@ -179,31 +199,33 @@ export const Assinatura: FC = () => {
             </span>
           </p> */}
 
-          <p className="text-center">
-          AUTORIZO QUE A EMPRESA CONTRATADA REALIZE TODA ASSESSORIA PARA OTIMIZAÇÃO DO PERIL EM MINHA PÁGINA DO GOOGLE MAPS, CIENTE DE TODAS INFORMAÇÕES PRESENTES NESTE DOCUMENTO.
-          </p>
-
-          <div className="assinatura-section pt-3">
             <p className="text-center">
-              <strong>Assinatura:</strong>
+              AUTORIZO QUE A EMPRESA CONTRATADA REALIZE TODA ASSESSORIA PARA
+              OTIMIZAÇÃO DO PERIL EM MINHA PÁGINA DO GOOGLE MAPS, CIENTE DE
+              TODAS INFORMAÇÕES PRESENTES NESTE DOCUMENTO.
             </p>
-            <div className="linha-assinatura"></div>
+
+            <div className="assinatura-section pt-3">
+              <p className="text-center">
+                <strong>Assinatura:</strong>
+              </p>
+              <div className="linha-assinatura"></div>
+            </div>
           </div>
-        </div>
-        <div className="btns-sections my-3" id="btn-baixar-pdf">
-          <button className="btn btn-danger" onClick={downloadPDF}>
-            <FontAwesomeIcon icon={faFilePdf} />
-            <span className="ms-1">Baixar PDF</span>
-          </button>
-          {/* <button className="btn btn-primary" onClick={handleAtualizarDesconto}>
+          <div className="btns-sections my-3" id="btn-baixar-pdf">
+            <button className="btn btn-danger" onClick={downloadPDF}>
+              <FontAwesomeIcon icon={faFilePdf} />
+              <span className="ms-1">Baixar PDF</span>
+            </button>
+            {/* <button className="btn btn-primary" onClick={handleAtualizarDesconto}>
             <FontAwesomeIcon icon={faFloppyDisk} />{" "}
             <span className="ms-1">Atualizar</span>
           </button> */}
+          </div>
         </div>
-      </div>
 
-      <ToastContainer />
-    </div>
+        <ToastContainer />
+      </div>
     )
   );
 };
