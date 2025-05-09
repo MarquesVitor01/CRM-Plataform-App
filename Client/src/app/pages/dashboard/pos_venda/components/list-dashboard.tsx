@@ -167,8 +167,6 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
     }
   };
 
-  console.log("PosVenda:", posVenda);
-
   const handleCheckboxChange = (id: string) => {
     setSelectedItems((prevSelectedItems) => {
       const newSelectedItems = new Set(prevSelectedItems);

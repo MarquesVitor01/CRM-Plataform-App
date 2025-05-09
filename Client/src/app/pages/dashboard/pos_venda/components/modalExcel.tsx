@@ -11,7 +11,7 @@ interface ModalExcelProps {
     startDate?: string;
     endDate?: string;
     dueDate?: string;
-    saleType?: string;
+    vendaType?: string;
     salesPerson?: string;
     sorting?: string;
   }) => void;
@@ -33,10 +33,9 @@ export const ModalExcel: React.FC<ModalExcelProps> = ({ onClose, onApplyFilters 
   
   const tipoVendaOptions: Option[] = [
     { value: 'Base', label: 'Base' },
-    { value: 'Renovacao', label: 'Renovação' }
+    { value: 'Renovacao', label: 'Renovação' },
+    { value: 'Recorencia', label: 'Recorrência' }
   ];
-  
-
 
   useEffect(() => {
     const fetchSalesPeople = async () => {
@@ -66,13 +65,13 @@ export const ModalExcel: React.FC<ModalExcelProps> = ({ onClose, onApplyFilters 
     setStartDate(savedFilters.startDate || undefined);
     setEndDate(savedFilters.endDate || undefined);
     setDueDate(savedFilters.dueDate || undefined);
-    setSaleType(savedFilters.saleType || undefined);
+    setSaleType(savedFilters.vendaType || undefined);
     setSalesPerson(savedFilters.salesPerson || undefined);
     setSorting(savedFilters.sorting || undefined);
   }, []);
 
   const handleApplyFilters = () => {
-    const filters = { startDate, endDate, dueDate, saleType, salesPerson, sorting };
+    const filters = { startDate, endDate, dueDate, vendaType: saleType, salesPerson, sorting };
     localStorage.setItem("excelFilters", JSON.stringify(filters)); // Salva os filtros
     onApplyFilters(filters);
     onClose();
@@ -134,7 +133,7 @@ export const ModalExcel: React.FC<ModalExcelProps> = ({ onClose, onApplyFilters 
 
           <div className="row">
             <div className="col-md-6 mb-3">
-              <label htmlFor="saleType" className="form-label">Tipo de Venda</label>
+              <label htmlFor="vendaType" className="form-label">Tipo de Venda</label>
               <Select
                 options={tipoVendaOptions}
                 placeholder="Selecione"

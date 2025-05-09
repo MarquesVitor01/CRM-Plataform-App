@@ -98,7 +98,6 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
   const [showIncompletos, setShowIncompletos] = useState(false);
   const [cargo, setCargo] = useState<string | null>(null);
 
-
   const [filters, setFilters] = useState({
     startDate: "",
     endDate: "",
@@ -177,25 +176,23 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
           setTotalMarketings(0);
           return;
         }
-  
+
         const marketingsCollection = collection(db, "marketings");
         const marketingsSnapshot = await getDocs(marketingsCollection);
         const marketingsList = marketingsSnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         })) as Marketing[];
-  
+
         const isAdmin =
-          cargo === "adm" ||
-          cargo === "supervisor" ||
-          cargo === "marketing";
-          console.log("isAdmin:", isAdmin);
+          cargo === "adm" || cargo === "supervisor" || cargo === "marketing";
+        console.log("isAdmin:", isAdmin);
         const filteredVendas = isAdmin
           ? marketingsList
           : marketingsList.filter(
               (marketing) => marketing.createdBy === auth.currentUser?.uid
             );
-  
+
         setMarketings(filteredVendas);
         setTotalMarketings(filteredVendas.length);
       } catch (error) {
@@ -203,12 +200,10 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
       } finally {
         setLoading(false);
       }
-      
     };
-  
+
     fetchVendas();
   }, [setTotalMarketings, auth]);
-  
 
   const handleCheckboxChange = (id: string) => {
     setSelectedItems((prevSelectedItems) => {
@@ -563,7 +558,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
               <FontAwesomeIcon icon={faSync} color="#fff" spin={syncLoading} />
             </button> */}
 
-           {cargo === "adm" && (
+            {cargo === "adm" && (
               <button
                 onClick={openModalExclusao}
                 className="remove-btn"
