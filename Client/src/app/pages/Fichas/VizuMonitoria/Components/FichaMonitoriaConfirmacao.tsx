@@ -5,6 +5,7 @@ interface InfoConfirmacao {
   monitoriaConcluidaYes: boolean;
   monitoriaConcluidaNo: boolean;
   observacaoYes: boolean;
+  observacaoNo: boolean;
   nomeMonitor: string;
   // qrcodeText: string;
   linkGravacao: string;
@@ -30,6 +31,7 @@ const questions = [
     yesId: "observacaoYes",
     noId: "observacaoNo",
     yesChecked: (form: InfoConfirmacao) => form.observacaoYes,
+    noChecked: (form: InfoConfirmacao) => form.observacaoNo,
   },
 ];
 
@@ -54,23 +56,27 @@ export const FichaMonitoriaConfirmacao: React.FC<InfoConfirmacaoProps> = ({
                 id={yesId}
                 checked={yesChecked(form)}
                 onChange={handleInputChange}
+                readOnly
+                disabled
               />
               <label className="form-check-label" htmlFor={yesId}>
                 Sim
               </label>
             </div>
-            {/* <div className="form-check">
+            <div className="form-check">
               <input
                 className="form-check-input"
                 type="checkbox"
                 id={noId}
                 checked={noChecked(form)}
                 onChange={handleInputChange}
+                readOnly
+                disabled
               />
               <label className="form-check-label" htmlFor={noId}>
                 Não
               </label>
-            </div> */}
+            </div>
           </div>
         ))}
         <div className="col-md-6 box-quest">
