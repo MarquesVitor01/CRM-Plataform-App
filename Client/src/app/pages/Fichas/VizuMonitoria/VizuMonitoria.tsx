@@ -38,12 +38,13 @@ interface ClientData {
   monitoriaConcluidaYes: boolean;
   monitoriaConcluidaNo: boolean;
   observacaoYes: boolean;
+  observacaoNo: boolean;
   nomeMonitor: string;
   linkGravacao: string;
   // qrcodeText: string;
 }
 
-export const FichaMonitoria: React.FC = () => {
+export const VizuMonitoria: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [clientData, setClientData] = useState<ClientData | null>(null);
   const [step, setStep] = useState(0);
@@ -267,9 +268,13 @@ export const FichaMonitoria: React.FC = () => {
               Próximo
             </button>
           )}
-          {step <= 3 && (
-            <button type="submit" className="btn btn-success">
-              Salvar
+          {step === 3 && (
+            <button
+              type="button"
+              className="btn btn-danger"
+              onClick={() => window.history.back()}
+            >
+              Sair
             </button>
           )}
         </div>

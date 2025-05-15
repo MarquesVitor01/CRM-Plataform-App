@@ -14,6 +14,7 @@ import {
   faBan,
   faUser,
   faHeadset,
+  faTable,
 } from "@fortawesome/free-solid-svg-icons";
 import "./navbar.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -121,6 +122,22 @@ export const Navbar = () => {
                 >
                   <FontAwesomeIcon icon={faChartLine} />
                   <span>Vendas</span>
+                </Link>
+              </li>
+            )}
+            {(cargo === "vendas" ||
+              cargo === "monitoria" ||
+              cargo === "marketing" ||
+              userId === adminId ||
+              userId === graziId) && (
+              <li className="nav-item">
+                <Link
+                  className="nav-link icon-tooltip"
+                  to="/analises"
+                  data-tooltip="Análises"
+                >
+                  <FontAwesomeIcon icon={faTable} />
+                  <span>Análises</span>
                 </Link>
               </li>
             )}

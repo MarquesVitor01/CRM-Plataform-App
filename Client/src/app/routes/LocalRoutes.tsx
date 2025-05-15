@@ -29,6 +29,8 @@ import { FichaPosVenda } from "../pages/Fichas/FichaPosVenda/FichaPosVenda";
 import { Assinatura } from "../pages/Assinatura/Assinatura";
 import { MsgMonitoria } from "../pages/Fichas/MsgMonitoria/MsgMonitoria";
 import { MsgMkt } from "../pages/Fichas/MsgMkt/MsgMkt";
+import { Analise } from "../pages/dashboard/analise/Analise";
+import { VizuMonitoria } from "../pages/Fichas/VizuMonitoria/VizuMonitoria";
 
 
 export const LocalRoutes: React.FC = () => {
@@ -44,6 +46,7 @@ export const LocalRoutes: React.FC = () => {
           <Route path="/cancelados" element={<PrivateRoute element={<Cancelados />} requiredCargo="vendas" />} />
           <Route path="/monitoria" element={<PrivateRoute element={<Monitoria />} requiredCargo="monitoria" />} />
           <Route path="/marketing" element={<PrivateRoute element={<Marketing />} requiredCargo="marketing" />} />
+          <Route path="/analises" element={<PrivateRoute element={<Analise />} />} />
           <Route path="/pos-venda" element={<PrivateRoute element={<PosVenda />} requiredCargo="posVenda" />} />
           <Route path="/financeiro" element={<PrivateRoute element={<Financeiro />} requiredCargo="financeiro" />} />
           <Route path="/cobranca" element={<PrivateRoute element={<Cobranca />} requiredCargo="cobranca" />} />
@@ -54,6 +57,7 @@ export const LocalRoutes: React.FC = () => {
           <Route path="/editcontrato/:id" element={<PrivateRoute element={<EditContrato />} />} />
           <Route path="/comprovantes/:id" element={<PrivateRoute element={<Comprovantes />} />} />
           <Route path="/fichamonitoria/:id" element={<PrivateRoute element={<FichaMonitoria />} requiredCargo="monitoria" />} />
+          <Route path="/vizumonitoria/:id" element={<PrivateRoute element={<VizuMonitoria />} />} />
           <Route path="/fichamsgmonitoria/:id" element={<PrivateRoute element={<MsgMonitoria />} requiredCargo="monitoria" />} />
           <Route path="/fichamsgmarketing/:id" element={<PrivateRoute element={<MsgMkt />} requiredCargo="marketing" />} />
           <Route path="/fichamarketing/:id" element={<PrivateRoute element={<FichaMarketing />} requiredCargo="marketing" />} />
@@ -71,7 +75,7 @@ export const LocalRoutes: React.FC = () => {
 
 const NavbarWrapper: React.FC = () => {
   const location = useLocation();
-  const showNavbarRoutes = ["/vendas", "/monitoria", "/marketing", "/financeiro", "/cobranca", "/cancelados", "/pos-venda"];
+  const showNavbarRoutes = ["/vendas", "/monitoria", "/marketing", "/financeiro", "/cobranca", "/cancelados", "/pos-venda", "/analises"];
 
   return showNavbarRoutes.includes(location.pathname) ? <Navbar /> : null;
 };

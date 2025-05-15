@@ -103,8 +103,8 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
     startDate: "",
     endDate: "",
     dueDate: "",
-    vendaType: "",
-    vendasPerson: "",
+    saleType: "",
+    salesPerson: "",
   });
   const [showConcluidas, setShowConcluidas] = useState(false);
 
@@ -267,7 +267,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
         (marketing.operador &&
           marketing.operador.toLowerCase().includes(lowerCaseTerm));
 
-      const { startDate, endDate, dueDate, vendaType, vendasPerson } = filters;
+      const { startDate, endDate, dueDate, saleType, salesPerson } = filters;
 
       const marketingData = new Date(marketing.data);
       const isStartDateValid = startDate
@@ -286,19 +286,19 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
           new Date(dueDate).toDateString()
         : true;
 
-      const isvendaTypeValid = vendaType
-        ? marketing.contrato === vendaType
+      const issaleTypeValid = saleType
+        ? marketing.contrato === saleType
         : true;
-      const isvendasPersonValid = vendasPerson
-        ? marketing.operador === vendasPerson
+      const issalesPersonValid = salesPerson
+        ? marketing.operador === salesPerson
         : true;
 
       return (
         matchesSearchTerm &&
         isDateInRange &&
         isDueDateValid &&
-        isvendaTypeValid &&
-        isvendasPersonValid
+        issaleTypeValid &&
+        issalesPersonValid
       );
     });
 

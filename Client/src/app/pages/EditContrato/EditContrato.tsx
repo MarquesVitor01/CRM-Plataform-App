@@ -88,10 +88,12 @@ export const EditContrato = () => {
   };
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
   ) => {
     const { name, value } = e.target;
-  
+
     setClientData((prevData) =>
       prevData
         ? {
@@ -100,27 +102,33 @@ export const EditContrato = () => {
             ...(name === "cpf" || name === "cnpj"
               ? { numeroContrato: value.slice(0, 6) }
               : {}),
-              ...(name === "valorVenda" || name === "parcelas"
-                ? (() => {
-                    const valorVenda = parseFloat(
-                      name === "valorVenda" ? value : prevData.valorVenda || "0"
-                    );
-                    const parcelas = parseInt(
-                      name === "parcelas" ? value : prevData.parcelas || "1"
-                    );
-    
-                    if (!isNaN(valorVenda) && parcelas > 0) {
-                      if (parcelas === 1) {
-                        // Se apenas 1 parcela, valorParcelado é igual ao valorVenda
-                        return { valorParcelado: Math.round(valorVenda).toString() };
-                      } else {
-                        // Divide o valorVenda pelas parcelas e arredonda para inteiro
-                        return { valorParcelado: Math.round(valorVenda / parcelas).toString() };
-                      }
+            ...(name === "valorVenda" || name === "parcelas"
+              ? (() => {
+                  const valorVenda = parseFloat(
+                    name === "valorVenda" ? value : prevData.valorVenda || "0"
+                  );
+                  const parcelas = parseInt(
+                    name === "parcelas" ? value : prevData.parcelas || "1"
+                  );
+
+                  if (!isNaN(valorVenda) && parcelas > 0) {
+                    if (parcelas === 1) {
+                      // Se apenas 1 parcela, valorParcelado é igual ao valorVenda
+                      return {
+                        valorParcelado: Math.round(valorVenda).toString(),
+                      };
+                    } else {
+                      // Divide o valorVenda pelas parcelas e arredonda para inteiro
+                      return {
+                        valorParcelado: Math.round(
+                          valorVenda / parcelas
+                        ).toString(),
+                      };
                     }
-                    return {};
-                  })()
-                : {}),
+                  }
+                  return {};
+                })()
+              : {}),
           }
         : prevData
     );
@@ -136,30 +144,47 @@ export const EditContrato = () => {
       try {
         const updatedData = Object.fromEntries(
           Object.entries(clientData).filter(
-            ([_, value]) => value !== "" && value !== null && value !== undefined
+            ([_, value]) =>
+              value !== "" && value !== null && value !== undefined
           )
         );
-  
+
         if (Object.keys(updatedData).length === 0) {
           console.error("Nenhum campo válido para atualizar.");
           return;
         }
-  
-        const colecoesParaAtualizar = ["vendas", "financeiros", "posVendas", "marketings"];
-  
+
+        const colecoesParaAtualizar = [
+          "vendas",
+          "financeiros",
+          "posVendas",
+          "marketings",
+        ];
         const updatePromises = colecoesParaAtualizar.map(async (colecao) => {
-          await setDoc(doc(db, colecao, id), {
-            ...updatedData,
-            dataAtualizado: new Date().toISOString(),
-          }, { merge: true });
-          console.log(`Atualizado com sucesso em ${colecao}`);
+          const docRef = doc(db, colecao, id);
+          const docSnap = await getDoc(docRef);
+
+          if (docSnap.exists()) {
+            await setDoc(
+              docRef,
+              {
+                ...updatedData,
+                dataAtualizado: new Date().toISOString(),
+              },
+              { merge: true }
+            );
+            console.log(`Atualizado com sucesso em ${colecao}`);
+          } else {
+            console.log(
+              `Documento não encontrado em ${colecao}, não será criado.`
+            );
+          }
         });
-  
+
         await Promise.all(updatePromises);
-  
+
         toast.success("Dados atualizados em todas as coleções!");
         setTimeout(() => navigate(-1), 2000);
-  
       } catch (error) {
         console.error("Erro ao atualizar os dados do cliente: ", error);
         toast.error("Erro ao atualizar os dados do cliente.");
@@ -168,7 +193,6 @@ export const EditContrato = () => {
       console.log("ID ou clientData não disponível.");
     }
   };
-  
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -179,7 +203,10 @@ export const EditContrato = () => {
     switch (step) {
       case 0:
         return (
-          <EditOperador form={clientData} handleInputChange={handleInputChange} />
+          <EditOperador
+            form={clientData}
+            handleInputChange={handleInputChange}
+          />
         );
       case 1:
         return (
@@ -193,7 +220,10 @@ export const EditContrato = () => {
         );
       case 2:
         return (
-          <EditInfoAdicionais form={clientData} handleInputChange={handleInputChange} />
+          <EditInfoAdicionais
+            form={clientData}
+            handleInputChange={handleInputChange}
+          />
         );
       default:
         return null;
@@ -208,17 +238,29 @@ export const EditContrato = () => {
           {renderStep()}
           <div className="mt-4 d-flex gap-4 justify-content-center">
             {step === 0 && (
-              <button type="button" className="btn btn-danger" onClick={sairFicha}>
+              <button
+                type="button"
+                className="btn btn-danger"
+                onClick={sairFicha}
+              >
                 Sair
               </button>
             )}
             {step > 0 && (
-              <button type="button" className="btn btn-secondary" onClick={handleBack}>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={handleBack}
+              >
                 Voltar
               </button>
             )}
             {step < 2 && (
-              <button type="button" className="btn btn-primary" onClick={handleNext}>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={handleNext}
+              >
                 Próximo
               </button>
             )}
