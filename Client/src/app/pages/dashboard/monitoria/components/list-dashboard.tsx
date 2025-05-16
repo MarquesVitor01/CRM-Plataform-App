@@ -12,6 +12,7 @@ import {
   faBars,
   faMoneyCheckDollar,
   faMarker,
+  faBroom,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { ModalExcel } from "./modalExcel";
@@ -40,7 +41,10 @@ interface ListDashboardProps {
   setTotalRealizados: (total: number) => void;
 }
 
-export const ListDashboard: React.FC<ListDashboardProps> = ({ setTotalVendas, setTotalRealizados }) => {
+export const ListDashboard: React.FC<ListDashboardProps> = ({
+  setTotalVendas,
+  setTotalRealizados,
+}) => {
   const [vendas, setVendas] = useState<Venda[]>([]);
   const [selectedItems] = useState<Set<string>>(new Set());
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -55,7 +59,8 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({ setTotalVendas, se
     endDate: "",
     dueDate: "",
     saleType: "",
-    salesPerson: ""
+    salesPerson: "",
+    saleGroup: ""
   });
 
   const [showConcluidas, setShowConcluidas] = useState(false);
@@ -74,9 +79,10 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({ setTotalVendas, se
         setVendas(vendasList);
         setTotalVendas(vendasList.length);
 
-        const totalRealizados = vendasList.filter(venda => venda.monitoriaConcluidaYes).length;
+        const totalRealizados = vendasList.filter(
+          (venda) => venda.monitoriaConcluidaYes
+        ).length;
         setTotalRealizados(totalRealizados);
-
       } catch (error) {
         console.error("Erro ao buscar vendas:", error);
       } finally {
@@ -105,31 +111,49 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({ setTotalVendas, se
       const matchesSearchTerm =
         (venda.cnpj && venda.cnpj.toLowerCase().includes(lowerCaseTerm)) ||
         (venda.cpf && venda.cpf.toLowerCase().includes(lowerCaseTerm)) ||
-        (venda.responsavel && venda.responsavel.toLowerCase().includes(lowerCaseTerm)) ||
+        (venda.responsavel &&
+          venda.responsavel.toLowerCase().includes(lowerCaseTerm)) ||
         (venda.email1 && venda.email1.toLowerCase().includes(lowerCaseTerm)) ||
         (venda.email2 && venda.email2.toLowerCase().includes(lowerCaseTerm)) ||
-        (venda.operador && venda.operador.toLowerCase().includes(lowerCaseTerm));
+        (venda.operador &&
+          venda.operador.toLowerCase().includes(lowerCaseTerm));
 
       const { startDate, endDate, dueDate, saleType, salesPerson } = filters;
 
       const vendaData = new Date(venda.data);
-      const isStartDateValid = startDate ? vendaData.toDateString() === new Date(startDate).toDateString() : true;
+      const isStartDateValid = startDate
+        ? vendaData.toDateString() === new Date(startDate).toDateString()
+        : true;
 
-      const isDateInRange = (startDate && endDate)
-        ? vendaData >= new Date(startDate) && vendaData <= new Date(endDate)
-        : isStartDateValid;
+      const isDateInRange =
+        startDate && endDate
+          ? vendaData >= new Date(startDate) && vendaData <= new Date(endDate)
+          : isStartDateValid;
 
       const vendaDataVencimento = new Date(venda.dataVencimento);
-      const isDueDateValid = dueDate ? vendaDataVencimento.toDateString() === new Date(dueDate).toDateString() : true;
+      const isDueDateValid = dueDate
+        ? vendaDataVencimento.toDateString() ===
+          new Date(dueDate).toDateString()
+        : true;
 
       const isSaleTypeValid = saleType ? venda.contrato === saleType : true;
-      const isSalesPersonValid = salesPerson ? venda.operador === salesPerson : true;
+      const isSalesPersonValid = salesPerson
+        ? venda.operador === salesPerson
+        : true;
 
-      return matchesSearchTerm && isDateInRange && isDueDateValid && isSaleTypeValid && isSalesPersonValid;
+      return (
+        matchesSearchTerm &&
+        isDateInRange &&
+        isDueDateValid &&
+        isSaleTypeValid &&
+        isSalesPersonValid
+      );
     });
 
     if (showConcluidas) {
-      filteredClients = filteredClients.filter((venda) => !venda.monitoriaConcluidaYes);
+      filteredClients = filteredClients.filter(
+        (venda) => !venda.monitoriaConcluidaYes
+      );
     }
 
     return filteredClients;
@@ -158,8 +182,16 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({ setTotalVendas, se
 
   const handleApplyFilters = (newFilters: any) => {
     setFilters(newFilters);
+    localStorage.setItem("vendaFilters", JSON.stringify(newFilters)); // ← salvar no localStorage
     setModalExcel(false);
   };
+
+  useEffect(() => {
+    const savedFilters = localStorage.getItem("vendaFilters");
+    if (savedFilters) {
+      setFilters(JSON.parse(savedFilters));
+    }
+  }, []);
 
   const toggleConcluido = () => {
     setShowConcluidas(!showConcluidas);
@@ -184,11 +216,13 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({ setTotalVendas, se
       .substring(0, 18);
   };
 
-
   return (
     <div className="list-dashboard">
       {modalExcel && (
-        <ModalExcel onClose={closeModalExcel} onApplyFilters={handleApplyFilters} />
+        <ModalExcel
+          onClose={closeModalExcel}
+          onApplyFilters={handleApplyFilters}
+        />
       )}
 
       <div className="header-list">
@@ -214,30 +248,75 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({ setTotalVendas, se
               className="search-input"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              onKeyPress={(e) => e.key === "Enter" && handleSearchClick()} 
+              onKeyPress={(e) => e.key === "Enter" && handleSearchClick()}
             />
           </div>
           <div className="selects-container">
             <button className="filtros-btn" onClick={openModalExcel}>
-              <FontAwesomeIcon icon={faFilter} color="#fff" data-tooltip-id="tooltip-filter" data-tooltip-content="Aplicar filtros" />
+              <FontAwesomeIcon
+                icon={faFilter}
+                color="#fff"
+                data-tooltip-id="tooltip-filter"
+                data-tooltip-content="Aplicar filtros"
+              />
+            </button>
+            <button
+              className="filtros-btn"
+              data-tooltip-id="clear-tooltip"
+              data-tooltip-content="Limpar filtros"
+              onClick={() => {
+                setFilters({
+                  startDate: "",
+                  endDate: "",
+                  dueDate: "",
+                  saleType: "",
+                  salesPerson: "",
+                  saleGroup: "",
+                });
+                localStorage.removeItem("vendaFilters");
+              }}
+            >
+              <FontAwesomeIcon icon={faBroom} color="#fff" />
+              <Tooltip
+                id="clear-tooltip"
+                place="top"
+                className="custom-tooltip"
+              />
             </button>
 
             {showConcluidas ? (
               <button className="remove-btn" onClick={toggleConcluido}>
-                <FontAwesomeIcon icon={faX} color="#fff" data-tooltip-id="tooltip-remove" data-tooltip-content="Remover concluídas" />
+                <FontAwesomeIcon
+                  icon={faX}
+                  color="#fff"
+                  data-tooltip-id="tooltip-remove"
+                  data-tooltip-content="Remover concluídas"
+                />
               </button>
             ) : (
               <button className="concluido-btn" onClick={toggleConcluido}>
-                <FontAwesomeIcon icon={faBars} color="#fff" data-tooltip-id="tooltip-show" data-tooltip-content="Mostrar concluídas" />
+                <FontAwesomeIcon
+                  icon={faBars}
+                  color="#fff"
+                  data-tooltip-id="tooltip-show"
+                  data-tooltip-content="Mostrar concluídas"
+                />
               </button>
             )}
 
             {/* Tooltips */}
-            <Tooltip id="tooltip-filter" place="top" className="custom-tooltip" />
-            <Tooltip id="tooltip-remove" place="top" className="custom-tooltip" />
+            <Tooltip
+              id="tooltip-filter"
+              place="top"
+              className="custom-tooltip"
+            />
+            <Tooltip
+              id="tooltip-remove"
+              place="top"
+              className="custom-tooltip"
+            />
             <Tooltip id="tooltip-show" place="top" className="custom-tooltip" />
           </div>
-
         </div>
       </div>
 
@@ -263,19 +342,45 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({ setTotalVendas, se
               {currentClients.map((venda: Venda) => (
                 <tr key={venda.id}>
                   <td></td>
-                  <td className={`${selectedItems.has(venda.id) ? "selected" : ""} ${venda.monitoriaConcluidaYes ? "concluida" : ""} ${venda.observacaoYes ? "analise" : ""}`}>
-                    {venda.cnpj ? formatCNPJ(venda.cnpj) : venda.cpf ? formatCPF(venda.cpf) : venda.cnpj || venda.cpf}
+                  <td
+                    className={`${
+                      selectedItems.has(venda.id) ? "selected" : ""
+                    } ${venda.monitoriaConcluidaYes ? "concluida" : ""} ${
+                      venda.observacaoYes ? "analise" : ""
+                    }`}
+                  >
+                    {venda.cnpj
+                      ? formatCNPJ(venda.cnpj)
+                      : venda.cpf
+                      ? formatCPF(venda.cpf)
+                      : venda.cnpj || venda.cpf}
                   </td>
-                  <td className={`${selectedItems.has(venda.id) ? "selected" : ""} ${venda.monitoriaConcluidaYes ? "concluida" : ""}`}>
+                  <td
+                    className={`${
+                      selectedItems.has(venda.id) ? "selected" : ""
+                    } ${venda.monitoriaConcluidaYes ? "concluida" : ""}`}
+                  >
                     {venda.responsavel}
                   </td>
-                  <td className={`${selectedItems.has(venda.id) ? "selected" : ""} ${venda.monitoriaConcluidaYes ? "concluida" : ""}`}>
+                  <td
+                    className={`${
+                      selectedItems.has(venda.id) ? "selected" : ""
+                    } ${venda.monitoriaConcluidaYes ? "concluida" : ""}`}
+                  >
                     {venda.email1}
                   </td>
-                  <td className={`${selectedItems.has(venda.id) ? "selected" : ""} ${venda.monitoriaConcluidaYes ? "concluida" : ""}`}>
+                  <td
+                    className={`${
+                      selectedItems.has(venda.id) ? "selected" : ""
+                    } ${venda.monitoriaConcluidaYes ? "concluida" : ""}`}
+                  >
                     {venda.operador.replace(/\./g, " ")}
                   </td>
-                  <td className={`${selectedItems.has(venda.id) ? "selected" : ""} ${venda.monitoriaConcluidaYes ? "concluida" : ""}`}>
+                  <td
+                    className={`${
+                      selectedItems.has(venda.id) ? "selected" : ""
+                    } ${venda.monitoriaConcluidaYes ? "concluida" : ""}`}
+                  >
                     {venda.nomeMonitor}
                   </td>
                   <td className="icon-container">
@@ -310,7 +415,11 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({ setTotalVendas, se
                         data-tooltip-id="tooltip-boleto"
                         data-tooltip-content="Ver ficha de boleto"
                       />
-                      <Tooltip id="tooltip-boleto" place="top" className="custom-tooltip" />
+                      <Tooltip
+                        id="tooltip-boleto"
+                        place="top"
+                        className="custom-tooltip"
+                      />
                     </Link>
                     <Link to={`/fichamsgmonitoria/${venda.id}`}>
                       <FontAwesomeIcon
@@ -319,15 +428,30 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({ setTotalVendas, se
                         data-tooltip-id="tooltip-boleto"
                         data-tooltip-content="Enviar mensagem"
                       />
-                      <Tooltip id="tooltip-boleto" place="top" className="custom-tooltip" />
+                      <Tooltip
+                        id="tooltip-boleto"
+                        place="top"
+                        className="custom-tooltip"
+                      />
                     </Link>
 
                     {/* Tooltips */}
-                    <Tooltip id="tooltip-view" place="top" className="custom-tooltip" />
-                    <Tooltip id="tooltip-edit" place="top" className="custom-tooltip" />
-                    <Tooltip id="tooltip-monitor" place="top" className="custom-tooltip" />
+                    <Tooltip
+                      id="tooltip-view"
+                      place="top"
+                      className="custom-tooltip"
+                    />
+                    <Tooltip
+                      id="tooltip-edit"
+                      place="top"
+                      className="custom-tooltip"
+                    />
+                    <Tooltip
+                      id="tooltip-monitor"
+                      place="top"
+                      className="custom-tooltip"
+                    />
                   </td>
-
                 </tr>
               ))}
             </tbody>
@@ -340,7 +464,9 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({ setTotalVendas, se
             >
               <FontAwesomeIcon icon={faArrowLeft} />
             </button>
-            <span>{currentPage} / {totalPages}</span>
+            <span>
+              {currentPage} / {totalPages}
+            </span>
             <button
               onClick={() => handlePageChange(currentPage + 1)}
               disabled={currentPage === totalPages}

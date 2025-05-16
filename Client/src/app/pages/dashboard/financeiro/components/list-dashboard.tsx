@@ -13,6 +13,7 @@ import {
   faCancel,
   faMinus,
   faDownload,
+  faBroom,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { ModalExcel } from "./modalExcel";
@@ -279,8 +280,16 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
 
   const handleApplyFilters = (newFilters: any) => {
     setFilters(newFilters);
+    localStorage.setItem("vendaFilters", JSON.stringify(newFilters)); // ← salvar no localStorage
     setModalExcel(false);
   };
+
+  useEffect(() => {
+    const savedFilters = localStorage.getItem("vendaFilters");
+    if (savedFilters) {
+      setFilters(JSON.parse(savedFilters));
+    }
+  }, []);
 
   const downloadClients = () => {
     const clientsToDownload = applyFilters();
@@ -391,6 +400,29 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
               data-tooltip-content="Aplicar filtros"
             >
               <FontAwesomeIcon icon={faFilter} color="#fff" />
+            </button>
+            <button
+              className="filtros-btn"
+              data-tooltip-id="clear-tooltip"
+              data-tooltip-content="Limpar filtros"
+              onClick={() => {
+                setFilters({
+                  startDate: "",
+                  endDate: "",
+                  dueDate: "",
+                  saleType: "",
+                  salesPerson: "",
+                  saleGroup: "",
+                });
+                localStorage.removeItem("vendaFilters");
+              }}
+            >
+              <FontAwesomeIcon icon={faBroom} color="#fff" />
+              <Tooltip
+                id="clear-tooltip"
+                place="top"
+                className="custom-tooltip"
+              />
             </button>
 
             {showCancelados ? (

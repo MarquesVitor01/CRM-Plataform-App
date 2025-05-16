@@ -15,6 +15,7 @@ import {
   faTrashAlt,
   faBalanceScaleLeft,
   faPrint,
+  faBroom,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { ModalExcel } from "./modalExcel";
@@ -91,8 +92,9 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
     startDate: "",
     endDate: "",
     dueDate: "",
-    vendaType: "",
-    vendasPerson: "",
+    saleType: "",
+    salesPerson: "",
+    saleGroup: ""
   });
   const [showConcluidas, setShowConcluidas] = useState(false);
 
@@ -225,7 +227,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
         (posVenda.operador &&
           posVenda.operador.toLowerCase().includes(lowerCaseTerm));
 
-      const { startDate, endDate, dueDate, vendaType, vendasPerson } = filters;
+      const { startDate, endDate, dueDate, saleType, salesPerson } = filters;
 
       const posVendaData = new Date(posVenda.data);
       const isStartDateValid = startDate
@@ -244,19 +246,17 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
           new Date(dueDate).toDateString()
         : true;
 
-      const isvendaTypeValid = vendaType
-        ? posVenda.contrato === vendaType
-        : true;
-      const isvendasPersonValid = vendasPerson
-        ? posVenda.operador === vendasPerson
+      const issaleTypeValid = saleType ? posVenda.contrato === saleType : true;
+      const issalesPersonValid = salesPerson
+        ? posVenda.operador === salesPerson
         : true;
 
       return (
         matchesSearchTerm &&
         isDateInRange &&
         isDueDateValid &&
-        isvendaTypeValid &&
-        isvendasPersonValid
+        issaleTypeValid &&
+        issalesPersonValid
       );
     });
 
@@ -292,8 +292,16 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
 
   const handleApplyFilters = (newFilters: any) => {
     setFilters(newFilters);
+    localStorage.setItem("vendaFilters", JSON.stringify(newFilters)); // ← salvar no localStorage
     setModalExcel(false);
   };
+
+  useEffect(() => {
+    const savedFilters = localStorage.getItem("vendaFilters");
+    if (savedFilters) {
+      setFilters(JSON.parse(savedFilters));
+    }
+  }, []);
 
   const toggleConcluido = () => {
     setShowConcluidas(!showConcluidas);
@@ -431,6 +439,30 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
               data-tooltip-content="Aplicar filtros"
             >
               <FontAwesomeIcon icon={faFilter} color="#fff" />
+            </button>
+
+            <button
+              className="filtros-btn"
+              data-tooltip-id="clear-tooltip"
+              data-tooltip-content="Limpar filtros"
+              onClick={() => {
+                setFilters({
+                  startDate: "",
+                  endDate: "",
+                  dueDate: "",
+                  saleType: "",
+                  salesPerson: "",
+                  saleGroup: "",
+                });
+                localStorage.removeItem("vendaFilters");
+              }}
+            >
+              <FontAwesomeIcon icon={faBroom} color="#fff" />
+              <Tooltip
+                id="clear-tooltip"
+                place="top"
+                className="custom-tooltip"
+              />
             </button>
 
             {/* <button

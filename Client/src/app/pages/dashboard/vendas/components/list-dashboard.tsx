@@ -13,6 +13,7 @@ import {
   faFile,
   faMoneyCheckDollar,
   faPrint,
+  faBroom,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { ModalExcel } from "./modalExcel";
@@ -231,9 +232,16 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
 
   const handleApplyFilters = (newFilters: any) => {
     setFilters(newFilters);
+    localStorage.setItem("vendaFilters", JSON.stringify(newFilters)); // ← salvar no localStorage
     setModalExcel(false);
   };
 
+  useEffect(() => {
+    const savedFilters = localStorage.getItem("vendaFilters");
+    if (savedFilters) {
+      setFilters(JSON.parse(savedFilters));
+    }
+  }, []);
   const formatarTelefone = (numero: any) => {
     if (!numero) return "";
 
@@ -393,7 +401,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
               className="search-input"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              onKeyPress={(e) => e.key === "Enter" && handleSearchClick()} 
+              onKeyPress={(e) => e.key === "Enter" && handleSearchClick()}
             />
           </div>
 
@@ -439,6 +447,30 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
               <FontAwesomeIcon icon={faFilter} color="#fff" />
               <Tooltip
                 id="filter-tooltip"
+                place="top"
+                className="custom-tooltip"
+              />
+            </button>
+
+            <button
+              className="filtros-btn"
+              data-tooltip-id="clear-tooltip"
+              data-tooltip-content="Limpar filtros"
+              onClick={() => {
+                setFilters({
+                  startDate: "",
+                  endDate: "",
+                  dueDate: "",
+                  saleType: "",
+                  salesPerson: "",
+                  saleGroup: "",
+                });
+                localStorage.removeItem("vendaFilters");
+              }}
+            >
+              <FontAwesomeIcon icon={faBroom} color="#fff" />
+              <Tooltip
+                id="clear-tooltip"
                 place="top"
                 className="custom-tooltip"
               />

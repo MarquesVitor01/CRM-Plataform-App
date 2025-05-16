@@ -17,6 +17,8 @@ import {
   faExclamation,
   faList,
   faMarker,
+  faPrint,
+  faBroom,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { ModalExcel } from "./modalExcel";
@@ -98,13 +100,13 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
   const [showIncompletos, setShowIncompletos] = useState(false);
   const [cargo, setCargo] = useState<string | null>(null);
 
-
   const [filters, setFilters] = useState({
     startDate: "",
     endDate: "",
     dueDate: "",
     saleType: "",
     salesPerson: "",
+    saleGroup: ""
   });
   const [showConcluidas, setShowConcluidas] = useState(false);
 
@@ -177,25 +179,23 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
           setTotalMarketings(0);
           return;
         }
-  
+
         const marketingsCollection = collection(db, "marketings");
         const marketingsSnapshot = await getDocs(marketingsCollection);
         const marketingsList = marketingsSnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         })) as Marketing[];
-  
+
         const isAdmin =
-          cargo === "adm" ||
-          cargo === "supervisor" ||
-          cargo === "marketing";
-          console.log("isAdmin:", isAdmin);
+          cargo === "adm" || cargo === "supervisor" || cargo === "marketing";
+        console.log("isAdmin:", isAdmin);
         const filteredVendas = isAdmin
           ? marketingsList
           : marketingsList.filter(
               (marketing) => marketing.createdBy === auth.currentUser?.uid
             );
-  
+
         setMarketings(filteredVendas);
         setTotalMarketings(filteredVendas.length);
       } catch (error) {
@@ -203,12 +203,10 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
       } finally {
         setLoading(false);
       }
-      
     };
-  
+
     fetchVendas();
   }, [setTotalMarketings, auth]);
-  
 
   const handleCheckboxChange = (id: string) => {
     setSelectedItems((prevSelectedItems) => {
@@ -286,9 +284,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
           new Date(dueDate).toDateString()
         : true;
 
-      const issaleTypeValid = saleType
-        ? marketing.contrato === saleType
-        : true;
+      const issaleTypeValid = saleType ? marketing.contrato === saleType : true;
       const issalesPersonValid = salesPerson
         ? marketing.operador === salesPerson
         : true;
@@ -333,57 +329,17 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
 
   const handleApplyFilters = (newFilters: any) => {
     setFilters(newFilters);
+    localStorage.setItem("vendaFilters", JSON.stringify(newFilters)); // ← salvar no localStorage
     setModalExcel(false);
   };
 
-  const handleSyncClients = async () => {
-    setSyncLoading(true);
-    try {
-      const vendasCollection = collection(db, "vendas");
-      const vendasSnapshot = await getDocs(vendasCollection);
-      const vendasList = vendasSnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as venda[];
-
-      const syncedvendas = vendasList.filter(
-        (venda) => venda.monitoriaConcluidaYes
-      );
-
-      const batch = writeBatch(db);
-      for (const venda of syncedvendas) {
-        const marketingDocRef = doc(db, "marketings", venda.id);
-        batch.set(marketingDocRef, venda, { merge: true });
-      }
-
-      await batch.commit();
-
-      const marketingsSnapshot = await getDocs(collection(db, "marketings"));
-      const marketingsList = marketingsSnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as Marketing[];
-
-      setMarketings(marketingsList);
-      setTotalMarketings(marketingsList.length);
-
-      // await fetch("https://crm-plataform-app-6t3u.vercel.app/sync-marketing", {
-      //   method: "POST",
-      // });
-      console.log("Vendas com posVendaConcuida true:", syncedvendas);
-
-      toast.success("Sincronização concluída!");
-    } catch (error) {
-      console.error("Erro ao sincronizar clientes:", error);
-      toast.error("Erro na sincronização!");
-    } finally {
-      setSyncLoading(false);
+  useEffect(() => {
+    const savedFilters = localStorage.getItem("vendaFilters");
+    if (savedFilters) {
+      setFilters(JSON.parse(savedFilters));
     }
-  };
+  }, []);
 
-  const toggleConcluido = () => {
-    setShowConcluidas(!showConcluidas);
-  };
 
   const formatCPF = (value: string): string => {
     return value
@@ -394,7 +350,6 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
       .substring(0, 14);
   };
 
-  // Função para formatar o CNPJ (visual)
   const formatCNPJ = (value: string): string => {
     return value
       .replace(/\D/g, "")
@@ -526,6 +481,30 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
             </button>
 
             <button
+              className="filtros-btn"
+              data-tooltip-id="clear-tooltip"
+              data-tooltip-content="Limpar filtros"
+              onClick={() => {
+                setFilters({
+                  startDate: "",
+                  endDate: "",
+                  dueDate: "",
+                  saleType: "",
+                  salesPerson: "",
+                  saleGroup: "",
+                });
+                localStorage.removeItem("vendaFilters");
+              }}
+            >
+              <FontAwesomeIcon icon={faBroom} color="#fff" />
+              <Tooltip
+                id="clear-tooltip"
+                place="top"
+                className="custom-tooltip"
+              />
+            </button>
+
+            <button
               className="btn-concluidos"
               onClick={toggleConcluidos}
               data-tooltip-id="tooltip-concluidos"
@@ -563,7 +542,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
               <FontAwesomeIcon icon={faSync} color="#fff" spin={syncLoading} />
             </button> */}
 
-           {cargo === "adm" && (
+            {cargo === "adm" && (
               <button
                 onClick={openModalExclusao}
                 className="remove-btn"
@@ -758,6 +737,36 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                         />
                         <Tooltip
                           id="tooltip-msg"
+                          place="top"
+                          className="custom-tooltip"
+                        />
+                      </Link>
+                      <Link
+                        to={`/fichaposVenda/${marketing.id}`}
+                        data-tooltip-id="tooltip-posVenda-file"
+                        data-tooltip-content="Ficha de posVenda"
+                      >
+                        <FontAwesomeIcon
+                          icon={faTableList}
+                          className="icon-spacing text-dark"
+                          data-tooltip-id="tooltip-pos"
+                          data-tooltip-content="Acessar ficha Pós Venda"
+                        />
+                        <Tooltip
+                          id="tooltip-pos"
+                          place="top"
+                          className="custom-tooltip"
+                        />
+                      </Link>
+                      <Link to={`/assinatura/${marketing.id}`}>
+                        <FontAwesomeIcon
+                          icon={faPrint}
+                          className="icon-spacing text-dark"
+                          data-tooltip-id="tooltip-assinatura"
+                          data-tooltip-content="Visualizar Assinatura"
+                        />
+                        <Tooltip
+                          id="tooltip-assinatura"
                           place="top"
                           className="custom-tooltip"
                         />
