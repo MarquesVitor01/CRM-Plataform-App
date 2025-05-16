@@ -7,6 +7,7 @@ import {
   faSearch,
   faFilter,
   faTableList,
+  faBroom,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { ModalExcel } from "./modalExcel";
@@ -53,6 +54,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
     saleType: "",
     salesPerson: "",
     cobPerson: "",
+    saleGroup: "",
   });
   const [activeSearchTerm, setActiveSearchTerm] = useState<string>("");
 
@@ -182,8 +184,16 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
 
   const handleApplyFilters = (newFilters: any) => {
     setFilters(newFilters);
+    localStorage.setItem("vendaFilters", JSON.stringify(newFilters));
     setModalExcel(false);
   };
+
+  useEffect(() => {
+    const savedFilters = localStorage.getItem("vendaFilters");
+    if (savedFilters) {
+      setFilters(JSON.parse(savedFilters));
+    }
+  }, []);
 
   const formatCPF = (value: string): string => {
     return value
@@ -237,7 +247,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
               className="search-input"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              onKeyPress={(e) => e.key === "Enter" && handleSearchClick()} 
+              onKeyPress={(e) => e.key === "Enter" && handleSearchClick()}
             />
           </div>
           <div className="selects-container">
@@ -248,6 +258,30 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
               data-tooltip-content="Aplicar filtros"
             >
               <FontAwesomeIcon icon={faFilter} color="#fff" />
+            </button>
+            <button
+              className="filtros-btn"
+              data-tooltip-id="clear-tooltip"
+              data-tooltip-content="Limpar filtros"
+              onClick={() => {
+                setFilters({
+                  startDate: "",
+                  endDate: "",
+                  dueDate: "",
+                  saleType: "",
+                  salesPerson: "",
+                  cobPerson: "",
+                  saleGroup: "",
+                });
+                localStorage.removeItem("vendaFilters");
+              }}
+            >
+              <FontAwesomeIcon icon={faBroom} color="#fff" />
+              <Tooltip
+                id="clear-tooltip"
+                place="top"
+                className="custom-tooltip"
+              />
             </button>
           </div>
 
