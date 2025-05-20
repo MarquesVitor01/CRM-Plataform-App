@@ -2,11 +2,19 @@ import { useAuth } from "../../../../context/AuthContext";
 
 interface HeaderDashProps {
   totalVendas: number;
-  totalRealizados: number; 
+  totalRealizados: number;
+  totalRealizadosDiario: number;
+  totalPendentesDiario: number;
 }
 
-export const HeaderDash: React.FC<HeaderDashProps> = ({ totalVendas, totalRealizados }) => {
-  const { nome } = useAuth(); 
+export const HeaderDash: React.FC<HeaderDashProps> = ({
+  totalVendas,
+  totalRealizados,
+  totalRealizadosDiario,
+  totalPendentesDiario,
+}) => {
+  const { nome } = useAuth();
+
   return (
     <section>
       <div className="header-dash">
@@ -15,18 +23,22 @@ export const HeaderDash: React.FC<HeaderDashProps> = ({ totalVendas, totalRealiz
             <h3>Olá, {nome}</h3>
           </div>
 
-          <div className="header-info">
-            <div className="col-md-4 info-item">
+          <div className="header-info row">
+            <div className="col-md-3 info-item">
               <h3>Total de Clientes</h3>
-              <p>{totalVendas}</p> 
+              <p>{totalVendas}</p>
             </div>
-            <div className="col-md-4 info-item">
-              <h3>Nota Geral</h3>
-              <p>93.56</p>
-            </div>
-            <div className="col-md-4 info-item">
+            <div className="col-md-3 info-item">
               <h3>Total Realizados</h3>
               <p>{totalRealizados}</p>
+            </div>
+            <div className="col-md-3 info-item">
+              <h3>Realizados Hoje</h3>
+              <p>{totalRealizadosDiario}</p>
+            </div>
+            <div className="col-md-3 info-item">
+              <h3>Pendentes Hoje</h3>
+              <p>{totalPendentesDiario}</p>
             </div>
           </div>
         </div>

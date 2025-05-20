@@ -358,28 +358,36 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                   <td
                     className={`${
                       selectedItems.has(venda.id) ? "selected" : ""
-                    } ${venda.monitoriaConcluidaYes ? "concluida" : ""}`}
+                    } ${venda.monitoriaConcluidaYes ? "concluida" : ""} ${
+                      venda.observacaoYes ? "analise" : ""
+                    }`}
                   >
                     {venda.responsavel}
                   </td>
                   <td
                     className={`${
                       selectedItems.has(venda.id) ? "selected" : ""
-                    } ${venda.monitoriaConcluidaYes ? "concluida" : ""}`}
+                    } ${venda.monitoriaConcluidaYes ? "concluida" : ""} ${
+                      venda.observacaoYes ? "analise" : ""
+                    }`}
                   >
                     {venda.email1}
                   </td>
                   <td
                     className={`${
                       selectedItems.has(venda.id) ? "selected" : ""
-                    } ${venda.monitoriaConcluidaYes ? "concluida" : ""}`}
+                    } ${venda.monitoriaConcluidaYes ? "concluida" : ""} ${
+                      venda.observacaoYes ? "analise" : ""
+                    }`}
                   >
                     {venda.operador.replace(/\./g, " ")}
                   </td>
                   <td
                     className={`${
                       selectedItems.has(venda.id) ? "selected" : ""
-                    } ${venda.monitoriaConcluidaYes ? "concluida" : ""}`}
+                    } ${venda.monitoriaConcluidaYes ? "concluida" : ""} ${
+                      venda.observacaoYes ? "analise" : ""
+                    }`}
                   >
                     {venda.nomeMonitor}
                   </td>
