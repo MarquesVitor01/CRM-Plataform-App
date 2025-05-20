@@ -28,7 +28,7 @@ export const Setores = () => {
     <div className="sector-selection container-fluid">
       <h1 className="title text-center">Escolha um Setor</h1>
       <div className="sector-container row justify-content-center">
-        {(cargo === "vendas" || cargo === "supervisor" || userId === adminId || userId === graziId) && (
+        {(cargo === "vendas" || cargo === "supervisor" || cargo === "adm" || userId === adminId || userId === graziId) && (
           <div className="sector col-10 col-md-4">
             <div className="sector-content">
               <FontAwesomeIcon icon={faChartLine} className="sector-icon" />
