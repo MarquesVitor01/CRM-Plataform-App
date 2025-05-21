@@ -4,7 +4,14 @@ import { FichaMonitoriaGrave } from "./Components/FichaMonitoriaGrave";
 import { FichaMonitoriaAuditoria } from "./Components/FichaMonitoriaAuditoria";
 import { FichaMonitoriaQualidade } from "./Components/fichaMonitoriaQualidade";
 import { FichaMonitoriaConfirmacao } from "./Components/FichaMonitoriaConfirmacao";
-import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
 import { db } from "../../../firebase/firebaseConfig";
 import { useNavigate, useParams } from "react-router-dom";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
@@ -40,6 +47,7 @@ interface ClientData {
   observacaoYes: boolean;
   nomeMonitor: string;
   linkGravacao: string;
+  operadorMkt: string;
   // qrcodeText: string;
 }
 
@@ -52,6 +60,41 @@ export const FichaMonitoria: React.FC = () => {
 
   const navigate = useNavigate();
 
+  const getProximoOperadorMarketing = async (): Promise<string | null> => {
+    try {
+      const usuariosRef = collection(db, "usuarios");
+      const snapshot = await getDocs(usuariosRef);
+
+      const operadoresMarketing = snapshot.docs
+        .map((doc) => doc.data())
+        .filter((user) => user.cargo === "marketing")
+        .sort((a, b) => a.nome.localeCompare(b.nome)); // ordena por nome, ou use createdAt
+
+      if (operadoresMarketing.length === 0) return null;
+
+      const controleRef = doc(db, "controleDistribuicao", "operadorAtual");
+      const controleSnap = await getDoc(controleRef);
+
+      let indexAtual = 0;
+
+      if (controleSnap.exists()) {
+        indexAtual = controleSnap.data().indexAtual || 0;
+      }
+
+      const operador = operadoresMarketing[indexAtual];
+
+      // Define o próximo índice
+      const proximoIndex = (indexAtual + 1) % operadoresMarketing.length;
+
+      // Atualiza o índice no Firestore
+      await setDoc(controleRef, { indexAtual: proximoIndex });
+
+      return operador.nome;
+    } catch (error) {
+      console.error("Erro ao buscar operador de marketing:", error);
+      return null;
+    }
+  };
   useEffect(() => {
     const fetchClientData = async () => {
       try {
@@ -96,18 +139,34 @@ export const FichaMonitoria: React.FC = () => {
   const updateClientData = async () => {
     if (id && clientData) {
       try {
-        const updatedData = Object.fromEntries(
-          Object.entries(clientData).filter(
+        const proximoOperador = await getProximoOperadorMarketing();
+
+        const monitoriaHorario = new Date().toLocaleString("pt-BR", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+
+        const updatedData: ClientData & { monitoriaHorario?: string } = {
+          ...clientData,
+          operadorMkt: proximoOperador || "",
+          monitoriaHorario,
+        };
+
+        const dataToUpdate = Object.fromEntries(
+          Object.entries(updatedData).filter(
             ([, value]) => value !== "" && value !== null && value !== undefined
           )
         );
 
-        if (Object.keys(updatedData).length) {
+        if (Object.keys(dataToUpdate).length) {
           const docRef = doc(db, "vendas", id);
-          await setDoc(docRef, updatedData, { merge: true });
+          await setDoc(docRef, dataToUpdate, { merge: true });
 
           if (clientData.monitoriaConcluidaYes) {
-            await adicionarClienteMarketing();
+            await adicionarClienteMarketing(updatedData);
           }
 
           navigate("/monitoria");
@@ -120,21 +179,19 @@ export const FichaMonitoria: React.FC = () => {
     }
   };
 
-  const adicionarClienteMarketing = async () => {
-    if (!id || !clientData) return;
+  const adicionarClienteMarketing = async (dadosCliente: ClientData) => {
+    if (!id || !dadosCliente) return;
 
     try {
       const marketingRef = doc(db, "marketings", id);
       const marketingSnap = await getDoc(marketingRef);
 
       if (marketingSnap.exists()) {
-        // Se já existe, ativa o modal de confirmação para criar uma cópia
         setPendingMarketingCopy(true);
         setShowModalConfirmAdd(true);
       } else {
-        // Se não existe, cria normalmente
         await setDoc(marketingRef, {
-          ...clientData,
+          ...dadosCliente,
           origem: "monitoria",
           dataAdicionado: new Date().toISOString(),
         });

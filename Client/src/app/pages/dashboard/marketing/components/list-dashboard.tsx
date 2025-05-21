@@ -59,24 +59,9 @@ interface Marketing {
   endereco: any;
   redeSocial: any;
   semRedeSocial: any;
+  operadorMkt: string;
+  monitoriaHorario: string
 }
-
-interface venda {
-  id: string;
-  cnpj: string;
-  responsavel: string;
-  email1: string;
-  email2: string;
-  operador: string;
-  data: string;
-  dataVencimento: string;
-  contrato: string;
-  nomeMonitor: string;
-  monitoriaConcluidaYes: boolean;
-  servicosConcluidos: boolean;
-  posVendaConcuida: boolean;
-}
-
 interface ListDashboardProps {
   setTotalMarketings: (total: number) => void;
   setTotalRealizados: (total: number) => void;
@@ -106,7 +91,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
     dueDate: "",
     saleType: "",
     salesPerson: "",
-    saleGroup: ""
+    saleGroup: "",
   });
   const [showConcluidas, setShowConcluidas] = useState(false);
 
@@ -168,45 +153,67 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
     }
   }
 
-  useEffect(() => {
-    const fetchVendas = async () => {
-      setLoading(true);
-      try {
-        const cargo = await getUserCargo();
-        if (!cargo) {
-          console.warn("Cargo não encontrado para o usuário.");
-          setMarketings([]);
-          setTotalMarketings(0);
-          return;
-        }
-
-        const marketingsCollection = collection(db, "marketings");
-        const marketingsSnapshot = await getDocs(marketingsCollection);
-        const marketingsList = marketingsSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        })) as Marketing[];
-
-        const isAdmin =
-          cargo === "adm" || cargo === "supervisor" || cargo === "marketing";
-        console.log("isAdmin:", isAdmin);
-        const filteredVendas = isAdmin
-          ? marketingsList
-          : marketingsList.filter(
-              (marketing) => marketing.createdBy === auth.currentUser?.uid
-            );
-
-        setMarketings(filteredVendas);
-        setTotalMarketings(filteredVendas.length);
-      } catch (error) {
-        console.error("Erro ao buscar marketings:", error);
-      } finally {
-        setLoading(false);
+useEffect(() => {
+  const fetchVendas = async () => {
+    setLoading(true);
+    try {
+      const user = auth.currentUser;
+      if (!user) {
+        console.warn("Usuário não está logado.");
+        return;
       }
-    };
 
-    fetchVendas();
-  }, [setTotalMarketings, auth]);
+      const userId = user.uid;
+      const userDocRef = doc(db, "usuarios", userId);
+      const userDocSnap = await getDoc(userDocRef);
+
+      if (!userDocSnap.exists()) {
+        console.warn("Usuário não encontrado.");
+        return;
+      }
+
+      const userData = userDocSnap.data();
+      const cargo = userData.cargo;
+      const nomeUsuario = userData.nome;
+      setCargo(cargo);
+
+      const marketingsCollection = collection(db, "marketings");
+      const marketingsSnapshot = await getDocs(marketingsCollection);
+      const marketingsList = marketingsSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as Marketing[];
+
+      let filteredVendas: Marketing[] = [];
+
+      if (cargo === "adm" || cargo === "supervisor") {
+        filteredVendas = marketingsList;
+      } else if (cargo === "marketing") {
+        filteredVendas = marketingsList.filter(
+          (marketing) =>
+            !marketing.operadorMkt ||
+            marketing.operadorMkt.trim() === "" ||
+            marketing.operadorMkt === nomeUsuario
+        );
+      } else {
+        filteredVendas = marketingsList.filter(
+          (marketing) => marketing.createdBy === userId
+        );
+      }
+
+      setMarketings(filteredVendas);
+      setTotalMarketings(filteredVendas.length);
+    } catch (error) {
+      console.error("Erro ao buscar marketings:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchVendas();
+}, [setTotalMarketings, auth]);
+
+
 
   const handleCheckboxChange = (id: string) => {
     setSelectedItems((prevSelectedItems) => {
@@ -242,9 +249,6 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
 
     await Promise.all(deletePromises);
 
-    // setMarketings((prevVendas) => {
-    //   return prevVendas.filter((marketing) => !selectedItems.has(marketing.id));
-    // });
     setSelectedItems(new Set());
   };
 
@@ -309,7 +313,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
 
   const handleSearchClick = () => {
     setActiveSearchTerm(searchTerm);
-    setCurrentPage(1); // Resetar para a primeira página ao realizar nova pesquisa
+    setCurrentPage(1);
   };
   const filteredClients = applyFilters();
   const totalPages = Math.ceil(filteredClients.length / itemsPerPage);
@@ -329,7 +333,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
 
   const handleApplyFilters = (newFilters: any) => {
     setFilters(newFilters);
-    localStorage.setItem("vendaFilters", JSON.stringify(newFilters)); // ← salvar no localStorage
+    localStorage.setItem("vendaFilters", JSON.stringify(newFilters));
     setModalExcel(false);
   };
 
@@ -339,7 +343,6 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
       setFilters(JSON.parse(savedFilters));
     }
   }, []);
-
 
   const formatCPF = (value: string): string => {
     return value
@@ -373,7 +376,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
 
   const toggleConcluidos = () => {
     setShowConcluidos(!showConcluidos);
-    setShowIncompletos(false); // evitar conflitos
+    setShowIncompletos(false);
   };
 
   const toggleIncompletos = () => {
@@ -692,6 +695,17 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                       }`}
                     >
                       {marketing.nomeMonitor}
+                    </td>
+                                        <td
+                      className={`${
+                        selectedItems.has(marketing.id) ? "selected" : ""
+                      } ${
+                        marketing.servicosConcluidos
+                          ? "servicos-realizados"
+                          : ""
+                      }`}
+                    >
+                      {marketing.monitoriaHorario}
                     </td>
                     <td className="icon-container">
                       <Link

@@ -97,11 +97,10 @@ export const Add = () => {
     fetchSenha();
   }, []);
 
-
   const calcularDataVigencia = (data: string, validade: string): string => {
     const dataObj = new Date(data);
     let mesesAdicionar = 0;
-  
+
     switch (validade) {
       case "Mensal":
         mesesAdicionar = 1;
@@ -118,15 +117,15 @@ export const Add = () => {
       default:
         return "";
     }
-  
+
     dataObj.setMonth(dataObj.getMonth() + mesesAdicionar);
-  
+
     const nomeMes = dataObj.toLocaleString("pt-BR", { month: "long" });
     const ano = dataObj.getFullYear();
-  
+
     return `${nomeMes.toLowerCase()}/${ano}`;
   };
-  
+
   useEffect(() => {
     const calcularParcelas = () => {
       const dataVencimento = form.dataVencimento;
@@ -288,26 +287,26 @@ export const Add = () => {
     >
   ) => {
     const { name, value } = e.target;
-  
+
     setForm((prev) => {
       const updatedForm = { ...prev, [name]: value };
-  
+
       if (name === "email1" || name === "email2") {
         updatedForm[name] = value.replace(/\s+/g, "");
       }
-  
+
       if (name === "celular" || name === "whatsapp") {
         updatedForm[name] = value.replace(/\D/g, "").slice(0, 13);
       }
-  
+
       if (name === "fixo") {
         updatedForm[name] = value.replace(/\D/g, "").slice(0, 10);
       }
-  
+
       if ((name === "cpf" || name === "cnpj") && value.length >= 6) {
         updatedForm.numeroContrato = value.slice(0, 6);
       }
-  
+
       // Atualiza a dataVigencia se 'validade' ou 'data' forem alterados
       if (name === "validade" || name === "data") {
         const validade = name === "validade" ? value : updatedForm.validade;
@@ -316,11 +315,10 @@ export const Add = () => {
           updatedForm.dataVigencia = calcularDataVigencia(data, validade);
         }
       }
-  
+
       return updatedForm;
     });
   };
-  
 
   const handleSelectChange = (selectedOption: any) => {
     setForm({ ...form, operador: selectedOption.value });
@@ -340,16 +338,26 @@ export const Add = () => {
 
   const handleModalClose = () => setShowModal(false);
   const handleModalShow = () => setShowModal(true);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
     try {
+      // Gerar data e horário atual no formato: dd/mm/yyyy HH:MM
+      const agora = new Date();
+      const dataHorario = agora.toLocaleString("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+
       const dadosParaSalvar = {
         ...form,
         parcelasDetalhadas: parcelasArray,
+        dataHorario, // 👈 adicionando data e hora da venda
       };
 
       const clienteRef = doc(db, "vendas", form.numeroContrato);

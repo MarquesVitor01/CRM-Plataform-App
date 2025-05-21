@@ -34,6 +34,7 @@ interface Venda {
   nomeMonitor: string;
   monitoriaConcluidaYes: boolean;
   observacaoYes: boolean;
+  dataHorario: string;
 }
 
 interface ListDashboardProps {
@@ -60,7 +61,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
     dueDate: "",
     saleType: "",
     salesPerson: "",
-    saleGroup: ""
+    saleGroup: "",
   });
 
   const [showConcluidas, setShowConcluidas] = useState(false);
@@ -335,6 +336,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                 <th>Email</th>
                 <th>Operador</th>
                 <th>Monitor</th>
+                <th>Encaminhamento</th>
                 <th></th>
               </tr>
             </thead>
@@ -390,6 +392,15 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                     }`}
                   >
                     {venda.nomeMonitor}
+                  </td>
+                  <td
+                    className={`${
+                      selectedItems.has(venda.id) ? "selected" : ""
+                    } ${venda.monitoriaConcluidaYes ? "concluida" : ""} ${
+                      venda.observacaoYes ? "analise" : ""
+                    }`}
+                  >
+                    {venda.dataHorario}
                   </td>
                   <td className="icon-container">
                     <Link to={`/contrato/${venda.id}`}>
