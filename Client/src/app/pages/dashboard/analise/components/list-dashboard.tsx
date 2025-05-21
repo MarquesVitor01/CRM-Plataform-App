@@ -17,7 +17,7 @@ import {
 import { Link } from "react-router-dom";
 import { ModalExcel } from "./modalExcel";
 import { db } from "../../../../firebase/firebaseConfig";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 import { Tooltip } from "react-tooltip";
 import { getAuth } from "firebase/auth";
 
@@ -73,47 +73,59 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
   const [showConcluidas, setShowConcluidas] = useState(false);
 
   useEffect(() => {
-    const fetchvendas = async () => {
-      setLoading(true);
-      try {
-        const vendasCollection = collection(db, "vendas");
-        const vendasSnapshot = await getDocs(vendasCollection);
-        const vendasList = vendasSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        })) as Venda[];
-
-        // Filtrar por permissões de acesso
-        const hasFullAccess =
-          userId === adminUserId ||
-          userId === SupervisorUserId ||
-          userId === graziId;
-
-        const vendasFiltradas = vendasList.filter((venda) => {
-          const pertenceAoUsuario = venda.createdBy === userId;
-          const possuiObservacao = venda.observacaoYes === true;
-
-          return hasFullAccess
-            ? possuiObservacao
-            : pertenceAoUsuario && possuiObservacao;
-        });
-
-        setVendas(vendasFiltradas);
-        setTotalVendas(vendasFiltradas.length);
-
-        const totalRealizados = vendasFiltradas.filter(
-          (venda) => venda.monitoriaConcluidaYes
-        ).length;
-        setTotalRealizados(totalRealizados);
-      } catch (error) {
-        console.error("Erro ao buscar vendas:", error);
-      } finally {
+  const fetchVendas = async () => {
+    setLoading(true);
+    try {
+      if (!userId) {
+        console.error("Usuário não autenticado");
         setLoading(false);
+        return;
       }
-    };
+      const userDoc = await getDoc(doc(db, "usuarios", userId));
+      if (!userDoc.exists()) {
+        console.error("Usuário não encontrado");
+        setLoading(false);
+        return;
+      }
 
-    fetchvendas();
-  }, [setTotalVendas, setTotalRealizados, userId]);
+      const userCargo = userDoc.data().cargo;
+      const cargosComAcessoTotal = ["adm", "supervisor", "monitoria"];
+
+      const vendasCollection = collection(db, "vendas");
+      const vendasSnapshot = await getDocs(vendasCollection);
+      const vendasList = vendasSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as Venda[];
+
+      const hasFullAccess = cargosComAcessoTotal.includes(userCargo);
+
+      const vendasFiltradas = vendasList.filter((venda) => {
+        const pertenceAoUsuario = venda.createdBy === userId;
+        const possuiObservacao = venda.observacaoYes === true;
+
+        return hasFullAccess
+          ? possuiObservacao
+          : pertenceAoUsuario && possuiObservacao;
+      });
+
+      setVendas(vendasFiltradas);
+      setTotalVendas(vendasFiltradas.length);
+
+      const totalRealizados = vendasFiltradas.filter(
+        (venda) => venda.monitoriaConcluidaYes
+      ).length;
+      setTotalRealizados(totalRealizados);
+    } catch (error) {
+      console.error("Erro ao buscar vendas:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchVendas();
+}, [setTotalVendas, setTotalRealizados, userId]);
+
 
   // const handleCheckboxChange = (id: string) => {
   //   setSelectedItems((prevSelectedItems) => {
