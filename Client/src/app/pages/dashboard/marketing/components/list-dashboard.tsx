@@ -612,6 +612,7 @@ useEffect(() => {
                 <th>Email</th>
                 <th>Operador</th>
                 <th>Monitor</th>
+                <th>Encaminhamento</th>
                 <th></th>
               </tr>
             </thead>
