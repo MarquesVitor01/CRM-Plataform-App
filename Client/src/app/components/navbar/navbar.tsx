@@ -112,6 +112,7 @@ export const Navbar = () => {
               </Link>
             </li>
             {(cargo === "vendas" ||
+            cargo === "supervisor" ||
               userId === adminId ||
               userId === graziId) && (
               <li className="nav-item">
@@ -126,6 +127,7 @@ export const Navbar = () => {
               </li>
             )}
             {(cargo === "vendas" ||
+            cargo === "supervisor" ||
               cargo === "monitoria" ||
               cargo === "marketing" ||
               userId === adminId ||
