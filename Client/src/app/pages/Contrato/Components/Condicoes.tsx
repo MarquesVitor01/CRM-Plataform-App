@@ -38,13 +38,14 @@ export const Condicoes: React.FC = () => {
   };
   return (
     clientData && (
-      <div className="condicoes card p-4 text-uppercase">
+      <div className="condicoes card p-4 text-uppercase d-flex flex-column justify-content-between">
+
         <h5 className="text-center">Visualize sua página no Google</h5>
         <img
           src={require("../../../Assets/logo-google.png")}
           alt="WhatsApp"
-          style={{ width: "170px" }}
-          className="mt-1"
+          style={{ width: "270px" }}
+          className="mt-1 mb-5"
         />
         <div className="qrcode-google">
           {clientData.linkGoogle && (
@@ -55,7 +56,7 @@ export const Condicoes: React.FC = () => {
               </p>
               <QRCodeSVG
                 value={clientData.linkGoogle}
-                size={100}
+                size={150}
                 className="mt-1 mb-2"
               />
               <p className="mt-2">

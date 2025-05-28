@@ -45,12 +45,11 @@ export const FichaPosVenda: React.FC = () => {
   const handleMarketingSubmit = async (data: any) => {
     try {
       if (id) {
-        const docRef = doc(db, "posVendas", id);
+        const docRef = doc(db, "marketings", id);
         await updateDoc(docRef, data);
         setClientData(data);
         console.log("Dados atualizados com sucesso!");
 
-        // Verifica se a venda foi concluída
         if (data.posVendaConcuida) {
           await adicionarClienteFinanceiro(data);
         }
@@ -150,220 +149,220 @@ export const FichaPosVenda: React.FC = () => {
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
   };
-  const MsgParcela = async () => {
-    try {
-      const celularComCodigo = `55${clientData.celular.replace(/^55/, "")}`;
+//   const MsgParcela = async () => {
+//     try {
+//       const celularComCodigo = `55${clientData.celular.replace(/^55/, "")}`;
 
-      const response = await axios.post(
-        "https://crm-plataform-app-6t3u.vercel.app/api/enviar-texto",
-        {
-          phone: celularComCodigo,
-          message: `Olá,  ${clientData.responsavel}
+//       const response = await axios.post(
+//         "https://crm-plataform-app-6t3u.vercel.app/api/enviar-texto",
+//         {
+//           phone: celularComCodigo,
+//           message: `Olá,  ${clientData.responsavel}
 
-Seja bem vindo, ao Grupo Maps! 
+// Seja bem vindo, ao Grupo Maps! 
 
-Conforme conversamos via ligação, já iniciamos o processo de atualização de sua página na plataforma de buscas do Google Maps e seu plano conosco já está ATIVO.
+// Conforme conversamos via ligação, já iniciamos o processo de atualização de sua página na plataforma de buscas do Google Maps e seu plano conosco já está ATIVO.
 
-Seu plano ${clientData.validade} de R$ ${formatValor(
-            clientData.valorVenda
-          )} a ser pago em ${
-            clientData.parcelas
-          } parcela(s) de R$ ${formatValor(
-            clientData.valorParcelado
-          )}, via boleto, ficou com o vencimento para o dia ${formatDateToBrazilian(
-            clientData.dataVencimento
-          )}.
+// Seu plano ${clientData.validade} de R$ ${formatValor(
+//             clientData.valorVenda
+//           )} a ser pago em ${
+//             clientData.parcelas
+//           } parcela(s) de R$ ${formatValor(
+//             clientData.valorParcelado
+//           )}, via boleto, ficou com o vencimento para o dia ${formatDateToBrazilian(
+//             clientData.dataVencimento
+//           )}.
 
-O protocolo de seu atendimento é:
-402462535
+// O protocolo de seu atendimento é:
+// 402462535
 
-Abaixo, o termo de uso/autorização para assessoria em divulgação no site Google Maps e prestação dos nossos serviços. 
+// Abaixo, o termo de uso/autorização para assessoria em divulgação no site Google Maps e prestação dos nossos serviços. 
 
-Os serviços a serem prestados serão; 
+// Os serviços a serem prestados serão; 
 
-1- Criação ou Atualização da página na Plataforma de buscas do Google Maps.
+// 1- Criação ou Atualização da página na Plataforma de buscas do Google Maps.
 
-2- Criação do Qr-Code Direcionador 
+// 2- Criação do Qr-Code Direcionador 
 
-3 - PACK com 3 artes para divulgação nas redes sociais.
+// 3 - PACK com 3 artes para divulgação nas redes sociais.
 
-4 - Suporte para Criação de anúncios Patrocinados no Google Ads.
+// 4 - Suporte para Criação de anúncios Patrocinados no Google Ads.
 
-5 - Adição de 5 bairros para ampliar a visibilidade da página.
+// 5 - Adição de 5 bairros para ampliar a visibilidade da página.
 
-6 - Correção do pino localizador do estabelecimento.
+// 6 - Correção do pino localizador do estabelecimento.
 
-7 - Inclusão de 30 fotos e 5 vídeos mensalmente.
+// 7 - Inclusão de 30 fotos e 5 vídeos mensalmente.
 
-8 - Alteração de endereço 
+// 8 - Alteração de endereço 
 
-9 - Alteração no horário de funcionamento.
+// 9 - Alteração no horário de funcionamento.
 
-10 - Logotipo personalizada 
+// 10 - Logotipo personalizada 
 
-Todos os serviços mencionados acima ⬆ estão inclusos no plano contratado.
+// Todos os serviços mencionados acima ⬆ estão inclusos no plano contratado.
 
-Importante ressaltar que para um trabalho bem elaborado é de extrema importância a comunicação com nosso departamento de marketing.
+// Importante ressaltar que para um trabalho bem elaborado é de extrema importância a comunicação com nosso departamento de marketing.
 
 
-Em caso de desistência será cobrado o valor proporcional dos serviços executados, conforme descrito em cláusula do contrato.
+// Em caso de desistência será cobrado o valor proporcional dos serviços executados, conforme descrito em cláusula do contrato.
 
-Em caso de dúvidas, estou a disposição ou entre em contato com a central de atendimento 0800 580 2766`,
-        }
-      );
-      if (response.data.success) {
-        alert("Mensagem enviada com sucesso!");
-      } else {
-        alert("Falha ao enviar a mensagem.");
-      }
-    } catch (error) {
-      console.error("Erro ao enviar mensagem:", error);
-      alert("Ocorreu um erro ao enviar a mensagem.");
-    }
-  };
+// Em caso de dúvidas, estou a disposição ou entre em contato com a central de atendimento 0800 580 2766`,
+//         }
+//       );
+//       if (response.data.success) {
+//         alert("Mensagem enviada com sucesso!");
+//       } else {
+//         alert("Falha ao enviar a mensagem.");
+//       }
+//     } catch (error) {
+//       console.error("Erro ao enviar mensagem:", error);
+//       alert("Ocorreu um erro ao enviar a mensagem.");
+//     }
+//   };
 
-  const MsgValorCheio = async () => {
-    try {
-      const celularComCodigo = `55${clientData.celular.replace(/^55/, "")}`;
+//   const MsgValorCheio = async () => {
+//     try {
+//       const celularComCodigo = `55${clientData.celular.replace(/^55/, "")}`;
 
-      const response = await axios.post(
-        "https://crm-plataform-app-6t3u.vercel.app/api/enviar-texto",
-        {
-          phone: celularComCodigo,
-          message: `Olá,  ${clientData.responsavel}
+//       const response = await axios.post(
+//         "https://crm-plataform-app-6t3u.vercel.app/api/enviar-texto",
+//         {
+//           phone: celularComCodigo,
+//           message: `Olá,  ${clientData.responsavel}
 
-Seja bem vindo, ao Grupo Maps! 
+// Seja bem vindo, ao Grupo Maps! 
 
-Conforme conversamos via ligação, já iniciamos o processo de atualização de sua página na plataforma de buscas do Google Maps e seu plano conosco já está ATIVO.
+// Conforme conversamos via ligação, já iniciamos o processo de atualização de sua página na plataforma de buscas do Google Maps e seu plano conosco já está ATIVO.
 
-Seu plano *${clientData.validade}* de R$ ${formatValor(
-            clientData.valorVenda
-          )} a ser pago em via boleto, ficou com o vencimento para o dia ${formatDateToBrazilian(
-            clientData.dataVencimento
-          )}.
+// Seu plano *${clientData.validade}* de R$ ${formatValor(
+//             clientData.valorVenda
+//           )} a ser pago em via boleto, ficou com o vencimento para o dia ${formatDateToBrazilian(
+//             clientData.dataVencimento
+//           )}.
 
-O protocolo de seu atendimento é:
-402462535
+// O protocolo de seu atendimento é:
+// 402462535
 
-Abaixo, o termo de uso/autorização para assessoria em divulgação no site Google Maps e prestação dos nossos serviços. 
+// Abaixo, o termo de uso/autorização para assessoria em divulgação no site Google Maps e prestação dos nossos serviços. 
 
-Os serviços a serem prestados serão; 
+// Os serviços a serem prestados serão; 
 
-1- Criação ou Atualização da página na Plataforma de buscas do Google Maps.
+// 1- Criação ou Atualização da página na Plataforma de buscas do Google Maps.
 
-2- Criação do Qr-Code Direcionador 
+// 2- Criação do Qr-Code Direcionador 
 
-3 - PACK com 3 artes para divulgação nas redes sociais.
+// 3 - PACK com 3 artes para divulgação nas redes sociais.
 
-4 - Suporte para Criação de anúncios Patrocinados no Google Ads.
+// 4 - Suporte para Criação de anúncios Patrocinados no Google Ads.
 
-5 - Adição de 5 bairros para ampliar a visibilidade da página.
+// 5 - Adição de 5 bairros para ampliar a visibilidade da página.
 
-6 - Correção do pino localizador do estabelecimento.
+// 6 - Correção do pino localizador do estabelecimento.
 
-7 - Inclusão de 30 fotos e 5 vídeos mensalmente.
+// 7 - Inclusão de 30 fotos e 5 vídeos mensalmente.
 
-8 - Alteração de endereço 
+// 8 - Alteração de endereço 
 
-9 - Alteração no horário de funcionamento.
+// 9 - Alteração no horário de funcionamento.
 
-10 - Logotipo personalizada 
+// 10 - Logotipo personalizada 
 
-Todos os serviços mencionados acima ⬆ estão inclusos no plano contratado.
+// Todos os serviços mencionados acima ⬆ estão inclusos no plano contratado.
 
-Importante ressaltar que para um trabalho bem elaborado é de extrema importância a comunicação com nosso departamento de marketing.
+// Importante ressaltar que para um trabalho bem elaborado é de extrema importância a comunicação com nosso departamento de marketing.
 
 
-Em caso de desistência será cobrado o valor proporcional dos serviços executados, conforme descrito em cláusula do contrato.
+// Em caso de desistência será cobrado o valor proporcional dos serviços executados, conforme descrito em cláusula do contrato.
 
-Em caso de dúvidas, estou a disposição ou entre em contato com a central de atendimento 0800 580 2766`,
-        }
-      );
+// Em caso de dúvidas, estou a disposição ou entre em contato com a central de atendimento 0800 580 2766`,
+//         }
+//       );
 
-      if (response.data.success) {
-        alert("Mensagem enviada com sucesso!");
-      } else {
-        alert("Falha ao enviar a mensagem.");
-      }
-    } catch (error) {
-      console.error("Erro ao enviar mensagem:", error);
-      alert("Ocorreu um erro ao enviar a mensagem.");
-    }
-  };
+//       if (response.data.success) {
+//         alert("Mensagem enviada com sucesso!");
+//       } else {
+//         alert("Falha ao enviar a mensagem.");
+//       }
+//     } catch (error) {
+//       console.error("Erro ao enviar mensagem:", error);
+//       alert("Ocorreu um erro ao enviar a mensagem.");
+//     }
+//   };
 
-  const MsgRecorrencia = async () => {
-    try {
-      const celularComCodigo = `55${clientData.celular.replace(/^55/, "")}`;
+//   const MsgRecorrencia = async () => {
+//     try {
+//       const celularComCodigo = `55${clientData.celular.replace(/^55/, "")}`;
 
-      const response = await axios.post(
-        "https://crm-plataform-app-6t3u.vercel.app/api/enviar-texto",
-        {
-          phone: celularComCodigo,
-          message: `Olá,  ${clientData.responsavel}
+//       const response = await axios.post(
+//         "https://crm-plataform-app-6t3u.vercel.app/api/enviar-texto",
+//         {
+//           phone: celularComCodigo,
+//           message: `Olá,  ${clientData.responsavel}
 
-Seja bem vindo, ao Grupo Maps! 
+// Seja bem vindo, ao Grupo Maps! 
 
-Conforme conversamos via ligação, já iniciamos o processo de atualização de sua página na plataforma de buscas do Google Maps seu plano conosco já está ATIVO.
+// Conforme conversamos via ligação, já iniciamos o processo de atualização de sua página na plataforma de buscas do Google Maps seu plano conosco já está ATIVO.
 
-Apenas reforçando que a adesão do seu plano *${
-            clientData.validade
-          }*  ficou no valor de R$ ${formatValor(
-            clientData.valorVenda
-          )} a ser pago via boleto, ficou com o vencimento para o dia ${formatDateToBrazilian(
-            clientData.dataVencimento
-          )}.
+// Apenas reforçando que a adesão do seu plano *${
+//             clientData.validade
+//           }*  ficou no valor de R$ ${formatValor(
+//             clientData.valorVenda
+//           )} a ser pago via boleto, ficou com o vencimento para o dia ${formatDateToBrazilian(
+//             clientData.dataVencimento
+//           )}.
 
-Lembrando que as demais 11 parcelas de R$ 19,90 ficou com vencimento para todo dia ${
-            clientData.diaData
-          } de cada mês 
+// Lembrando que as demais 11 parcelas de R$ 19,90 ficou com vencimento para todo dia ${
+//             clientData.diaData
+//           } de cada mês 
 
-O protocolo de seu atendimento é:
-402462535
+// O protocolo de seu atendimento é:
+// 402462535
 
-Abaixo, o termo de uso/autorização para assessoria em divulgação no site Google Maps e prestação dos nossos serviços. 
+// Abaixo, o termo de uso/autorização para assessoria em divulgação no site Google Maps e prestação dos nossos serviços. 
 
-Os serviços a serem prestados serão; 
+// Os serviços a serem prestados serão; 
 
-1- Criação ou Atualização da página na Plataforma de buscas do Google Maps.
+// 1- Criação ou Atualização da página na Plataforma de buscas do Google Maps.
 
-2- Criação do Qr-Code Direcionador 
+// 2- Criação do Qr-Code Direcionador 
 
-3 - PACK com 3 artes para divulgação nas redes sociais.
+// 3 - PACK com 3 artes para divulgação nas redes sociais.
 
-4 - Suporte para Criação de anúncios Patrocinados no Google Ads.
+// 4 - Suporte para Criação de anúncios Patrocinados no Google Ads.
 
-5 - Adição de 5 bairros para ampliar a visibilidade da página.
+// 5 - Adição de 5 bairros para ampliar a visibilidade da página.
 
-6 - Correção do pino localizador do estabelecimento.
+// 6 - Correção do pino localizador do estabelecimento.
 
-7 - Inclusão de 30 fotos e 5 vídeos mensalmente.
+// 7 - Inclusão de 30 fotos e 5 vídeos mensalmente.
 
-8 - Alteração de endereço 
+// 8 - Alteração de endereço 
 
-9 - Alteração no horário de funcionamento.
+// 9 - Alteração no horário de funcionamento.
 
-10 - Logotipo personalizada 
+// 10 - Logotipo personalizada 
 
-Todos os serviços mencionados acima ⬆ estão inclusos no plano contratado.
+// Todos os serviços mencionados acima ⬆ estão inclusos no plano contratado.
 
-Importante ressaltar que para um trabalho bem elaborado é de extrema importância a comunicação com nosso departamento de marketing.
+// Importante ressaltar que para um trabalho bem elaborado é de extrema importância a comunicação com nosso departamento de marketing.
 
 
-Em caso de desistência será cobrado o valor proporcional dos serviços executados, conforme descrito em cláusula do contrato.
+// Em caso de desistência será cobrado o valor proporcional dos serviços executados, conforme descrito em cláusula do contrato.
 
-Em caso de dúvidas, estou a disposição ou entre em contato com a central de atendimento 0800 580 2766`,
-        }
-      );
-      if (response.data.success) {
-        alert("Mensagem enviada com sucesso!");
-      } else {
-        alert("Falha ao enviar a mensagem.");
-      }
-    } catch (error) {
-      console.error("Erro ao enviar mensagem:", error);
-      alert("Ocorreu um erro ao enviar a mensagem.");
-    }
-  };
+// Em caso de dúvidas, estou a disposição ou entre em contato com a central de atendimento 0800 580 2766`,
+//         }
+//       );
+//       if (response.data.success) {
+//         alert("Mensagem enviada com sucesso!");
+//       } else {
+//         alert("Falha ao enviar a mensagem.");
+//       }
+//     } catch (error) {
+//       console.error("Erro ao enviar mensagem:", error);
+//       alert("Ocorreu um erro ao enviar a mensagem.");
+//     }
+//   };
 
   // const MsgLink = async () => {
   //   try {
@@ -434,7 +433,7 @@ Em caso de dúvidas, estou a disposição ou entre em contato com a central de a
                 <p>
                   <strong>Observações:</strong> {clientData.observacoes}
                 </p>
-                {clientData.parcelas >= 2 && (
+                {/* {clientData.parcelas >= 2 && (
                   <button className="btn btn-primary mt-3" onClick={MsgParcela}>
                     Enviar Mensagem De Apresentação de Vendas Parceladas
                   </button>
@@ -456,7 +455,7 @@ Em caso de dúvidas, estou a disposição ou entre em contato com a central de a
                     >
                       Enviar Mensagem De Apresentação de Vendas com Recorrência
                     </button>
-                  )}
+                  )} */}
               </div>
             </div>
             <div className="col-md-6">

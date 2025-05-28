@@ -33,6 +33,7 @@
   align-items: center;
   flex-direction: column;
   margin-top: 10px;
+  min-height: 90vh;
 }
 
 .condicoes .text-condicoes {

@@ -19,6 +19,8 @@ import {
   faMarker,
   faPrint,
   faBroom,
+  faCheckCircle,
+  faCircleXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { ModalExcel } from "./modalExcel";
@@ -60,7 +62,8 @@ interface Marketing {
   redeSocial: any;
   semRedeSocial: any;
   operadorMkt: string;
-  monitoriaHorario: string
+  posVendaConcuida: boolean;
+  monitoriaHorario: string;
 }
 interface ListDashboardProps {
   setTotalMarketings: (total: number) => void;
@@ -153,67 +156,65 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
     }
   }
 
-useEffect(() => {
-  const fetchVendas = async () => {
-    setLoading(true);
-    try {
-      const user = auth.currentUser;
-      if (!user) {
-        console.warn("Usuário não está logado.");
-        return;
+  useEffect(() => {
+    const fetchVendas = async () => {
+      setLoading(true);
+      try {
+        const user = auth.currentUser;
+        if (!user) {
+          console.warn("Usuário não está logado.");
+          return;
+        }
+
+        const userId = user.uid;
+        const userDocRef = doc(db, "usuarios", userId);
+        const userDocSnap = await getDoc(userDocRef);
+
+        if (!userDocSnap.exists()) {
+          console.warn("Usuário não encontrado.");
+          return;
+        }
+
+        const userData = userDocSnap.data();
+        const cargo = userData.cargo;
+        const nomeUsuario = userData.nome;
+        setCargo(cargo);
+
+        const marketingsCollection = collection(db, "marketings");
+        const marketingsSnapshot = await getDocs(marketingsCollection);
+        const marketingsList = marketingsSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as Marketing[];
+
+        let filteredVendas: Marketing[] = [];
+
+        if (cargo === "adm" || cargo === "supervisor") {
+          filteredVendas = marketingsList;
+        } else if (cargo === "marketing") {
+          filteredVendas = marketingsList.filter(
+            (marketing) =>
+              !marketing.operadorMkt ||
+              marketing.operadorMkt.trim() === "" ||
+              marketing.operadorMkt === nomeUsuario
+          );
+        } else {
+          filteredVendas = marketingsList.filter(
+            (marketing) => marketing.createdBy === userId
+          );
+        }
+
+        setMarketings(filteredVendas);
+        setTotalMarketings(filteredVendas.length);
+      } catch (error) {
+        console.error("Erro ao buscar marketings:", error);
+      } finally {
+        setLoading(false);
       }
+    };
 
-      const userId = user.uid;
-      const userDocRef = doc(db, "usuarios", userId);
-      const userDocSnap = await getDoc(userDocRef);
-
-      if (!userDocSnap.exists()) {
-        console.warn("Usuário não encontrado.");
-        return;
-      }
-
-      const userData = userDocSnap.data();
-      const cargo = userData.cargo;
-      const nomeUsuario = userData.nome;
-      setCargo(cargo);
-
-      const marketingsCollection = collection(db, "marketings");
-      const marketingsSnapshot = await getDocs(marketingsCollection);
-      const marketingsList = marketingsSnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as Marketing[];
-
-      let filteredVendas: Marketing[] = [];
-
-      if (cargo === "adm" || cargo === "supervisor") {
-        filteredVendas = marketingsList;
-      } else if (cargo === "marketing") {
-        filteredVendas = marketingsList.filter(
-          (marketing) =>
-            !marketing.operadorMkt ||
-            marketing.operadorMkt.trim() === "" ||
-            marketing.operadorMkt === nomeUsuario
-        );
-      } else {
-        filteredVendas = marketingsList.filter(
-          (marketing) => marketing.createdBy === userId
-        );
-      }
-
-      setMarketings(filteredVendas);
-      setTotalMarketings(filteredVendas.length);
-    } catch (error) {
-      console.error("Erro ao buscar marketings:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  fetchVendas();
-}, [setTotalMarketings, auth]);
-
-
+    fetchVendas();
+  }, [setTotalMarketings, auth]);
 
   const handleCheckboxChange = (id: string) => {
     setSelectedItems((prevSelectedItems) => {
@@ -372,6 +373,9 @@ useEffect(() => {
       marketing.endereco &&
       (marketing.redeSocial || marketing.semRedeSocial)
     );
+  };
+  const isPosVendaConcuida = (marketing: Marketing) => {
+    return !!marketing.posVendaConcuida;
   };
 
   const toggleConcluidos = () => {
@@ -603,7 +607,7 @@ useEffect(() => {
         <div className="no-clients">Nenhum cliente encontrado.</div>
       ) : (
         <>
-          <table className="table">
+          <table className="table table-hover">
             <thead>
               <tr>
                 <th></th>
@@ -621,6 +625,7 @@ useEffect(() => {
                 const checklistCompleto = isChecklistConcluido(marketing);
                 const serviçoIniciado =
                   checklistCompleto || marketing.servicosConcluidos;
+                console.log("posVendaConcuida:", marketing.posVendaConcuida);
 
                 return (
                   <tr key={marketing.id}>
@@ -635,6 +640,25 @@ useEffect(() => {
                         onChange={() => handleCheckboxChange(marketing.id)}
                         className="checkbox-table"
                       />
+                    </td>
+                    <td
+                      className={`text-center ${
+                        selectedItems.has(marketing.id) ? "selected" : ""
+                      }`}
+                    >
+                      {isPosVendaConcuida(marketing) ? (
+                        <FontAwesomeIcon
+                          icon={faCheckCircle}
+                          color="green"
+                          title="Concluída"
+                        />
+                      ) : (
+                        <FontAwesomeIcon
+                          icon={faCircleXmark}
+                          color="red"
+                          title="Pendente"
+                        />
+                      )}
                     </td>
                     <td
                       className={`${
@@ -697,7 +721,7 @@ useEffect(() => {
                     >
                       {marketing.nomeMonitor}
                     </td>
-                                        <td
+                    <td
                       className={`${
                         selectedItems.has(marketing.id) ? "selected" : ""
                       } ${
@@ -773,7 +797,7 @@ useEffect(() => {
                           className="custom-tooltip"
                         />
                       </Link>
-                      <Link to={`/assinatura/${marketing.id}`}>
+                      {/* <Link to={`/assinatura/${marketing.id}`}>
                         <FontAwesomeIcon
                           icon={faPrint}
                           className="icon-spacing text-dark"
@@ -785,7 +809,7 @@ useEffect(() => {
                           place="top"
                           className="custom-tooltip"
                         />
-                      </Link>
+                      </Link> */}
 
                       <Tooltip
                         id="tooltip-view-contract"
