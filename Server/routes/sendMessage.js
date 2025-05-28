@@ -4,10 +4,9 @@ const axios = require("axios");
 const router = express.Router();
 
 // Token da API do Whatscale
-const WHATSCALE_TOKEN_MKT = "1747938307239-a679e44917e1b04b2618234207ec8793";
+const WHATSCALE_TOKEN_MKT = "1739444925773-7d49829341d332d43a45e6e399cc8af9";
  const WHATSCALE_TOKEN_VENDAS = "1739444925773-7d49829341d332d43a45e6e399cc8af9";
  
-// Rota para enviar mensagens via Whatscale
 router.post("/enviar-texto-mkt", async (req, res) => {
     try {
         const { phone, message } = req.body;
@@ -15,10 +14,8 @@ router.post("/enviar-texto-mkt", async (req, res) => {
         if (!phone || !message) {
             return res.status(400).json({ success: false, message: "phone e message são obrigatórios" });
         }
-        // URL correta da API com o token na rota
         const url = `https://api-whatsapp.wascript.com.br/api/enviar-texto/${WHATSCALE_TOKEN_MKT}`;
 
-        // Fazendo requisição para a API do Whatscale
         const response = await axios.post(url, { phone, message }, {
             headers: {
                 "Content-Type": "application/json"
