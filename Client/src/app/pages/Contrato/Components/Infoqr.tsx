@@ -45,16 +45,143 @@ export const Infoqr: React.FC = () => {
   return (
     clientData && (
       <div className="bonus card text-center gravacao p-4">
-        <h5 className="text-white ">GRAVAÇÃO</h5>
-        <div className="form-group">
-          <h6>
+        <h5 className="text-white ">CONDIÇÕES DE PAGAMENTO</h5>
+        <div className="form-group-info">
+          <p className="text-uppercase">
+            {clientData.parcelas <= 1 &&
+              (clientData.contrato === "Base" ||
+                clientData.contrato === "Renovacao") && (
+                <strong>
+                  O plano escolhido foi o{" "}
+                  <u className="">{clientData.validade}</u>, no valor de{" "}
+                  <u>
+                    R${" "}
+                    {clientData.valorVenda
+                      ? formatValor(clientData.valorVenda)
+                      : ""}
+                  </u>{" "}
+                  , com o vencimento para o dia{" "}
+                  {formatDateToBrazilian(clientData.dataVencimento)}.
+                  <br />
+                  Sua renovação prevista para ocorrer em{" "}
+                  {clientData.dataVigencia}
+                  . <br /> salvo manifestação contrária por parte do contratante
+                  dentro do prazo legal de 30 dias antecedentes.
+                </strong>
+              )}
+            {clientData.parcelas > 1 &&
+              clientData.contrato === "Recorencia" && (
+                <strong>
+                  O plano escolhido foi o{" "}
+                  <u className="">{clientData.validade}</u>, no valor de{" "}
+                  <u>
+                    R${" "}
+                    {clientData.valorVenda
+                      ? formatValor(clientData.valorVenda)
+                      : ""}
+                  </u>{" "}
+                  , com o vencimento para o dia{" "}
+                  {formatDateToBrazilian(clientData.dataVencimento)}. E suas
+                  parcelas recorrentes no valor de{" "}
+                  <u>
+                    R${" "}
+                    {clientData.parcelaRecorrente
+                      ? formatValor(clientData.parcelaRecorrente)
+                      : ""}
+                  </u>{" "} com vencimento para o dia {clientData.diaData} dos
+                  meses subsequentes.
+                  <br />
+                  Sua renovação prevista para ocorrer em{" "}
+                  {clientData.dataVigencia}
+                  . <br /> salvo manifestação contrária por parte do contratante
+                  dentro do prazo legal de 30 dias antecedentes.
+                </strong>
+              )}
+            {clientData.parcelas > 1 &&
+              (clientData.contrato === "Base" ||
+                clientData.contrato === "Renovacao") && (
+                <strong>
+                  O plano escolhido foi o{" "}
+                  <u className="">{clientData.validade}</u>, no valor de{" "}
+                  <u>
+                    R${" "}
+                    {clientData.valorVenda
+                      ? formatValor(clientData.valorVenda)
+                      : ""}
+                  </u>{" "}
+                  , parcelado em {clientData.parcelas} parcela(s) de{" "}
+                  <u>
+                    R${" "}
+                    {clientData.valorParcelado
+                      ? formatValor(clientData.valorParcelado)
+                      : ""}
+                  </u>{" "}
+                  com primeiro vencimento para o dia{" "}
+                  {formatDateToBrazilian(clientData.dataVencimento)}. E suas
+                  parcelas com vencimento para o dia {clientData.diaData} dos
+                  meses subsequentes.
+                  <br />
+                  Sua renovação prevista para ocorrer em{" "}
+                  {clientData.dataVigencia}
+                  . <br /> salvo manifestação contrária por parte do contratante
+                  dentro do prazo legal de 30 dias antecedentes.
+                </strong>
+              )}
+          </p>
+        </div>
+        <div className="boleto-container">
+          <div className="boleto-logo">
+            <img src={require("../../../Assets/logo-efi.png")} alt="EFI Pay" />
+          </div>
+          <div className="boleto-header">
+            <div className="boleto-info">
+              <div className="header-boleto">
+                <p className="mt-3">
+                  Código do boleto: <br />
+                  {clientData.boleto?.[0]?.barcode}
+                </p>
+                <p className="mt-3">
+                  Link do boleto: <br />
+                  <a href={clientData.boleto?.[0]?.billetLink}>
+                    {clientData.boleto?.[0]?.billetLink}
+                  </a>
+                </p>
+              </div>
+              <div className="code-boleto">
+                <p className="mt-3">
+                  QrCode para pagamento:
+                  {clientData.boleto?.[0]?.pix && (
+                    <div className="mt-1">
+                      <QRCodeSVG
+                        value={clientData.boleto?.[0]?.pix}
+                        size={85}
+                      />
+                    </div>
+                  )}
+                </p>
+              </div>
+              <p className="mt-3">
+                <a href={clientData.boleto?.[0]?.link}>
+                  {clientData.boleto?.[0]?.link}
+                </a>
+              </p>
+              <p className="mt-3">
+                Data de vencimento:{" "}
+                {formatDateToBrazilian(clientData.dataVencimento)}
+              </p>
+            </div>
+          </div>
+        </div>
+        <h5 className="text-white">GRAVAÇÃO</h5>
+        <div className="form-group-info">
+          <p>
             <strong>
               ACEITE REALIZADO DE FORMA VERBAL;
               <br />
               PARA VERIFICAR SUA ADESÃO CLIQUE NO BOTÃO A BAIXO OU ESCANEIE O
               QRCODE DA GRAVAÇÃO
             </strong>
-          </h6>
+          </p>
         </div>
         <div className="qrcode-container">
           <a
@@ -74,6 +201,22 @@ export const Infoqr: React.FC = () => {
               </div>
             )}
           </a>
+        </div>
+        <div className="linha-assinatura mt-5"></div>
+
+        <h5 className="mt-2">CENTRAL DE ATENDIMENTO</h5>
+        <div className="text-center">
+          <p>
+            0800 580 2766
+            <br />
+            <a href="mailto:MARKETING@GRUPOMAPSEMPRESAS.com.br">
+              MARKETING@GRUPOMAPSEMPRESAS.com.br
+            </a>
+            <br />
+            <a href="mailto:CONTATO@GRUPOMAPSEMPRESAS.com.br">
+              CONTATO@GRUPOMAPSEMPRESAS.com.br
+            </a>
+          </p>
         </div>
       </div>
     )

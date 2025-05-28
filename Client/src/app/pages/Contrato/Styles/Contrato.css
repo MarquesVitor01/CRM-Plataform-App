@@ -65,6 +65,12 @@
   color: #Fff;
 }
 
+.condicoes p {
+  width: 600px;
+  text-align: center;
+  font-size: 12px;
+}
+
 .bonus p {
   width: 600px;
   font-size: 12px;
@@ -82,7 +88,6 @@
 .boleto-container {
   font-family: Arial, sans-serif;
   max-width: 700px;
-  margin: 20px auto;
   padding: 20px;
   border: 2px solid #333;
   border-radius: 5px;
@@ -91,16 +96,21 @@
   display: flex;
   justify-content: center;
   flex-direction: column;
+  margin-top: -20px;
 }
-
+.checkbox-blue {
+  accent-color: #007bff!important; 
+  width: 18px;
+  height: 18px;
+  cursor: not-allowed;
+}
 .boleto-header {
   display: flex;
   justify-content: center;
-  margin-bottom: 20px;
 }
 
 .boleto-logo img {
-  width:70px ;
+  width:50px ;
 }
 
 .gravacao{
@@ -111,6 +121,13 @@
 .qrcode-container {
   display: flex;
   align-items: center;
+  margin-top: -25px;
+}
+
+.qrcode-google {
+  display: flex;
+  align-items: center;
+  margin-block: 10px;
 }
 
 .qrcode-link {
@@ -146,4 +163,8 @@
 
 .header p{
   font-size: smaller;
+}
+
+.form-group-info{
+  margin-top: -15px;
 }

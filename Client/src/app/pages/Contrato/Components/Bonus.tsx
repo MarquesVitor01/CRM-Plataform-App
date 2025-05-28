@@ -94,21 +94,11 @@ export const Bonus: React.FC = () => {
         </div> */}
 
         <div className="form-group">
-          <p className="text-uppercase ">
+          <p className="text-uppercase">
             <strong>
               Declaro, para os devidos fins, que recebi por ligação telefônica
               todas as informações referentes ao plano contratado, incluindo
-              condições, valores e forma de execução do serviço. O plano
-              escolhido foi o <u className="">{clientData.validade} </u>, no
-              valor de{" "}
-              <u>
-                R${" "}
-                {clientData.valorVenda
-                  ? formatValor(clientData.valorVenda)
-                  : ""}
-              </u>{" "}
-              , com sua renovação prevista para ocorrer em{" "}
-              {clientData.dataVigencia}. <br /> salvo manifestação contrária por parte do contratante dentro do prazo legal de 30 dias antecedentes. 
+              condições, valores e forma de execução do serviço.
               <br /> Autorizo a empresa G.MAPS CONTACT CENTER LTDA a realizar toda a assessoria e otimização do perfil da minha empresa no Google Maps, conforme as condições descritas neste documento.
             </strong>
           </p>
@@ -132,49 +122,7 @@ export const Bonus: React.FC = () => {
           </p>
         </div> */}
 
-        {/* <div className="boleto-container">
-          <div className="boleto-logo">
-            <img src={require("../../../Assets/logo-efi.png")} alt="EFI Pay" />
-          </div>
-          <div className="boleto-header mt-3">
-            <div className="boleto-info">
-              <div className="header-boleto">
-                <p className="mt-3">
-                  Código do boleto: <br />
-                  {clientData.boleto?.[0]?.barcode}
-                </p>
-                <p className="mt-3">
-                  Link do boleto: <br />
-                  <a href={clientData.boleto?.[0]?.billetLink}>
-                    {clientData.boleto?.[0]?.billetLink}
-                  </a>
-                </p>
-              </div>
-              <div className="code-boleto">
-                <p className="mt-3">
-                  QrCode para pagamento:
-                  {clientData.boleto?.[0]?.pix && (
-                    <div className="mt-1">
-                      <QRCodeSVG
-                        value={clientData.boleto?.[0]?.pix}
-                        size={85}
-                      />
-                    </div>
-                  )}
-                </p>
-              </div>
-              <p className="mt-3">
-                <a href={clientData.boleto?.[0]?.link}>
-                  {clientData.boleto?.[0]?.link}
-                </a>
-              </p>
-              <p className="mt-3">
-                Data de vencimento:{" "}
-                {formatDateToBrazilian(clientData.dataVencimento)}
-              </p>
-            </div>
-          </div>
-        </div> */}
+
         {/* <p>PARA ATENDIMENTO VIA WHATSAPP BASTA CLICAR NO ÍCONE ABAIXO:</p>
         <a
           href="https://wa.link/ulgll4"
