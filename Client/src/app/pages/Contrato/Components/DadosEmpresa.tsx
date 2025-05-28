@@ -65,7 +65,7 @@ export const DadosEmpresa: React.FC = () => {
 
   return (
     clientData && (
-      <div className="dados-empresa card p-4 my-1 upper">
+      <div className="dados-empresa card p-4 mb-1 upper">
         <h5 className="text-center font-weight-bold">DADOS DA EMPRESA</h5>
         <div className="row">
           <div className="col-md-6 mb-1">
@@ -76,14 +76,7 @@ export const DadosEmpresa: React.FC = () => {
               <p>
                 <strong>NOME FANTASIA:</strong> {clientData.nomeFantasia}
               </p>
-              <p>
-                <strong>CNPJ/CPF:</strong>{" "}
-                {clientData.cnpj
-                  ? formatCNPJ(clientData.cnpj)
-                  : clientData.cpf
-                  ? formatCPF(clientData.cpf)
-                  : ""}
-              </p>
+
               <p>
                 <strong>ENDEREÇO COMERCIAL:</strong>{" "}
                 {clientData.enderecoComercial}, {clientData.numeroResidencial}
@@ -97,16 +90,22 @@ export const DadosEmpresa: React.FC = () => {
               <p>
                 <strong>ESTADO:</strong> {clientData.estado}
               </p>
-              
-            
+
               <p>
                 <strong>CEP:</strong> {clientData.cep}
               </p>
-             
             </div>
           </div>
           <div className="col-md-6 mb-1">
             <div className="p-2 bg-light rounded">
+              <p>
+                <strong>CNPJ/CPF:</strong>{" "}
+                {clientData.cnpj
+                  ? formatCNPJ(clientData.cnpj)
+                  : clientData.cpf
+                  ? formatCPF(clientData.cpf)
+                  : ""}
+              </p>
               <p>
                 <strong>TELEFONE:</strong>{" "}
                 {clientData.fixo ? formatFixo(clientData.fixo) : ""}
@@ -119,7 +118,7 @@ export const DadosEmpresa: React.FC = () => {
                 <strong>WHATSAPP:</strong>{" "}
                 {clientData.whatsapp ? formatCelular(clientData.whatsapp) : ""}
               </p>
-              
+
               <p>
                 <strong>1º E-MAIL:</strong> {clientData.email1}
               </p>
@@ -127,9 +126,10 @@ export const DadosEmpresa: React.FC = () => {
                 <strong>2º E-MAIL:</strong> {clientData.email2 || "N/A"}
               </p>
               <p>
-                <strong>HORÁRIO DE FUNCIONAMENTO:</strong> {clientData.horarioFuncionamento}
+                <strong>HORÁRIO DE FUNCIONAMENTO:</strong>{" "}
+                {clientData.horarioFuncionamento}
               </p>
-              <p>
+              {/* <p>
                 <strong>LINK DA PÁGINA GOOGLE:</strong>{" "}
                 <a
                   href={`${clientData.linkGoogle}`}
@@ -138,7 +138,7 @@ export const DadosEmpresa: React.FC = () => {
                 >
                   {clientData.linkGoogle}
                 </a>
-              </p>
+              </p> */}
             </div>
           </div>
         </div>

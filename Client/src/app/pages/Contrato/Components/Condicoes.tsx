@@ -1,4 +1,4 @@
-import { faLeftLong, faRightLong } from "@fortawesome/free-solid-svg-icons";
+import { faCheckCircle, faLeftLong, faRightLong } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { doc, getDoc } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
@@ -31,7 +31,7 @@ export const Condicoes: React.FC = () => {
     fetchClientData();
   }, [id]);
   const formatValor = (value: string | number | undefined): string => {
-    if (!value) return "0,00"; // Retorna um valor padrão caso seja undefined ou null
+    if (!value) return "0,00";
     const num =
       typeof value === "number" ? value.toFixed(2) : value.replace(/\D/g, "");
     return num.replace(/(\d)(\d{2})$/, "$1,$2");
@@ -43,36 +43,47 @@ export const Condicoes: React.FC = () => {
         <img
           src={require("../../../Assets/logo-google.png")}
           alt="WhatsApp"
-          style={{ width: "150px" }}
+          style={{ width: "170px" }}
+          className="mt-1"
         />
-        <div className="qrcode-container">
+        <div className="qrcode-google">
           {clientData.linkGoogle && (
             <div className="d-flex flex-column align-items-center mt-1">
-              <h6 className="mt-2">
+              <p className="mt-2">
                 Escanei o QrCOde Para Verificar e conferir a página ou clique no
                 link:
-              </h6>
-              <QRCodeSVG value={clientData.linkGoogle} size={100} />
-              <h6 className="mt-2">
+              </p>
+              <QRCodeSVG
+                value={clientData.linkGoogle}
+                size={100}
+                className="mt-1 mb-2"
+              />
+              <p className="mt-2">
                 Link da Página:{" "}
                 <a href={`${clientData.linkGoogle}`}>{clientData.linkGoogle}</a>
-              </h6>
+              </p>
             </div>
           )}
         </div>
         <div className="">
-          <h6 className="mt-2">
-            <a href="">Termos de Serviço e Política de Privacidade</a>
-          </h6>
+          <p className="mt-2">
+            <a href="https://drive.google.com/file/d/10Q5zFIqR1l9YunhdawO2nhbSfALK_iih/view?usp=sharing">Termos de Serviço</a> e{" "}
+            <a href="https://drive.google.com/file/d/1xTe9gL84D79-0OaayMUQPhiy3GFidxYO/view?usp=sharing">Política de Privacidade</a>
+          </p>
         </div>
-        <div className="assinatura-section justify-content-center d-flex flex-column ">
-          <h6 className="">
-            Eu concordo com os termos de serviço e política de privacidade
-          </h6>
-          <div className="linha-assinatura mt-5"></div>
+        <div className="assinatura-section justify-content-center d-flex flex-column">
+          <div className="assinatura-section justify-content-center d-flex flex-column">
+            <div className="d-flex align-items-center">
+              <p className="mb-0 ms-1">
+              <FontAwesomeIcon icon={faCheckCircle} color="#007bff" size="lg" />{"  "}
+                Eu concordo com os termos de serviço e política de privacidade
+              </p>
+            </div>
+            <div className="linha-assinatura mt-5"></div>
+          </div>
         </div>
-        <div className="mx-auto w-100 text-center">
-          <h5 className="mt-2">CENTRAL DE ATENDIMENTO</h5>
+        <h5 className="mt-2 text-center">CENTRAL DE ATENDIMENTO</h5>
+        <div className="text-center">
           <p>
             0800 580 2766
             <br />
