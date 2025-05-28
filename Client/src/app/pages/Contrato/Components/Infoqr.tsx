@@ -29,12 +29,11 @@ export const Infoqr: React.FC = () => {
     fetchClientData();
   }, [id]);
 
-  // Função para formatar a data no formato brasileiro
   const formatDateToBrazilian = (dateString: string) => {
     const date = new Date(dateString);
-    date.setHours(date.getHours() + 3); // Ajuste para o horário de Brasília, se necessário
+    date.setHours(date.getHours() + 3); 
     const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // meses começam do zero
+    const month = String(date.getMonth() + 1).padStart(2, "0");
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
   };
