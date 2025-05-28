@@ -47,7 +47,7 @@ export const Header: React.FC = () => {
           className="mb-1"
         />
 
-        <div className="row my-2">
+        <div className="row m ">
           <div className="col-md-4">
             <p><strong>CONTRATO Nº:</strong> {clientData.numeroContrato}</p>
           </div>
@@ -60,10 +60,10 @@ export const Header: React.FC = () => {
         </div>
         <div className="row mb-3">
           <div className="col-md-4">
-            <strong>EQUIPE:</strong> {clientData.equipe}
+            <p><strong>EQUIPE:</strong> {clientData.equipe}</p>
           </div>
           <div className="col-md-4">
-          <strong>VÁLIDO POR UM ANO</strong>
+          <p><strong>VÁLIDO POR UM ANO</strong></p>
           </div>
           <div className="col-md-4">
             <p><strong>PLANO:</strong> {clientData.validade}</p>

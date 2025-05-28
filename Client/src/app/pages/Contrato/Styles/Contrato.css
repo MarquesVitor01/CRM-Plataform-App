@@ -15,7 +15,6 @@
 
 .dados-empresa h5 {
   background-color: #59afd6;
-  padding-block: 10px;
   color: #fff;
 }
 
@@ -105,7 +104,6 @@
 }
 
 .gravacao{
-  margin-top: 20px;
   display: flex;
   gap: 20px;
 }
@@ -124,7 +122,9 @@
 .qrcode img {
   width: 100px;
 }
-
+.assinatura-section {
+  margin-top: -2px!important;
+}
 .qrcode svg {
   width: 70px; /* Tamanho do QR Code */
   height: 70px; /* Tamanho do QR Code */
@@ -141,4 +141,9 @@
     color: black;
     pointer-events: none; /* Desativa interatividade */
   }
+}
+
+
+.header p{
+  font-size: smaller;
 }

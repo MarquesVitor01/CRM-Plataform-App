@@ -42,12 +42,12 @@ export const LocalRoutes: React.FC = () => {
           <Route path="/" element={<Login />} />
           <Route path="/setores" element={<PrivateRoute element={<Setores />} />} />
           <Route path="/perfil" element={<PrivateRoute element={<Perfil />} />} />
-          <Route path="/vendas" element={<PrivateRoute element={<Vendas />} requiredCargo="vendas" />} />
-          <Route path="/cancelados" element={<PrivateRoute element={<Cancelados />} requiredCargo="vendas" />} />
-          <Route path="/monitoria" element={<PrivateRoute element={<Monitoria />} requiredCargo="monitoria" />} />
-          <Route path="/marketing" element={<PrivateRoute element={<Marketing />} requiredCargo="marketing" />} />
+          <Route path="/vendas" element={<PrivateRoute element={<Vendas />}/>} />
+          <Route path="/cancelados" element={<PrivateRoute element={<Cancelados />} />} />
+          <Route path="/monitoria" element={<PrivateRoute element={<Monitoria />} />} />
+          <Route path="/marketing" element={<PrivateRoute element={<Marketing />} />} />
           <Route path="/analises" element={<PrivateRoute element={<Analise />} />} />
-          <Route path="/pos-venda" element={<PrivateRoute element={<PosVenda />} requiredCargo="posVenda" />} />
+          <Route path="/pos-venda" element={<PrivateRoute element={<PosVenda />} />} />
           <Route path="/financeiro" element={<PrivateRoute element={<Financeiro />} requiredCargo="financeiro" />} />
           <Route path="/cobranca" element={<PrivateRoute element={<Cobranca />} requiredCargo="cobranca" />} />
           <Route path="/relatorio" element={<PrivateRoute element={<Relatorio />} />} />
@@ -56,16 +56,16 @@ export const LocalRoutes: React.FC = () => {
           <Route path="/assinatura/:id" element={<PrivateRoute element={<Assinatura />} />} />
           <Route path="/editcontrato/:id" element={<PrivateRoute element={<EditContrato />} />} />
           <Route path="/comprovantes/:id" element={<PrivateRoute element={<Comprovantes />} />} />
-          <Route path="/fichamonitoria/:id" element={<PrivateRoute element={<FichaMonitoria />} requiredCargo="monitoria" />} />
+          <Route path="/fichamonitoria/:id" element={<PrivateRoute element={<FichaMonitoria />} />} />
           <Route path="/vizumonitoria/:id" element={<PrivateRoute element={<VizuMonitoria />} />} />
-          <Route path="/fichamsgmonitoria/:id" element={<PrivateRoute element={<MsgMonitoria />} requiredCargo="monitoria" />} />
-          <Route path="/fichamsgmarketing/:id" element={<PrivateRoute element={<MsgMkt />} requiredCargo="marketing" />} />
-          <Route path="/fichamarketing/:id" element={<PrivateRoute element={<FichaMarketing />} requiredCargo="marketing" />} />
-          <Route path="/fichaposvenda/:id" element={<PrivateRoute element={<FichaPosVenda />} requiredCargo="posVenda" />} />
+          <Route path="/fichamsgmonitoria/:id" element={<PrivateRoute element={<MsgMonitoria />}  />} />
+          <Route path="/fichamsgmarketing/:id" element={<PrivateRoute element={<MsgMkt />}  />} />
+          <Route path="/fichamarketing/:id" element={<PrivateRoute element={<FichaMarketing />} />} />
+          <Route path="/fichaposvenda/:id" element={<PrivateRoute element={<FichaPosVenda />} />} />
           <Route path="/fichafinanceiro/:id" element={<PrivateRoute element={<FichaFinanceiro />} requiredCargo="financeiro" />} />
           <Route path="/fichacobranca/:id" element={<PrivateRoute element={<FichaCobranca />} requiredCargo="cobranca" />} />
           <Route path="/fichaboleto/:id" element={<PrivateRoute element={<FichaBoleto />} />} />
-          <Route path="/fichacancelamento/:id" element={<PrivateRoute element={<FichaCancelamento />} requiredCargo="vendas" />} />
+          <Route path="/fichacancelamento/:id" element={<PrivateRoute element={<FichaCancelamento />} />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </BrowserRouter>

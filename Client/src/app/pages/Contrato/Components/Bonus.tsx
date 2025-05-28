@@ -45,8 +45,8 @@ export const Bonus: React.FC = () => {
   return (
     clientData && (
       <div className="bonus card text-center p-4">
-        <h5 className="text-white ">CONDIÇÕES DE PAGAMENTO</h5>
-        <div className="d-flex justify-content-center my-1">
+        <h5 className="text-white ">DECLARAÇÃO DE CIÊNCIA E AUTORIZAÇÃO</h5>
+        {/* <div className="d-flex justify-content-center my-1">
           {clientData.criacao === "sim" && (
             <div className="mx-2">
               <strong
@@ -91,65 +91,48 @@ export const Bonus: React.FC = () => {
               </strong>
             </div>
           )}
-        </div>
+        </div> */}
 
         <div className="form-group">
-          {clientData.contrato === "Recorencia" ? (
-            <p>
-              <strong>
-                COMO ACORDADO SEGUE PLANO{" "}
-                <u className="">{clientData.validade} </u>
-                SENDO 1º PAGAMENTO NO VALOR DE{" "}
-                <u>
-                  R${" "}
-                  {clientData.valorVenda
-                    ? formatValor(clientData.valorVenda)
-                    : ""}
-                </u>{" "}
-                ({clientData.valorExtenso}) + 11 PARCELAS
-                DE
-                <u>
-                  R${" "}
-                  19,90
-                </u>{" "}
-                (Dezenove Reais e Noventa Centavos) COM VENCIMENTO PARA O DIA
-                <u> {formatDateToBrazilian(clientData.dataVencimento)} </u>E SUAS PARCELAS PARA TODO DIA
-                <u> {clientData.diaData} </u>DE CADA MÊS.
-              </strong>
-            </p>
-          ) : (
-            <p>
-              <strong>
-                Como acordado, segue o plano no valor de{" "}
-                <u>
-                  R${" "}
-                  {clientData.valorVenda
-                    ? formatValor(clientData.valorVenda)
-                    : ""}
-                </u>
-                , a ser pago em{" "}
-                <u>
-                  {clientData.parcelas} parcela(s)
-                  {clientData.parcelas > 1 &&
-                    ` de R$ ${
-                      clientData.valorParcelado
-                        ? formatValor(clientData.valorParcelado)
-                        : ""
-                    }`}
-                </u>
-                , via <u>{clientData.formaPagamento}</u>, com o vencimento para
-                o dia <u>{formatDateToBrazilian(clientData.dataVencimento)}</u>.
-              </strong>
-            </p>
-          )}
+          <p className="text-uppercase ">
+            <strong>
+              Declaro, para os devidos fins, que recebi por ligação telefônica
+              todas as informações referentes ao plano contratado, incluindo
+              condições, valores e forma de execução do serviço. O plano
+              escolhido foi o <u className="">{clientData.validade} </u>, no
+              valor de{" "}
+              <u>
+                R${" "}
+                {clientData.valorVenda
+                  ? formatValor(clientData.valorVenda)
+                  : ""}
+              </u>{" "}
+              , com sua renovação prevista para ocorrer em{" "}
+              {clientData.dataVigencia}. <br /> salvo manifestação contrária por parte do contratante dentro do prazo legal de 30 dias antecedentes. 
+              <br /> Autorizo a empresa G.MAPS CONTACT CENTER LTDA a realizar toda a assessoria e otimização do perfil da minha empresa no Google Maps, conforme as condições descritas neste documento.
+            </strong>
+          </p>
         </div>
 
-        <p className="">
-          O PAGAMENTO PODE SER FEITO ATRAVÉS DO BOLETO BANCÁRIO OU PIX QR-CODE
-          DISPONÍVEL NO BOLETO.
-        </p>
+        <div className="assinatura-section pt-5">
+          <div className="linha-assinatura"></div>
+        </div>
 
-        <div className="boleto-container">
+        {/* <h5 className="mt-2">CENTRAL DE ATENDIMENTO</h5>
+        <div>
+          <p>0800 580 2766</p>
+          <p>
+            <a href="mailto:MARKETING@GRUPOMAPSEMPRESAS.com.br">
+              MARKETING@GRUPOMAPSEMPRESAS.com.br
+            </a>
+            <br />
+            <a href="mailto:CONTATO@GRUPOMAPSEMPRESAS.com.br">
+              CONTATO@GRUPOMAPSEMPRESAS.com.br
+            </a>
+          </p>
+        </div> */}
+
+        {/* <div className="boleto-container">
           <div className="boleto-logo">
             <img src={require("../../../Assets/logo-efi.png")} alt="EFI Pay" />
           </div>
@@ -181,18 +164,17 @@ export const Bonus: React.FC = () => {
                 </p>
               </div>
               <p className="mt-3">
-                  <a href={clientData.boleto?.[0]?.link}>
-                    {clientData.boleto?.[0]?.link}
-                  </a>
-                </p>
+                <a href={clientData.boleto?.[0]?.link}>
+                  {clientData.boleto?.[0]?.link}
+                </a>
+              </p>
               <p className="mt-3">
                 Data de vencimento:{" "}
                 {formatDateToBrazilian(clientData.dataVencimento)}
               </p>
-
             </div>
           </div>
-        </div>
+        </div> */}
         {/* <p>PARA ATENDIMENTO VIA WHATSAPP BASTA CLICAR NO ÍCONE ABAIXO:</p>
         <a
           href="https://wa.link/ulgll4"

@@ -84,10 +84,9 @@ export const Contrato: FC = () => {
       <div className="bg-infos-contrato" id="contrato">
         <Header />
         <DadosEmpresa />
-        <div className="page-break"></div> 
         <Bonus />
+        <div className="page-break"></div> 
         <Infoqr />
-        <div className="page-break"></div>
         <Condicoes />
       </div>
       <button className="btn btn-danger mt-4" onClick={downloadPDF}>
