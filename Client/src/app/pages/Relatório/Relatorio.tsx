@@ -77,7 +77,7 @@ export const Relatorio: React.FC = () => {
 
   useEffect(() => {
     const fetchVendas = () => {
-      const vendasCollection = collection(db, "marketings");
+      const vendasCollection = collection(db, "vendas");
 
       const unsubscribe = onSnapshot(vendasCollection, (querySnapshot) => {
         const vendasHoje: (Venda & { avatar?: string })[] = [];
