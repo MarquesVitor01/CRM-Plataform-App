@@ -31,6 +31,7 @@ import { MsgMonitoria } from "../pages/Fichas/MsgMonitoria/MsgMonitoria";
 import { MsgMkt } from "../pages/Fichas/MsgMkt/MsgMkt";
 import { Analise } from "../pages/dashboard/analise/Analise";
 import { VizuMonitoria } from "../pages/Fichas/VizuMonitoria/VizuMonitoria";
+import { NovoMkt } from "../pages/dashboard/novo_mkt/NovoMkt";
 
 
 export const LocalRoutes: React.FC = () => {
@@ -46,8 +47,9 @@ export const LocalRoutes: React.FC = () => {
           <Route path="/cancelados" element={<PrivateRoute element={<Cancelados />} />} />
           <Route path="/monitoria" element={<PrivateRoute element={<Monitoria />} />} />
           <Route path="/marketing" element={<PrivateRoute element={<Marketing />} />} />
+          <Route path="/novomarketing" element={<PrivateRoute element={<NovoMkt />} />} />
           <Route path="/analises" element={<PrivateRoute element={<Analise />} />} />
-          <Route path="/pos-venda" element={<PrivateRoute element={<PosVenda />} />} />
+          {/* <Route path="/pos-venda" element={<PrivateRoute element={<PosVenda />} />} /> */}
           <Route path="/financeiro" element={<PrivateRoute element={<Financeiro />} requiredCargo="financeiro" />} />
           <Route path="/cobranca" element={<PrivateRoute element={<Cobranca />} requiredCargo="cobranca" />} />
           <Route path="/relatorio" element={<PrivateRoute element={<Relatorio />} />} />
@@ -75,7 +77,7 @@ export const LocalRoutes: React.FC = () => {
 
 const NavbarWrapper: React.FC = () => {
   const location = useLocation();
-  const showNavbarRoutes = ["/vendas", "/monitoria", "/marketing", "/financeiro", "/cobranca", "/cancelados", "/pos-venda", "/analises"];
+  const showNavbarRoutes = ["/vendas", "/monitoria", "/marketing", "/financeiro", "/cobranca", "/cancelados", "/pos-venda", "/analises", "/novomarketing"];
 
   return showNavbarRoutes.includes(location.pathname) ? <Navbar /> : null;
 };

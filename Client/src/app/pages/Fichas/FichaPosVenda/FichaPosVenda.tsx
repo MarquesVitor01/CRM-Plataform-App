@@ -23,7 +23,7 @@ export const FichaPosVenda: React.FC = () => {
     const fetchClientData = async () => {
       try {
         if (id) {
-          const docRef = doc(db, "posVendas", id);
+          const docRef = doc(db, "vendas", id);
           const docSnap = await getDoc(docRef);
 
           if (docSnap.exists()) {
@@ -45,7 +45,7 @@ export const FichaPosVenda: React.FC = () => {
   const handleMarketingSubmit = async (data: any) => {
     try {
       if (id) {
-        const docRef = doc(db, "marketings", id);
+        const docRef = doc(db, "vendas", id);
         await updateDoc(docRef, data);
         setClientData(data);
         console.log("Dados atualizados com sucesso!");
@@ -54,7 +54,7 @@ export const FichaPosVenda: React.FC = () => {
           await adicionarClienteFinanceiro(data);
         }
 
-        navigate("/pos-venda");
+        navigate("/novomarketing");
       }
     } catch (error) {
       console.error("Erro ao atualizar os dados de marketing: ", error);

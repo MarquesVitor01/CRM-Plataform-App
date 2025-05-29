@@ -33,14 +33,12 @@
   align-items: center;
   flex-direction: column;
   margin-top: 10px;
-  min-height: 90vh;
 }
 
 .condicoes .text-condicoes {
   width: 900px;
   font-size: 12px;
   text-align: justify;
-  padding-inline: 20px;
 }
 
 .image-container {
@@ -89,7 +87,6 @@
 .boleto-container {
   font-family: Arial, sans-serif;
   max-width: 700px;
-  padding: 20px;
   border: 2px solid #333;
   border-radius: 5px;
   background-color: #f9f9f9;
@@ -97,7 +94,7 @@
   display: flex;
   justify-content: center;
   flex-direction: column;
-  margin-top: -20px;
+  margin-top: -25px;
 }
 .checkbox-blue {
   accent-color: #007bff!important; 
@@ -128,7 +125,6 @@
 .qrcode-google {
   display: flex;
   align-items: center;
-  margin-block: 10px;
 }
 
 .qrcode-link {

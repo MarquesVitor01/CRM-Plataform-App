@@ -135,11 +135,11 @@ export const Infoqr: React.FC = () => {
           <div className="boleto-header">
             <div className="boleto-info">
               <div className="header-boleto">
-                <p className="mt-3">
+                <p className="mt-1">
                   Código do boleto: <br />
                   {clientData.boleto?.[0]?.barcode}
                 </p>
-                <p className="mt-3">
+                <p className="mt-1">
                   Link do boleto: <br />
                   <a href={clientData.boleto?.[0]?.billetLink}>
                     {clientData.boleto?.[0]?.billetLink}
@@ -147,31 +147,31 @@ export const Infoqr: React.FC = () => {
                 </p>
               </div>
               <div className="code-boleto">
-                <p className="mt-3">
+                <p className="mt-1">
                   QrCode para pagamento:
                   {clientData.boleto?.[0]?.pix && (
                     <div className="mt-1">
                       <QRCodeSVG
                         value={clientData.boleto?.[0]?.pix}
-                        size={85}
+                        size={80}
                       />
                     </div>
                   )}
                 </p>
               </div>
-              <p className="mt-3">
+              <p className="mt-1">
                 <a href={clientData.boleto?.[0]?.link}>
                   {clientData.boleto?.[0]?.link}
                 </a>
               </p>
-              <p className="mt-3">
+              <p className="mt-1">
                 Data de vencimento:{" "}
                 {formatDateToBrazilian(clientData.dataVencimento)}
               </p>
             </div>
           </div>
         </div>
-        <h5 className="text-white">GRAVAÇÃO</h5>
+        {/* <h5 className="text-white">GRAVAÇÃO</h5>
         <div className="form-group-info">
           <p>
             <strong>
@@ -216,7 +216,7 @@ export const Infoqr: React.FC = () => {
               CONTATO@GRUPOMAPSEMPRESAS.com.br
             </a>
           </p>
-        </div>
+        </div> */}
       </div>
     )
   );

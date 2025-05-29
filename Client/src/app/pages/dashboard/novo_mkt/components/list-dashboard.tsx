@@ -3,22 +3,21 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowLeft,
   faArrowRight,
+  faEdit,
   faEye,
   faSearch,
   faFilter,
-  faPlus,
-  faSync,
-  faTableList,
+  faRectangleList,
   faX,
   faBars,
   faMoneyCheckDollar,
-  faTrashAlt,
-  faCheck,
-  faExclamation,
-  faList,
   faMarker,
-  faPrint,
   faBroom,
+  faTableList,
+  faTrashAlt,
+  faExclamation,
+  faCheck,
+  faPlus,
   faCheckCircle,
   faCircleXmark,
 } from "@fortawesome/free-solid-svg-icons";
@@ -27,19 +26,16 @@ import { ModalExcel } from "./modalExcel";
 import { db } from "../../../../firebase/firebaseConfig";
 import {
   collection,
-  getDocs,
-  doc,
-  writeBatch,
-  setDoc,
   deleteDoc,
+  doc,
   getDoc,
-  getFirestore,
+  getDocs,
+  setDoc,
 } from "firebase/firestore";
-import { toast, ToastContainer } from "react-toastify";
 import { Tooltip } from "react-tooltip";
 import { getAuth } from "firebase/auth";
 
-interface Marketing {
+interface Venda {
   id: string;
   cnpj: string;
   cpf: string;
@@ -65,6 +61,7 @@ interface Marketing {
   posVendaConcuida: boolean;
   monitoriaHorario: string;
 }
+
 interface ListDashboardProps {
   setTotalMarketings: (total: number) => void;
   setTotalRealizados: (total: number) => void;
@@ -74,19 +71,16 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
   setTotalMarketings,
   setTotalRealizados,
 }) => {
-  const [marketings, setMarketings] = useState<Marketing[]>([]);
-  const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
+  const [vendas, setVendas] = useState<Venda[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [modalExcel, setModalExcel] = useState(false);
   const itemsPerPage = 5;
   const [loading, setLoading] = useState<boolean>(true);
-  const [modalExclusao, setModalExclusao] = useState(false);
-  const [activeSearchTerm, setActiveSearchTerm] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [syncLoading, setSyncLoading] = useState<boolean>(false);
-  const [showConcluidos, setShowConcluidos] = useState(false);
-  const [showIncompletos, setShowIncompletos] = useState(false);
+  const [activeSearchTerm, setActiveSearchTerm] = useState<string>("");
   const [cargo, setCargo] = useState<string | null>(null);
+  const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
+  const [marketings, setMarketings] = useState<Venda[]>([]);
 
   const [filters, setFilters] = useState({
     startDate: "",
@@ -96,65 +90,9 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
     salesPerson: "",
     saleGroup: "",
   });
+
   const [showConcluidas, setShowConcluidas] = useState(false);
-
   const auth = getAuth();
-  const db = getFirestore();
-
-  useEffect(() => {
-    const fetchMarketings = async () => {
-      setLoading(true);
-      try {
-        const marketingsCollection = collection(db, "marketings");
-        const marketingsSnapshot = await getDocs(marketingsCollection);
-        const marketingsList = marketingsSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        })) as Marketing[];
-
-        setMarketings(marketingsList);
-        setTotalMarketings(marketingsList.length);
-
-        const totalRealizados = marketingsList.filter(
-          (marketing) => marketing.servicosConcluidos
-        ).length;
-        setTotalRealizados(totalRealizados);
-      } catch (error) {
-        console.error("Erro ao buscar marketings:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchMarketings();
-  }, [setTotalMarketings, setTotalRealizados]);
-
-  async function getUserCargo() {
-    const userId = auth.currentUser?.uid;
-
-    if (!userId) {
-      console.log("Usuário não está logado.");
-      return null;
-    }
-
-    try {
-      const userDocRef = doc(db, "usuarios", userId);
-      const userDocSnap = await getDoc(userDocRef);
-
-      if (userDocSnap.exists()) {
-        const userData = userDocSnap.data();
-        const cargo = userData.cargo;
-        console.log("Cargo do usuário:", cargo);
-        return cargo;
-      } else {
-        console.log("Documento do usuário não encontrado.");
-        return null;
-      }
-    } catch (error) {
-      console.error("Erro ao buscar cargo do usuário:", error);
-      return null;
-    }
-  }
 
   useEffect(() => {
     const fetchVendas = async () => {
@@ -180,30 +118,31 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
         const nomeUsuario = userData.nome;
         setCargo(cargo);
 
-        const marketingsCollection = collection(db, "marketings");
+        const marketingsCollection = collection(db, "vendas");
         const marketingsSnapshot = await getDocs(marketingsCollection);
         const marketingsList = marketingsSnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
-        })) as Marketing[];
+        })) as Venda[];
 
-        let filteredVendas: Marketing[] = [];
+        let filteredVendas: Venda[] = [];
 
         if (cargo === "adm" || cargo === "supervisor") {
           filteredVendas = marketingsList;
         } else if (cargo === "marketing") {
           filteredVendas = marketingsList.filter(
-            (marketing) =>
-              !marketing.operadorMkt ||
-              marketing.operadorMkt.trim() === "" ||
-              marketing.operadorMkt === nomeUsuario
+            (venda) =>
+              !venda.operadorMkt ||
+              venda.operadorMkt.trim() === "" ||
+              venda.operadorMkt === nomeUsuario
           );
         } else {
           filteredVendas = marketingsList.filter(
-            (marketing) => marketing.createdBy === userId
+            (venda) => venda.createdBy === userId
           );
         }
 
+        setVendas(filteredVendas); // Isso vai atualizar o estado que é usado para renderizar
         setMarketings(filteredVendas);
         setTotalMarketings(filteredVendas.length);
       } catch (error) {
@@ -228,51 +167,22 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
     });
   };
 
-  const openModalExclusao = () => setModalExclusao(true);
-  const closeModalExclusao = () => setModalExclusao(false);
-
-  const handleRemoveSelected = async () => {
-    if (selectedItems.size === 0) return;
-
-    const deletePromises = Array.from(selectedItems).map(async (id) => {
-      const marketingDoc = doc(db, "marketings", id);
-      const vendaData = (await getDoc(marketingDoc)).data();
-
-      if (vendaData) {
-        await setDoc(doc(db, "cancelados", id), {
-          ...vendaData,
-          deletedAt: new Date(),
-        });
-      }
-
-      await deleteDoc(marketingDoc);
-    });
-
-    await Promise.all(deletePromises);
-
-    setSelectedItems(new Set());
-  };
-
   const applyFilters = () => {
-    let filteredClients = marketings.filter((marketing) => {
+    let filteredClients = vendas.filter((venda) => {
       const lowerCaseTerm = activeSearchTerm.toLowerCase();
       const matchesSearchTerm =
-        (marketing.cnpj &&
-          marketing.cnpj.toLowerCase().includes(lowerCaseTerm)) ||
-        (marketing.cpf &&
-          marketing.cpf.toLowerCase().includes(lowerCaseTerm)) ||
-        (marketing.responsavel &&
-          marketing.responsavel.toLowerCase().includes(lowerCaseTerm)) ||
-        (marketing.email1 &&
-          marketing.email1.toLowerCase().includes(lowerCaseTerm)) ||
-        (marketing.email2 &&
-          marketing.email2.toLowerCase().includes(lowerCaseTerm)) ||
-        (marketing.operador &&
-          marketing.operador.toLowerCase().includes(lowerCaseTerm));
+        (venda.cnpj && venda.cnpj.toLowerCase().includes(lowerCaseTerm)) ||
+        (venda.cpf && venda.cpf.toLowerCase().includes(lowerCaseTerm)) ||
+        (venda.responsavel &&
+          venda.responsavel.toLowerCase().includes(lowerCaseTerm)) ||
+        (venda.email1 && venda.email1.toLowerCase().includes(lowerCaseTerm)) ||
+        (venda.email2 && venda.email2.toLowerCase().includes(lowerCaseTerm)) ||
+        (venda.operador &&
+          venda.operador.toLowerCase().includes(lowerCaseTerm));
 
       const { startDate, endDate, dueDate, saleType, salesPerson } = filters;
 
-      const marketingData = new Date(marketing.data);
+      const marketingData = new Date(venda.data);
       const isStartDateValid = startDate
         ? marketingData.toDateString() === new Date(startDate).toDateString()
         : true;
@@ -283,15 +193,15 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
             marketingData <= new Date(endDate)
           : isStartDateValid;
 
-      const marketingDataVencimento = new Date(marketing.dataVencimento);
+      const marketingDataVencimento = new Date(venda.dataVencimento);
       const isDueDateValid = dueDate
         ? marketingDataVencimento.toDateString() ===
           new Date(dueDate).toDateString()
         : true;
 
-      const issaleTypeValid = saleType ? marketing.contrato === saleType : true;
+      const issaleTypeValid = saleType ? venda.contrato === saleType : true;
       const issalesPersonValid = salesPerson
-        ? marketing.operador === salesPerson
+        ? venda.operador === salesPerson
         : true;
 
       return (
@@ -314,8 +224,9 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
 
   const handleSearchClick = () => {
     setActiveSearchTerm(searchTerm);
-    setCurrentPage(1);
+    setCurrentPage(1); // Resetar para a primeira página ao realizar nova pesquisa
   };
+
   const filteredClients = applyFilters();
   const totalPages = Math.ceil(filteredClients.length / itemsPerPage);
   const currentClients = filteredClients.slice(
@@ -332,18 +243,16 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
   const openModalExcel = () => setModalExcel(true);
   const closeModalExcel = () => setModalExcel(false);
 
-  const handleApplyFilters = (newFilters: any) => {
-    setFilters(newFilters);
-    localStorage.setItem("vendaFilters", JSON.stringify(newFilters));
-    setModalExcel(false);
-  };
-
   useEffect(() => {
     const savedFilters = localStorage.getItem("vendaFilters");
     if (savedFilters) {
       setFilters(JSON.parse(savedFilters));
     }
   }, []);
+
+  const toggleConcluido = () => {
+    setShowConcluidas(!showConcluidas);
+  };
 
   const formatCPF = (value: string): string => {
     return value
@@ -363,20 +272,45 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
       .replace(/(\d{2})\.(\d{3})\.(\d{3})\/(\d{4})(\d)/, "$1.$2.$3/$4-$5")
       .substring(0, 18);
   };
+  const [showConcluidos, setShowConcluidos] = useState(false);
+  const [showIncompletos, setShowIncompletos] = useState(false);
+  const [modalExclusao, setModalExclusao] = useState(false);
 
-  const isChecklistConcluido = (marketing: Marketing) => {
-    return (
-      marketing.cartaApresentacao &&
-      marketing.certificado &&
-      marketing.fotosAdicionadas &&
-      marketing.telefone &&
-      marketing.endereco &&
-      (marketing.redeSocial || marketing.semRedeSocial)
-    );
+  const openModalExclusao = () => setModalExclusao(true);
+  const closeModalExclusao = () => setModalExclusao(false);
+
+  const handleRemoveSelected = async () => {
+    if (selectedItems.size === 0) return;
+
+    const deletePromises = Array.from(selectedItems).map(async (id) => {
+      const marketingDoc = doc(db, "vendas", id);
+      const vendaData = (await getDoc(marketingDoc)).data();
+
+      if (vendaData) {
+        await setDoc(doc(db, "cancelados", id), {
+          ...vendaData,
+          deletedAt: new Date(),
+        });
+      }
+
+      await deleteDoc(marketingDoc);
+    });
+
+    await Promise.all(deletePromises);
+
+    setSelectedItems(new Set());
   };
-  const isPosVendaConcuida = (marketing: Marketing) => {
-    return !!marketing.posVendaConcuida;
+  const handleApplyFilters = (newFilters: any) => {
+    setFilters(newFilters);
+    localStorage.setItem("vendaFilters", JSON.stringify(newFilters));
+    setModalExcel(false);
   };
+  useEffect(() => {
+    const savedFilters = localStorage.getItem("vendaFilters");
+    if (savedFilters) {
+      setFilters(JSON.parse(savedFilters));
+    }
+  }, []);
 
   const toggleConcluidos = () => {
     setShowConcluidos(!showConcluidos);
@@ -388,13 +322,22 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
     setShowConcluidos(false);
   };
 
-  const mostrarTodos = () => {
-    setShowConcluidos(false);
-    setShowIncompletos(false);
+  const isPosVendaConcuida = (venda: Venda) => {
+    return !!venda.posVendaConcuida;
+  };
+  const isChecklistConcluido = (venda: Venda) => {
+    return (
+      venda.cartaApresentacao &&
+      venda.certificado &&
+      venda.fotosAdicionadas &&
+      venda.telefone &&
+      venda.endereco &&
+      (venda.redeSocial || venda.semRedeSocial)
+    );
   };
 
-  const filteredClientss = currentClients.filter((marketing) => {
-    const completo = isChecklistConcluido(marketing);
+  const filteredClientss = currentClients.filter((venda) => {
+    const completo = isChecklistConcluido(venda);
 
     if (showConcluidos) return completo;
     if (showIncompletos) return !completo;
@@ -444,7 +387,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
       )}
       <div className="header-list">
         <div className="header-content">
-          <h2>Marketing</h2>
+          <h2>Novo Marketing</h2>
           <div className="search-container">
             <button
               className="search-button"
@@ -538,16 +481,16 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
             </button>
 
             {/* <button
-              className="planilha-btn"
-              onClick={handleSyncClients}
-              disabled={syncLoading}
-              data-tooltip-id="tooltip-sync"
-              data-tooltip-content={
-                syncLoading ? "Sincronizando..." : "Sincronizar clientes"
-              }
-            >
-              <FontAwesomeIcon icon={faSync} color="#fff" spin={syncLoading} />
-            </button> */}
+               className="planilha-btn"
+               onClick={handleSyncClients}
+               disabled={syncLoading}
+               data-tooltip-id="tooltip-sync"
+               data-tooltip-content={
+                 syncLoading ? "Sincronizando..." : "Sincronizar clientes"
+               }
+             >
+               <FontAwesomeIcon icon={faSync} color="#fff" spin={syncLoading} />
+             </button> */}
 
             {cargo === "adm" && (
               <button
@@ -604,15 +547,15 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
       {loading ? (
         <div className="loading">Carregando...</div>
       ) : filteredClients.length === 0 ? (
-        <div className="no-clients">Nenhum cliente encontrado.</div>
+        <div className="no-clients">Não existem vendas a exibir.</div>
       ) : (
         <>
-          <table className="table table-hover">
+          <table className="table">
             <thead>
               <tr>
                 <th></th>
                 <th>Realizado</th>
-                <th>CNPJ</th>
+                <th>CNPJ/CPF</th>
                 <th>Nome</th>
                 <th>Email</th>
                 <th>Operador</th>
@@ -622,32 +565,30 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
               </tr>
             </thead>
             <tbody>
-              {filteredClientss.map((marketing) => {
-                const checklistCompleto = isChecklistConcluido(marketing);
+              {filteredClientss.map((venda: Venda) => {
+                const checklistCompleto = isChecklistConcluido(venda);
                 const serviçoIniciado =
-                  checklistCompleto || marketing.servicosConcluidos;
-                console.log("posVendaConcuida:", marketing.posVendaConcuida);
+                  checklistCompleto || venda.servicosConcluidos;
+                console.log("posVendaConcuida:", venda.posVendaConcuida);
 
                 return (
-                  <tr key={marketing.id}>
+                  <tr key={venda.id}>
                     <td
-                      className={
-                        selectedItems.has(marketing.id) ? "selected" : ""
-                      }
+                      className={selectedItems.has(venda.id) ? "selected" : ""}
                     >
                       <input
                         type="checkbox"
-                        checked={selectedItems.has(marketing.id)}
-                        onChange={() => handleCheckboxChange(marketing.id)}
+                        checked={selectedItems.has(venda.id)}
+                        onChange={() => handleCheckboxChange(venda.id)}
                         className="checkbox-table"
                       />
                     </td>
                     <td
                       className={`text-center ${
-                        selectedItems.has(marketing.id) ? "selected" : ""
+                        selectedItems.has(venda.id) ? "selected" : ""
                       }`}
                     >
-                      {isPosVendaConcuida(marketing) ? (
+                      {isPosVendaConcuida(venda) ? (
                         <FontAwesomeIcon
                           icon={faCheckCircle}
                           color="green"
@@ -663,7 +604,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                     </td>
                     <td
                       className={`${
-                        selectedItems.has(marketing.id) ? "selected" : ""
+                        selectedItems.has(venda.id) ? "selected" : ""
                       } ${
                         serviçoIniciado
                           ? checklistCompleto
@@ -672,70 +613,60 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                           : ""
                       }`}
                     >
-                      {marketing.cnpj
-                        ? formatCNPJ(marketing.cnpj)
-                        : marketing.cpf
-                        ? formatCPF(marketing.cpf)
-                        : marketing.cnpj || marketing.cpf}
+                      {venda.cnpj
+                        ? formatCNPJ(venda.cnpj)
+                        : venda.cpf
+                        ? formatCPF(venda.cpf)
+                        : venda.cnpj || venda.cpf}
                     </td>
                     <td
                       className={`${
-                        selectedItems.has(marketing.id) ? "selected" : ""
+                        selectedItems.has(venda.id) ? "selected" : ""
                       } ${
-                        marketing.servicosConcluidos
-                          ? "servicos-realizados"
-                          : ""
+                        venda.servicosConcluidos ? "servicos-realizados" : ""
                       }`}
                     >
-                      {marketing.responsavel}
+                      {venda.responsavel}
                     </td>
                     <td
                       className={`${
-                        selectedItems.has(marketing.id) ? "selected" : ""
+                        selectedItems.has(venda.id) ? "selected" : ""
                       } ${
-                        marketing.servicosConcluidos
-                          ? "servicos-realizados"
-                          : ""
+                        venda.servicosConcluidos ? "servicos-realizados" : ""
                       }`}
                     >
-                      {marketing.email1 || marketing.email2}
+                      {venda.email1 || venda.email2}
                     </td>
                     <td
                       className={`${
-                        selectedItems.has(marketing.id) ? "selected" : ""
+                        selectedItems.has(venda.id) ? "selected" : ""
                       } ${
-                        marketing.servicosConcluidos
-                          ? "servicos-realizados"
-                          : ""
+                        venda.servicosConcluidos ? "servicos-realizados" : ""
                       }`}
                     >
-                      {marketing.operador.replace(/\./g, " ")}
+                      {venda.operador.replace(/\./g, " ")}
                     </td>
                     <td
                       className={`${
-                        selectedItems.has(marketing.id) ? "selected" : ""
+                        selectedItems.has(venda.id) ? "selected" : ""
                       } ${
-                        marketing.servicosConcluidos
-                          ? "servicos-realizados"
-                          : ""
+                        venda.servicosConcluidos ? "servicos-realizados" : ""
                       }`}
                     >
-                      {marketing.nomeMonitor}
+                      {venda.nomeMonitor}
                     </td>
                     <td
                       className={`${
-                        selectedItems.has(marketing.id) ? "selected" : ""
+                        selectedItems.has(venda.id) ? "selected" : ""
                       } ${
-                        marketing.servicosConcluidos
-                          ? "servicos-realizados"
-                          : ""
+                        venda.servicosConcluidos ? "servicos-realizados" : ""
                       }`}
                     >
-                      {marketing.monitoriaHorario}
+                      {venda.monitoriaHorario}
                     </td>
                     <td className="icon-container">
                       <Link
-                        to={`/contrato/${marketing.id}`}
+                        to={`/contrato/${venda.id}`}
                         data-tooltip-id="tooltip-view-contract"
                         data-tooltip-content="Visualizar contrato"
                       >
@@ -746,7 +677,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                       </Link>
 
                       <Link
-                        to={`/fichamarketing/${marketing.id}`}
+                        to={`/fichamarketing/${venda.id}`}
                         data-tooltip-id="tooltip-marketing-file"
                         data-tooltip-content="Ficha de marketing"
                       >
@@ -755,7 +686,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                           className="icon-spacing text-dark"
                         />
                       </Link>
-                      <Link to={`/fichaboleto/${marketing.id}`}>
+                      <Link to={`/fichaboleto/${venda.id}`}>
                         <FontAwesomeIcon
                           icon={faMoneyCheckDollar}
                           className="icon-spacing text-dark"
@@ -768,7 +699,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                           className="custom-tooltip"
                         />
                       </Link>
-                      <Link to={`/fichamsgmarketing/${marketing.id}`}>
+                      <Link to={`/fichamsgmarketing/${venda.id}`}>
                         <FontAwesomeIcon
                           icon={faMarker}
                           className="icon-spacing text-dark"
@@ -782,7 +713,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                         />
                       </Link>
                       <Link
-                        to={`/fichaposVenda/${marketing.id}`}
+                        to={`/fichaposVenda/${venda.id}`}
                         data-tooltip-id="tooltip-posVenda-file"
                         data-tooltip-content="Ficha de posVenda"
                       >
@@ -837,7 +768,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
               <FontAwesomeIcon icon={faArrowLeft} />
             </button>
             <span>
-              Página {currentPage} de {totalPages}
+              {currentPage} / {totalPages}
             </span>
             <button
               onClick={() => handlePageChange(currentPage + 1)}
@@ -845,7 +776,6 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
             >
               <FontAwesomeIcon icon={faArrowRight} />
             </button>
-            <ToastContainer />
           </div>
         </>
       )}

@@ -44,22 +44,21 @@ export const Condicoes: React.FC = () => {
         <img
           src={require("../../../Assets/logo-google.png")}
           alt="WhatsApp"
-          style={{ width: "270px" }}
-          className="mt-1 mb-5"
+          style={{ width: "100px" }}
         />
         <div className="qrcode-google">
           {clientData.linkGoogle && (
             <div className="d-flex flex-column align-items-center mt-1">
-              <p className="mt-2">
+              <p className="">
                 Escanei o QrCOde Para Verificar e conferir a página ou clique no
                 link:
               </p>
               <QRCodeSVG
                 value={clientData.linkGoogle}
-                size={150}
-                className="mt-1 mb-2"
+                size={80}
+                className=" mb-2"
               />
-              <p className="mt-2">
+              <p className="">
                 Link da Página:{" "}
                 <a href={`${clientData.linkGoogle}`}>{clientData.linkGoogle}</a>
               </p>
@@ -67,7 +66,7 @@ export const Condicoes: React.FC = () => {
           )}
         </div>
         <div className="">
-          <p className="mt-2">
+          <p className="">
             <a href="https://drive.google.com/file/d/10Q5zFIqR1l9YunhdawO2nhbSfALK_iih/view?usp=sharing">Termos de Serviço</a> e{" "}
             <a href="https://drive.google.com/file/d/1xTe9gL84D79-0OaayMUQPhiy3GFidxYO/view?usp=sharing">Política de Privacidade</a>
           </p>
