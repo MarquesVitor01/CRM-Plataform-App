@@ -160,7 +160,7 @@ export const Navbar = () => {
                 </li>
               )}
 
-            {(cargo === "monitoria" ||
+            {/* {(cargo === "monitoria" ||
               userId === adminId ||
               userId === supervisorId) && (
               <li className="nav-item">
@@ -173,7 +173,7 @@ export const Navbar = () => {
                   <span>Monitoria</span>
                 </Link>
               </li>
-            )}
+            )} */}
 
             {(cargo === "marketing" ||
               userId === adminId ||
@@ -181,7 +181,7 @@ export const Navbar = () => {
               <li className="nav-item">
                 <Link
                   className="nav-link icon-tooltip"
-                  to="/marketing"
+                  to="/novomarketing"
                   data-tooltip="Marketing"
                 >
                   <FontAwesomeIcon icon={faBullhorn} />
@@ -189,7 +189,7 @@ export const Navbar = () => {
                 </Link>
               </li>
             )}
-            {(cargo === "posVenda" ||
+            {/* {(cargo === "posVenda" ||
               userId === adminId ||
               userId === supervisorId) && (
               <li className="nav-item">
@@ -202,7 +202,7 @@ export const Navbar = () => {
                   <span>Pós Venda</span>
                 </Link>
               </li>
-            )}
+            )} */}
             {(cargo === "financeiro" || userId === adminId) && (
               <li className="nav-item">
                 <Link

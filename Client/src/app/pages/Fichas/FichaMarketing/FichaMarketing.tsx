@@ -33,7 +33,7 @@ export const FichaMarketing: React.FC = () => {
     const fetchClientData = async () => {
       try {
         if (id) {
-          const docRef = doc(db, "marketings", id);
+          const docRef = doc(db, "vendas", id);
           const docSnap = await getDoc(docRef);
 
           if (docSnap.exists()) {
@@ -55,69 +55,71 @@ export const FichaMarketing: React.FC = () => {
   const handleMarketingSubmit = async (data: any) => {
     try {
       if (id) {
-        const docRef = doc(db, "marketings", id);
+        const docRef = doc(db, "vendas", id);
         await updateDoc(docRef, data);
         setClientData(data);
         console.log("Dados atualizados com sucesso!");
   
-        if (data.servicosConcluidos === true) {
-          const posVendasRef = doc(db, "posVendas", id);
-          const posVendasSnap = await getDoc(posVendasRef);
+        // if (data.servicosConcluidos === true) {
+        //   const posVendasRef = doc(db, "posVendas", id);
+        //   const posVendasSnap = await getDoc(posVendasRef);
   
-          if (!posVendasSnap.exists()) {
-            await setDoc(posVendasRef, {
-              ...data,
-              dataAdicionado: new Date().toISOString(),
-            });
-            console.log("Cliente adicionado à coleção posVendas!");
-          } else {
-            await updateDoc(posVendasRef, {
-              ...data,
-              dataAtualizado: new Date().toISOString(),
-            });
-            console.log("Dados atualizados na coleção posVendas!");
-          }
+        //   if (!posVendasSnap.exists()) {
+        //     await setDoc(posVendasRef, {
+        //       ...data,
+        //       dataAdicionado: new Date().toISOString(),
+        //     });
+        //     console.log("Cliente adicionado à coleção posVendas!");
+        //   } else {
+        //     await updateDoc(posVendasRef, {
+        //       ...data,
+        //       dataAtualizado: new Date().toISOString(),
+        //     });
+        //     console.log("Dados atualizados na coleção posVendas!");
+        //   }
   
-          navigate("/marketing");
-        } else {
-          navigate("/marketing");
-        }
+        //   navigate("/marketing");
+        // } else {
+        //   navigate("/marketing");
+        // }
+        navigate("/novomarketing");
+
       }
     } catch (error) {
       console.error("Erro ao atualizar os dados de marketing: ", error);
     }
   };
   
-  const handleConfirmDuplicate = async () => {
-    if (!pendingData || !pendingId) return;
+  // const handleConfirmDuplicate = async () => {
+  //   if (!pendingData || !pendingId) return;
 
-    try {
-      const querySnapshot = await getDocs(
-        query(
-          collection(db, "posVendas"),
-          where("__name__", ">=", `${pendingId}_copia`),
-          where("__name__", "<", `${pendingId}_copia~`)
-        )
-      );
+  //   try {
+  //     const querySnapshot = await getDocs(
+  //       query(
+  //         collection(db, "posVendas"),
+  //         where("__name__", ">=", `${pendingId}_copia`),
+  //         where("__name__", "<", `${pendingId}_copia~`)
+  //       )
+  //     );
 
-      const copiaCount = querySnapshot.size;
-      const newId = `${pendingId}_copia${copiaCount + 1}`;
+  //     const copiaCount = querySnapshot.size;
+  //     const newId = `${pendingId}_copia${copiaCount + 1}`;
 
-      await setDoc(doc(db, "posVendas", newId), {
-        ...pendingData,
-        dataAdicionado: new Date().toISOString(),
-        idOriginal: pendingId,
-      });
+  //     await setDoc(doc(db, "posVendas", newId), {
+  //       ...pendingData,
+  //       dataAdicionado: new Date().toISOString(),
+  //       idOriginal: pendingId,
+  //     });
 
-      console.log(`Cópia criada com ID: ${newId}`);
-      setShowModalConfirm(false);
-      setPendingData(null);
-      setPendingId(null);
-      navigate("/marketing");
-    } catch (error) {
-      console.error("Erro ao criar cópia na coleção posVendas:", error);
-    }
-  };
+  //     console.log(`Cópia criada com ID: ${newId}`);
+  //     setShowModalConfirm(false);
+  //     setPendingData(null);
+  //     setPendingId(null);
+  //     navigate("/marketing");
+  //   } catch (error) {
+  //     console.error("Erro ao criar cópia na coleção posVendas:", error);
+  //   }
+  // };
 
   const sairFicha = () => {
     window.history.back();
@@ -195,13 +197,13 @@ export const FichaMarketing: React.FC = () => {
             </div>
           </div>
         </div>
-          <ConfirmModal
+          {/* <ConfirmModal
           show={showModalConfirm}
           title="Duplicar cliente"
           message="Este cliente já está na lista de pós-vendas. Deseja fazer uma cópia dele?"
           onCancel={() => setShowModalConfirm(false)}
           onConfirm={handleConfirmDuplicate}
-        />
+        /> */}
       </div>
     )
   );
