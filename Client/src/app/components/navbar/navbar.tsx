@@ -126,7 +126,7 @@ export const Navbar = () => {
                 </Link>
               </li>
             )}
-            {(cargo === "vendas" ||
+            {/* {(cargo === "vendas" ||
             cargo === "supervisor" ||
               cargo === "monitoria" ||
               cargo === "marketing" ||
@@ -142,7 +142,7 @@ export const Navbar = () => {
                   <span>Análises</span>
                 </Link>
               </li>
-            )}
+            )} */}
             {cargo !== "marketing" &&
               (cargo === "vendas" ||
                 cargo === "supervisor" ||
