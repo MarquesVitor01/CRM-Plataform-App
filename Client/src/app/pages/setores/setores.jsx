@@ -63,7 +63,7 @@ export const Setores = () => {
           </div>
         )}
 
-        {(cargo === "monitoria" ||
+        {/* {(cargo === "monitoria" ||
           userId === adminId ||
           userId === supervisorId) && (
           <div className="sector col-10 col-md-4 col-lg-3">
@@ -76,7 +76,7 @@ export const Setores = () => {
               </Link>
             </div>
           </div>
-        )}
+        )} */}
 
         {(cargo === "posVenda" ||
           userId === adminId ||
@@ -101,7 +101,7 @@ export const Setores = () => {
               <FontAwesomeIcon icon={faBullhorn} className="sector-icon" />
               <h2>Marketing</h2>
               <p>Clique aqui para ter uma visão do marketing.</p>
-              <Link to="/marketing" className="btn-sector btn btn-primary">
+              <Link to="/novomarketing" className="btn-sector btn btn-primary">
                 Visão do Marketing
               </Link>
             </div>

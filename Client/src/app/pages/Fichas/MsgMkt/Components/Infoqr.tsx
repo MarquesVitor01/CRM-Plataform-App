@@ -12,7 +12,7 @@ export const Infoqr: React.FC = () => {
     const fetchClientData = async () => {
       try {
         if (id) {
-          const docRef = doc(db, "marketings", id);
+          const docRef = doc(db, "vendas", id);
           const docSnap = await getDoc(docRef);
 
           if (docSnap.exists()) {
@@ -32,11 +32,12 @@ export const Infoqr: React.FC = () => {
   return (
     clientData && (
       <div className="bonus text-center">
+        <br />
         {/* <img src="/img/estrelas.png" alt="Logo" width={200} /> */}
         <div className="qrcode-container p-5">
           {clientData.linkGoogle && (
             <div className="qrcode-mktservice">
-              <QRCodeSVG value={clientData.linkGoogle} size={90} />
+              <QRCodeSVG value={clientData.linkGoogle} />
             </div>
           )}
         </div>

@@ -22,7 +22,7 @@ export const MsgMkt: React.FC = () => {
     const fetchClientData = async () => {
       try {
         if (id) {
-          const docRef = doc(db, "marketings", id);
+          const docRef = doc(db, "vendas", id);
           const docSnap = await getDoc(docRef);
 
           if (docSnap.exists()) {
