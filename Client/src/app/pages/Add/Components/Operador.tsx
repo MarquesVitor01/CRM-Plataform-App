@@ -1,5 +1,6 @@
 // Operador.tsx
-import React from "react";
+import React, { useState } from "react";
+import { Header } from "./Header";
 interface OperadorProps {
   form: {
     numeroContrato: string;
@@ -17,6 +18,9 @@ interface OperadorProps {
     parcelaRecorrente: string;
     diaData: string;
     valorExtenso: string;
+    renovacaoAutomatica: string;
+    responsavel: string;
+    cargo: string;
   };
   handleInputChange: (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -29,6 +33,7 @@ export const Operador: React.FC<OperadorProps> = ({
   form,
   handleInputChange,
 }) => {
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const formatValor = (value: string): string => {
     return value.replace(/\D/g, "").replace(/(\d)(\d{2})$/, "$1,$2");
   };
@@ -39,18 +44,29 @@ export const Operador: React.FC<OperadorProps> = ({
     const { value, name } = e.target;
     let formattedValue = value;
 
-    if (name === "valorVenda") {
+    if (name === "valorVenda" || name === "parcelaRecorrente") {
       formattedValue = formatValor(value);
       handleInputChange({
         target: { name, value: value.replace(/\D/g, "") },
       } as React.ChangeEvent<HTMLInputElement>);
+      return;
     }
-    if (name === "parcelaRecorrente") {
-      formattedValue = formatValor(value);
-      handleInputChange({
-        target: { name, value: value.replace(/\D/g, "") },
-      } as React.ChangeEvent<HTMLInputElement>);
+
+    if (name === "responsavel") {
+      const nomeSobrenomeRegex = /^[A-Za-zÀ-ÿ]{2,}( [A-Za-zÀ-ÿ]{2,})+$/;
+
+      if (!nomeSobrenomeRegex.test(value.trim())) {
+        // Exibe erro (você deve ter um state de erros, exemplo: setErrors)
+        setErrors((prev) => ({
+          ...prev,
+          responsavel: "Insira nome e sobrenome válidos.",
+        }));
+      } else {
+        setErrors((prev) => ({ ...prev, responsavel: "" }));
+      }
     }
+
+    handleInputChange(e); // Chamada padrão para os demais campos
   };
 
   const extractDayFromDate = (dataVencimento: string): string => {
@@ -72,58 +88,22 @@ export const Operador: React.FC<OperadorProps> = ({
 
   return (
     <div className="row d-flex justify-content-center">
-      <h4 className="text-white">Informações do Contrato</h4>
-
+      <Header
+        title="Plano e Condições de Pagamento"
+        img="/img/img-header-adicao-2.png"
+      />
       <div className="form-group mb-3 col-md-4">
-        <label htmlFor="numeroContrato">Contrato Nº</label>
+        <label htmlFor="equipe">Equipe</label>
         <input
           type="text"
           className="form-control"
-          id="numeroContrato"
-          name="numeroContrato"
-          value={form.numeroContrato}
+          id="equipe"
+          name="equipe"
+          value={form.equipe}
           onChange={handleInputChange}
-          placeholder="Inserido de forma automática a partir do cnpj/cpf"
           readOnly
         />
       </div>
-      <div className="form-group mb-3 col-md-4">
-        <label htmlFor="valorVenda">Valor da Venda</label>
-        <input
-          type="text"
-          className="form-control"
-          id="valorVenda"
-          name="valorVenda"
-          value={form.valorVenda ? formatValor(form.valorVenda) : ""}
-          onChange={handleDocumentChange}
-          placeholder="Insira o valor da venda"
-        />
-      </div>
-
-      <div className="form-group mb-3 col-md-4">
-        <label htmlFor="parcelas">Parcelas</label>
-        <select
-          className="form-control"
-          id="parcelas"
-          name="parcelas"
-          value={form.parcelas}
-          onChange={handleInputChange}
-        >
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5">5</option>
-          <option value="6">6</option>
-          <option value="7">7</option>
-          <option value="8">8</option>
-          <option value="9">9</option>
-          <option value="10">10</option>
-          <option value="11">11</option>
-          <option value="12">12</option>
-        </select>
-      </div>
-
       <div className="form-group mb-3 col-md-4">
         <label htmlFor="contrato">Tipo de Contrato</label>
         <select
@@ -139,6 +119,154 @@ export const Operador: React.FC<OperadorProps> = ({
           <option value="Renovacao">Renovação</option>
         </select>
       </div>
+      <div className="form-group mb-3 col-md-4">
+        <label htmlFor="validade">Válido por</label>
+        <select
+          className="form-control"
+          id="validade"
+          name="validade"
+          value={form.validade}
+          onChange={handleInputChange}
+        >
+          <option value="">Selecione uma opção</option>
+          <option value="Cancelamento">Cancelamento</option>
+          <option value="Mensal">Mensal</option>
+          <option value="Trimestral">Trimestral</option>
+          <option value="Semestral">Semestral</option>
+          <option value="Anual">Anual</option>
+        </select>
+      </div>
+      <div className="form-group mb-3 col-md-4">
+        <label htmlFor="valorVenda">Valor da Venda</label>
+        <input
+          type="text"
+          className="form-control"
+          id="valorVenda"
+          name="valorVenda"
+          value={form.valorVenda ? formatValor(form.valorVenda) : ""}
+          onChange={handleDocumentChange}
+          placeholder="Insira o valor da venda"
+        />
+      </div>
+
+      <div className="form-group mb-3 col-md-4">
+        <label htmlFor="data">Data da Venda (dd/mm/aaaa)</label>
+        <input
+          type="date"
+          className="form-control"
+          id="data"
+          name="data"
+          value={form.data}
+          onChange={handleInputChange}
+          required
+        />
+      </div>
+
+      {form.contrato === "Recorencia" && (
+        <div className="form-group mb-3 col-md-4">
+          <label htmlFor="diaData">Dia (dd)</label>
+          <input
+            type="text"
+            className="form-control"
+            id="diaData"
+            name="diaData"
+            value={form.diaData}
+            readOnly
+          />
+        </div>
+      )}
+
+      <div className="form-group mb-3 col-md-4">
+        <label htmlFor="data">Data do Vencimento (dd/mm/aaaa)</label>
+        <input
+          type="date"
+          className="form-control"
+          id="dataVencimento"
+          name="dataVencimento"
+          value={form.dataVencimento}
+          onChange={handleDateChange}
+        />
+      </div>
+      <div className="form-group mb-3 col-md-4">
+        <label htmlFor="formaPagamento">Forma de Pagamento</label>
+        <select
+          className="form-control"
+          id="formaPagamento"
+          name="formaPagamento"
+          value={form.formaPagamento}
+          onChange={handleInputChange}
+        >
+          <option value="">Selecione uma opção</option>
+          {/* <option value="Pix">Pix</option> */}
+          <option value="Boleto">Boleto</option>
+          <option value="Crédito">Crédito</option>
+        </select>
+      </div>
+      <div className="form-group mb-3 col-md-4">
+        <label htmlFor="parcelas">Parcelas</label>
+        <select
+          className="form-control"
+          id="parcelas"
+          name="parcelas"
+          value={form.parcelas}
+          onChange={handleInputChange}
+        >
+          {Array.from({
+            length: form.formaPagamento === "Boleto" ? 2 : 12,
+          }).map((_, index) => {
+            const parcela = index + 1;
+            return (
+              <option key={parcela} value={parcela}>
+                {parcela}
+              </option>
+            );
+          })}
+        </select>
+      </div>
+      <div className="form-group mb-3 col-md-4">
+        <label htmlFor="renovacaoAutomatica" className="form-label text-white">
+          Renovação Automática
+        </label>
+        <select
+          className="form-control"
+          id="renovacaoAutomatica"
+          name="renovacaoAutomatica"
+          value={form.renovacaoAutomatica}
+          onChange={handleInputChange}
+        >
+          <option value="">Selecione</option>
+          <option value="sim">Sim</option>
+          <option value="nao">Não</option>
+        </select>
+      </div>
+      <div className="form-group mb-3 col-md-4">
+        <label htmlFor="responsavel">Responsável</label>
+        <input
+          type="text"
+          className={`form-control ${errors.responsavel ? "is-invalid" : ""}`}
+          id="responsavel"
+          name="responsavel"
+          value={form.responsavel}
+          onChange={handleDocumentChange}
+          placeholder="Insira o nome completo do responsável"
+          required
+        />
+        {errors.responsavel && (
+          <div className="invalid-feedback">{errors.responsavel}</div>
+        )}
+      </div>
+      <div className="form-group mb-3 col-md-4">
+        <label htmlFor="cargo">Cargo do Responsável</label>
+        <input
+          type="text"
+          className="form-control"
+          id="cargo"
+          name="cargo"
+          value={form.cargo}
+          onChange={handleDocumentChange}
+          placeholder="Insira o cargo do responsável"
+        />
+      </div>
 
       {form.contrato === "Recorencia" && (
         <div className="form-group mb-3 col-md-4">
@@ -150,9 +278,15 @@ export const Operador: React.FC<OperadorProps> = ({
             value={form.valorExtenso}
             onChange={handleInputChange}
           >
-            <option value="Duzentos e Quarenta e Nove Reais e Noventa Centavos">Duzentos e Quarenta e Nove Reais e Noventa Centavos</option>
-            <option value="Cento e Noventa e Nove Reais e Noventa Centavos">Cento e Noventa e Nove Reais e Noventa Centavos</option>
-            <option value="Cento e Quarenta e Nove Reais e Noventa Centavos">Cento e Quarenta e Nove Reais e Noventa Centavos</option>
+            <option value="Duzentos e Quarenta e Nove Reais e Noventa Centavos">
+              Duzentos e Quarenta e Nove Reais e Noventa Centavos
+            </option>
+            <option value="Cento e Noventa e Nove Reais e Noventa Centavos">
+              Cento e Noventa e Nove Reais e Noventa Centavos
+            </option>
+            <option value="Cento e Quarenta e Nove Reais e Noventa Centavos">
+              Cento e Quarenta e Nove Reais e Noventa Centavos
+            </option>
           </select>
         </div>
       )}
@@ -176,59 +310,6 @@ export const Operador: React.FC<OperadorProps> = ({
       )}
 
       <div className="form-group mb-3 col-md-4">
-        <label htmlFor="formaPagamento">Forma de Pagamento</label>
-        <select
-          className="form-control"
-          id="formaPagamento"
-          name="formaPagamento"
-          value={form.formaPagamento}
-          onChange={handleInputChange}
-        >
-          <option value="">Selecione uma opção</option>
-          {/* <option value="Pix">Pix</option> */}
-          <option value="Boleto">Boleto</option>
-          {/* <option value="Crédito">Crédito</option> */}
-        </select>
-      </div>
-
-      <div className="form-group mb-3 col-md-4">
-        <label htmlFor="data">Data da Venda (dd/mm/aaaa)</label>
-        <input
-          type="date"
-          className="form-control"
-          id="data"
-          name="data"
-          value={form.data}
-          onChange={handleInputChange}
-          required
-        />
-      </div>
-      <div className="form-group mb-3 col-md-4">
-        <label htmlFor="data">Data do Vencimento (dd/mm/aaaa)</label>
-        <input
-          type="date"
-          className="form-control"
-          id="dataVencimento"
-          name="dataVencimento"
-          value={form.dataVencimento}
-          onChange={handleDateChange}
-        />
-      </div>
-      {form.contrato === "Recorencia" && (
-        <div className="form-group mb-3 col-md-4">
-          <label htmlFor="diaData">Dia (dd)</label>
-          <input
-            type="text"
-            className="form-control"
-            id="diaData"
-            name="diaData"
-            value={form.diaData}
-            readOnly
-          />
-        </div>
-      )}
-
-      <div className="form-group mb-3 col-md-4">
         <label htmlFor="operador">Operador</label>
         <input
           type="text"
@@ -236,19 +317,6 @@ export const Operador: React.FC<OperadorProps> = ({
           id="operador"
           name="operador"
           value={form.operador}
-          onChange={handleInputChange}
-          readOnly
-        />
-      </div>
-
-      <div className="form-group mb-3 col-md-4">
-        <label htmlFor="equipe">Equipe</label>
-        <input
-          type="text"
-          className="form-control"
-          id="equipe"
-          name="equipe"
-          value={form.equipe}
           onChange={handleInputChange}
           readOnly
         />
@@ -271,7 +339,7 @@ export const Operador: React.FC<OperadorProps> = ({
         </select>
       </div> */}
 
-      <div className="form-group mb-3 col-md-4">
+      {/* <div className="form-group mb-3 col-md-4">
         <label htmlFor="account">Grupo</label>
         <select
           className="form-control"
@@ -282,28 +350,8 @@ export const Operador: React.FC<OperadorProps> = ({
         >
           <option value="">Selecione uma opção</option>
           <option value="equipe_marcio">Equipe do Márcio/Kaio</option>
-          <option value="equipe_antony">Equipe do Antony</option>
-          <option value="equipe_alef">Equipe do Alef</option>
         </select>
-      </div>
-
-      <div className="form-group mb-3 col-md-4">
-        <label htmlFor="validade">Válido por</label>
-        <select
-          className="form-control"
-          id="validade"
-          name="validade"
-          value={form.validade}
-          onChange={handleInputChange}
-        >
-          <option value="">Selecione uma opção</option>
-          <option value="Cancelamento">Cancelamento</option>
-          <option value="Mensal">Mensal</option>
-          <option value="Trimestral">Trimestral</option>
-          <option value="Semestral">Semestral</option>
-          <option value="Anual">Anual</option>
-        </select>
-      </div>
+      </div> */}
     </div>
   );
 };

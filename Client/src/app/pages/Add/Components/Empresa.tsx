@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Header } from "./Header";
 
 interface Address {
   logradouro: string;
@@ -52,6 +53,7 @@ interface DadosEmpresaProps {
     cep: string;
     estado: string;
     cidade: string;
+    complemento: string;
     validade: string;
     observacoes: string;
     fixo: string;
@@ -100,10 +102,8 @@ export const DadosEmpresa: React.FC<DadosEmpresaProps> = ({
   };
 
   const formatCEP = (value: string): string => {
-    // Remove tudo que não é dígito e limita a 8 caracteres
     const onlyNumbers = value.replace(/\D/g, "").substring(0, 8);
 
-    // Insere o traço após os primeiros 5 dígitos (apenas para exibição)
     if (onlyNumbers.length > 5) {
       return `${onlyNumbers.slice(0, 5)}-${onlyNumbers.slice(5)}`;
     }
@@ -160,7 +160,10 @@ export const DadosEmpresa: React.FC<DadosEmpresaProps> = ({
 
       console.log("Dados recebidos:", data);
 
-      if (data.situacao_cadastral?.situacao_atual?.toUpperCase() === "INAPTA" || data.situacao_cadastral?.situacao_atual?.toUpperCase() === "BAIXADA") {
+      if (
+        data.situacao_cadastral?.situacao_atual?.toUpperCase() === "INAPTA" ||
+        data.situacao_cadastral?.situacao_atual?.toUpperCase() === "BAIXADA"
+      ) {
         setModalMessage(
           `A empresa com o CNPJ informado está com a situação ${
             data.situacao_cadastral?.situacao_atual || "desconhecida"
@@ -252,18 +255,21 @@ export const DadosEmpresa: React.FC<DadosEmpresaProps> = ({
 
   return (
     <div className="row d-flex justify-content-center">
-      <h4 className="text-white">Dados da Empresa</h4>
-
-      <div className="form-group mb-3 col-md-4">
-        <label htmlFor="razaoSocial">Razão Social</label>
+      <Header
+        title="Adicionar Informações do Cliente/Empresa"
+        img="/img/img-header-adicao-1.png"
+      />
+<div className="form-group mb-3 col-md-4">
+        <label htmlFor="numeroContrato">Contrato Nº</label>
         <input
           type="text"
           className="form-control"
-          id="razaoSocial"
-          name="razaoSocial"
-          value={form.razaoSocial}
+          id="numeroContrato"
+          name="numeroContrato"
+          value={form.numeroContrato}
           onChange={handleInputChange}
-          placeholder="Insira a razão social"
+          placeholder="Inserido de forma automática a partir do cnpj/cpf"
+          readOnly
         />
       </div>
       <div className="form-group mb-3 col-md-4">
@@ -276,7 +282,7 @@ export const DadosEmpresa: React.FC<DadosEmpresaProps> = ({
           value={form.cnpj ? formatCNPJ(form.cnpj) : ""}
           onChange={handleDocumentChange}
           onBlur={() => handleCNPJSearch(form.cnpj)}
-          placeholder="Insira o cnpj"
+          placeholder="Insira o CNPJ"
         />
       </div>
       <div className="form-group mb-3 col-md-4">
@@ -288,7 +294,19 @@ export const DadosEmpresa: React.FC<DadosEmpresaProps> = ({
           name="cpf"
           value={form.cpf ? formatCPF(form.cpf) : ""}
           onChange={handleDocumentChange}
-          placeholder="Insira o cpf"
+          placeholder="Insira o CPF"
+        />
+      </div>
+      <div className="form-group mb-3 col-md-4">
+        <label htmlFor="razaoSocial">Razão Social</label>
+        <input
+          type="text"
+          className="form-control"
+          id="razaoSocial"
+          name="razaoSocial"
+          value={form.razaoSocial}
+          onChange={handleInputChange}
+          placeholder="Insira a razão social"
         />
       </div>
 
@@ -304,7 +322,18 @@ export const DadosEmpresa: React.FC<DadosEmpresaProps> = ({
           placeholder="Insira o nome fantasia"
         />
       </div>
-
+      <div className="form-group mb-3 col-md-4">
+        <label htmlFor="cep">CEP</label>
+        <input
+          type="text"
+          className="form-control"
+          id="cep"
+          name="cep"
+          value={formatCEP(form.cep)}
+          onChange={handleCEPChange}
+          placeholder="Insira o CEP"
+        />
+      </div>
       <div className="form-group mb-3 col-md-4">
         <label htmlFor="enderecoComercial">Endereço Comercial</label>
         <input
@@ -345,18 +374,17 @@ export const DadosEmpresa: React.FC<DadosEmpresaProps> = ({
       </div>
 
       <div className="form-group mb-3 col-md-4">
-        <label htmlFor="cep">CEP</label>
+        <label htmlFor="cidade">Cidade</label>
         <input
           type="text"
           className="form-control"
-          id="cep"
-          name="cep"
-          value={formatCEP(form.cep)} // Exibe o CEP formatado (com traço)
-          onChange={handleCEPChange} // Gerencia a mudança
-          placeholder="Insira o CEP"
+          id="cidade"
+          name="cidade"
+          value={form.cidade}
+          onChange={handleInputChange}
+          placeholder="Insira a cidade"
         />
       </div>
-
       <div className="form-group mb-3 col-md-4">
         <label htmlFor="estado">Estado</label>
         <select
@@ -376,15 +404,27 @@ export const DadosEmpresa: React.FC<DadosEmpresaProps> = ({
       </div>
 
       <div className="form-group mb-3 col-md-4">
-        <label htmlFor="cidade">Cidade</label>
+        <label htmlFor="cidade">Complemento</label>
         <input
           type="text"
           className="form-control"
-          id="cidade"
-          name="cidade"
-          value={form.cidade}
+          id="complemento"
+          name="complemento"
+          value={form.complemento}
           onChange={handleInputChange}
-          placeholder="Insira a cidade"
+          placeholder="Insira o Complemento"
+        />
+      </div>
+      <div className="form-group mb-3 col-md-4">
+        <label htmlFor="cidade">Horário de Funcionamento</label>
+        <input
+          type="text"
+          className="form-control"
+          id="horarioFuncionamento"
+          name="horarioFuncionamento"
+          value={form.horarioFuncionamento}
+          onChange={handleInputChange}
+          placeholder="Insira o horário de funcionamento"
         />
       </div>
 
@@ -398,6 +438,7 @@ export const DadosEmpresa: React.FC<DadosEmpresaProps> = ({
           value={form.fixo}
           onChange={handleInputChange}
           placeholder="Insira o telefone fixo"
+          required
         />
       </div>
 
@@ -411,6 +452,7 @@ export const DadosEmpresa: React.FC<DadosEmpresaProps> = ({
           value={form.celular}
           onChange={handleInputChange}
           placeholder="Insira o celular"
+          required
         />
       </div>
 
@@ -424,6 +466,7 @@ export const DadosEmpresa: React.FC<DadosEmpresaProps> = ({
           value={form.whatsapp}
           onChange={handleInputChange}
           placeholder="Insira o whatsapp comercial"
+          required
         />
       </div>
 
@@ -437,60 +480,11 @@ export const DadosEmpresa: React.FC<DadosEmpresaProps> = ({
           value={form.email1}
           onChange={handleEmailChange}
           placeholder="Insira o primeiro e-mail"
+          required
         />
       </div>
       <div className="form-group mb-3 col-md-4">
-        <label htmlFor="email2">2º E-mail</label>
-        <input
-          type="text"
-          className="form-control"
-          id="email2"
-          name="email2"
-          value={form.email2}
-          onChange={handleEmailChange}
-          placeholder="Insira o segundo e-mail"
-        />
-      </div>
-
-      <div className="form-group mb-3 col-md-4">
-        <label htmlFor="horarioFuncionamento">Horário de Funcionamento</label>
-        <input
-          type="text"
-          className="form-control"
-          id="horarioFuncionamento"
-          name="horarioFuncionamento"
-          value={form.horarioFuncionamento}
-          onChange={handleInputChange}
-          placeholder="Insira o horário de funcionamento"
-        />
-      </div>
-
-      <div className="form-group mb-3 col-md-4">
-        <label htmlFor="responsavel">Nome do Responsável</label>
-        <input
-          type="text"
-          className="form-control"
-          id="responsavel"
-          name="responsavel"
-          value={form.responsavel}
-          onChange={handleInputChange}
-          placeholder="Insira o nome do responsável"
-        />
-      </div>
-      <div className="form-group mb-3 col-md-4">
-        <label htmlFor="cargo">Cargo</label>
-        <input
-          type="text"
-          className="form-control"
-          id="cargo"
-          name="cargo"
-          value={form.cargo}
-          onChange={handleInputChange}
-          placeholder="Insira o cargo"
-        />
-      </div>
-      <div className="form-group mb-3 col-md-4">
-        <label htmlFor="linkGoogle">Link Google Maps</label>
+        <label htmlFor="linkGoogle">Link da Página</label>
         <input
           type="text"
           className="form-control"
