@@ -130,15 +130,13 @@ export const Contrato: FC = () => {
         formatarCentavosParaReais(clientData?.valorVenda) || "[VALOR DA VENDA]"
       }* com vencimento para o dia *${
         formatarDataParaBR(clientData?.dataVencimento) || "[DATA DE VENCIMENTO]"
-      }*.\n\nPara que possamos dar início à otimização da sua página e à divulgação das fotos e vídeos da sua empresa em nossas campanhas no Google, precisamos da sua autorização.\n\nSegue abaixo o termo da autorização:\n `,
+      }*.\n\nPara que possamos dar início à otimização da sua página e à divulgação das fotos e vídeos da sua empresa em nossas campanhas no Google, precisamos da sua autorização.\n\nSegue abaixo o termo da autorização:\n ${clientData?.linkParaAssinatura || "[LINK PARA ASSINATURA]"}\n\n`,
     },
     {
       titulo: "MENSAGEM 2",
       texto: `Perfeito, *${
         clientData?.responsavel || "[NOME DO RESPONSÁVEL]"
-      }*! ✅ \n\nRecebemos sua autorização para o uso das imagens e vídeos da sua empresa e prestação dos nossos serviços.\n\nJá vamos dar início 🚀\n\n${
-    clientData?.contratoAssinado || "https://exemplo.com/contrato"
-  }`,
+      }*! ✅ \n\nRecebemos sua autorização para o uso das imagens e vídeos da sua empresa e prestação dos nossos serviços.\n\nJá vamos dar início 🚀`,
     },
     {
       titulo: "MENSAGEM 3",
@@ -223,8 +221,8 @@ export const Contrato: FC = () => {
             </div>
           ))}
         </div>
-        <div className="col-md-10">
-          <CampoLinkContrato idVenda={id} linkAtual={clientData?.contratoAssinado} />
+        <div className="col-md-12">
+          <CampoLinkContrato idVenda={id}  />
         </div>
       </div>
 
