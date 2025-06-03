@@ -11,6 +11,8 @@ import { Infoqr } from "./Components/Infoqr";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../../firebase/firebaseConfig";
 import { useParams } from "react-router-dom";
+import axios from "axios";
+import CampoLinkContrato from "./Components/LinkContrato";
 
 export const Contrato: FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -81,20 +83,152 @@ export const Contrato: FC = () => {
       alert("Erro: Um ou mais elementos não foram encontrados.");
     }
   };
+  const formatarCentavosParaReais = (
+    valor: string | number | undefined
+  ): string => {
+    if (!valor) return "0,00";
+
+    const valorString = typeof valor === "number" ? valor.toString() : valor;
+    const somenteNumeros = valorString.replace(/\D/g, ""); // remove tudo que não for número
+
+    if (somenteNumeros.length < 3) {
+      return (parseInt(somenteNumeros || "0", 10) / 100)
+        .toFixed(2)
+        .replace(".", ",");
+    }
+
+    const reais = somenteNumeros.slice(0, -2);
+    const centavos = somenteNumeros.slice(-2);
+    return `${reais},${centavos}`;
+  };
+
+  const formatarDataParaBR = (data: string | undefined): string => {
+    if (!data) return "";
+
+    const [ano, mes, dia] = data.split("-");
+    return `${dia}/${mes}/${ano}`;
+  };
+
+  function formatarNomeOperador(nome: string | undefined): string {
+    if (!nome) return "[NOME OPERADOR]";
+    return nome
+      .split(".")
+      .map((parte) => parte.charAt(0).toUpperCase() + parte.slice(1))
+      .join(" ");
+  }
+
+  const mensagens = [
+    {
+      titulo: "MENSAGEM 1",
+      texto: `Olá *${
+        clientData?.responsavel || "[NOME DO RESPONSÁVEL]"
+      }*, eu me chamo *${
+        formatarNomeOperador(clientData?.operador) || "[NOME OPERADOR]"
+      }*, será um prazer em ajudar a melhorar sua página do Google Maps! \n\nConforme falamos, o seu plano escolhido foi o *${
+        clientData?.validade || "[TIPO DE PLANO]"
+      }* no valor de *R$ ${
+        formatarCentavosParaReais(clientData?.valorVenda) || "[VALOR DA VENDA]"
+      }* com vencimento para o dia *${
+        formatarDataParaBR(clientData?.dataVencimento) || "[DATA DE VENCIMENTO]"
+      }*.\n\nPara que possamos dar início à otimização da sua página e à divulgação das fotos e vídeos da sua empresa em nossas campanhas no Google, precisamos da sua autorização.\n\nSegue abaixo o termo da autorização:\n `,
+    },
+    {
+      titulo: "MENSAGEM 2",
+      texto: `Perfeito, *${
+        clientData?.responsavel || "[NOME DO RESPONSÁVEL]"
+      }*! ✅ \n\nRecebemos sua autorização para o uso das imagens e vídeos da sua empresa e prestação dos nossos serviços.\n\nJá vamos dar início 🚀\n\n${
+    clientData?.contratoAssinado || "https://exemplo.com/contrato"
+  }`,
+    },
+    {
+      titulo: "MENSAGEM 3",
+      texto: `Agora vou enviar o seu QR-CODE. Você pode:\n- Imprimir e colar no balcão da loja\n- Usar no cartão digital\n- Mandar por WhatsApp para clientes após o atendimento\n\nQuanto mais avaliações ⭐⭐⭐⭐⭐ e positivas, mais destaque sua empresa ganha no Google!`,
+    },
+    {
+      titulo: "MENSAGEM 4",
+      texto: `Pronto, segue seu QR-CODE!\n\nAproveite e baixe ele agora ou encaminhe para seus amigos, clientes e parentes.\n\nQuanto mais avaliações ⭐⭐⭐⭐⭐, mais destaque sua empresa ganha no Google!\n\n[inserir o link do Qr-code]`,
+    },
+  ];
+
+  
+
+  const celularComCodigo = `55${clientData?.celular.replace(/^55/, "") || ""}`;
+
+  const handleEnviarMensagem = async (index: number) => {
+    const mensagemSelecionada = mensagens[index];
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/enviar-texto-vendas",
+        {
+          phone: celularComCodigo,
+          message: `${mensagemSelecionada.texto} `,
+        }
+      );
+      if (response.data.success) {
+        alert("Mensagem enviada com sucesso!");
+      } else {
+        alert("Falha ao enviar a mensagem.");
+      }
+    } catch (error) {
+      console.error("Erro ao enviar mensagem:", error);
+      alert("Ocorreu um erro ao enviar a mensagem.");
+    }
+  };
 
   return (
-    <div className="bg-contrato">
-      <div className="bg-infos-contrato" id="contrato">
-        <Header />
-        <DadosEmpresa />
-        <Bonus />
-        <div className="page-break"></div>
-        <Infoqr />
-        <Condicoes />
-      </div>
-      <button className="btn btn-danger mt-4" onClick={downloadPDF}>
+    <div className="bg-contrato row align-items-start">
+      <div className="col-md-5 d-flex flex-column align-items-center justify-content-center">
+        <div className="bg-infos-contrato" id="contrato">
+          <Header />
+          <DadosEmpresa />
+          <Bonus />
+          <div className="page-break"></div>
+          <Infoqr />
+          <Condicoes />
+        </div>
+        <button className="btn btn-danger mt-4" onClick={downloadPDF}>
         <FontAwesomeIcon icon={faFilePdf} /> Baixar PDF
       </button>
+      </div>
+
+      <div className="col-md-7">
+        <div className="row gx-3 gy-4">
+          {mensagens.map((mensagem, index) => (
+            <div className="col-md-6 mb-4" key={index}>
+              <div className="card-mensagem-custom p-3 h-100 d-flex flex-column justify-content-between">
+                <div>
+                  <h5 className="bg-primary text-white text-center py-2">
+                    {mensagem.titulo}
+                  </h5>
+                  <p
+                    className="mt-3"
+                    dangerouslySetInnerHTML={{ __html: mensagem.texto }}
+                  />
+                </div>
+                <div className="mt-3">
+                  <button
+                     onClick={() => handleEnviarMensagem(index)}
+                    className="btn btn-primary w-100 d-flex justify-content-center align-items-center gap-4"
+                  >
+                    ENVIAR MENSAGEM
+                    <img
+                      src="/img/whatsapp.png"
+                      alt="WhatsApp"
+                      width={25}
+                      height={25}
+                    />
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="col-md-10">
+          <CampoLinkContrato idVenda={id} linkAtual={clientData?.contratoAssinado} />
+        </div>
+      </div>
+
+      
     </div>
   );
 };

@@ -1,16 +1,16 @@
 .bg-contrato {
-  background: linear-gradient(150deg, #494ba7 50%, #25BFB2 50%);
+  background: linear-gradient(150deg, #494ba7 50%, #25bfb2 50%);
   display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
+  justify-content: space-between;
+  flex-direction: row;
+  padding: 50px;
 }
 
 .bg-infos-contrato {
   background-color: #fff;
 }
 .page-break {
-  page-break-before: always; /* Força a quebra de página antes deste elemento */
+  page-break-before: always; 
 }
 
 .dados-empresa h5 {
@@ -46,7 +46,6 @@
   align-items: center;
 }
 
-
 .image-container .arrow {
   font-size: 70px;
 }
@@ -61,7 +60,7 @@
 .condicoes h5 {
   width: 100%;
   background-color: #59afd6;
-  color: #Fff;
+  color: #fff;
 }
 
 .condicoes p {
@@ -75,14 +74,13 @@
   font-size: 12px;
 }
 
-.upper p{
-  text-transform: uppercase!important;
+.upper p {
+  text-transform: uppercase !important;
 }
 
-.upper-span span{
-  text-transform: uppercase!important;
+.upper-span span {
+  text-transform: uppercase !important;
 }
-
 
 .boleto-container {
   font-family: Arial, sans-serif;
@@ -97,7 +95,7 @@
   margin-top: -25px;
 }
 .checkbox-blue {
-  accent-color: #007bff!important; 
+  accent-color: #007bff !important;
   width: 18px;
   height: 18px;
   cursor: not-allowed;
@@ -108,10 +106,10 @@
 }
 
 .boleto-logo img {
-  width:50px ;
+  width: 50px;
 }
 
-.gravacao{
+.gravacao {
   display: flex;
   gap: 20px;
 }
@@ -137,17 +135,16 @@
   width: 100px;
 }
 .assinatura-section {
-  margin-top: -2px!important;
+  margin-top: -2px !important;
 }
 .qrcode svg {
   width: 70px; /* Tamanho do QR Code */
   height: 70px; /* Tamanho do QR Code */
 }
 
-.obs{
+.obs {
   font-size: 14px;
 }
-
 
 @media print {
   a {
@@ -157,11 +154,17 @@
   }
 }
 
-
-.header p{
+.header p {
   font-size: smaller;
 }
 
-.form-group-info{
+.form-group-info {
   margin-top: -15px;
+}
+
+
+.card-mensagem-custom {
+  background: #f8f9fa;
+  border-radius: 10px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
 }

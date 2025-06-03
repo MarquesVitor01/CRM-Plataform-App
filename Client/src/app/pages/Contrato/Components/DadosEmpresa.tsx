@@ -122,9 +122,9 @@ export const DadosEmpresa: React.FC = () => {
               <p>
                 <strong>1º E-MAIL:</strong> {clientData.email1}
               </p>
-              <p>
+              {/* <p>
                 <strong>2º E-MAIL:</strong> {clientData.email2 || "N/A"}
-              </p>
+              </p> */}
               <p>
                 <strong>HORÁRIO DE FUNCIONAMENTO:</strong>{" "}
                 {clientData.horarioFuncionamento}

@@ -5,7 +5,7 @@ const router = express.Router();
 
 // Token da API do Whatscale
 const WHATSCALE_TOKEN_MKT = "1748456767481-771184166057a2f729e16979725420d1";
-const WHATSCALE_TOKEN_VENDAS = "1748955156537-b67ceeafb33f98b83a28a1f5f36b9dbb";
+const WHATSCALE_TOKEN_VENDAS = "1748961163722-cf42c8357e8e586623b2f22508c5c859";
 
 router.post("/enviar-texto-mkt", async (req, res) => {
   try {
