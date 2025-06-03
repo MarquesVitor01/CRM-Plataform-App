@@ -38,7 +38,7 @@ interface ClientData {
   cargo: string;
   parcelas: string;
   dataVencimento: string;
-  // qrcodeText: string;
+  complemento: string;
   linkGravacao: string;
   linkGoogle: string;
   renovacaoAutomatica: string;
@@ -203,13 +203,6 @@ export const EditContrato = () => {
     switch (step) {
       case 0:
         return (
-          <EditOperador
-            form={clientData}
-            handleInputChange={handleInputChange}
-          />
-        );
-      case 1:
-        return (
           <EditEmpresa
             form={clientData}
             handleInputChange={handleInputChange}
@@ -218,13 +211,14 @@ export const EditContrato = () => {
             isRotated={isRotated}
           />
         );
-      case 2:
+      case 1:
         return (
-          <EditInfoAdicionais
+          <EditOperador
             form={clientData}
             handleInputChange={handleInputChange}
           />
         );
+      
       default:
         return null;
     }
@@ -233,7 +227,6 @@ export const EditContrato = () => {
   return (
     <div className="contrato text-center">
       <div className="container">
-        <h2 className="title-contrato">Editar Informações do Cliente</h2>
         <form onSubmit={handleSubmit}>
           {renderStep()}
           <div className="mt-4 d-flex gap-4 justify-content-center">
@@ -255,7 +248,7 @@ export const EditContrato = () => {
                 Voltar
               </button>
             )}
-            {step < 2 && (
+            {step < 1 && (
               <button
                 type="button"
                 className="btn btn-primary"

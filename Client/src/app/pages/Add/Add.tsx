@@ -39,6 +39,7 @@ export const Add = () => {
     cep: "",
     estado: "",
     cidade: "",
+    complemento: '',
     validade: "",
     dataVigencia: "",
     observacoes: "",
@@ -388,70 +389,23 @@ export const Add = () => {
     <div className="contrato text-center">
       {loading && <p>Aguarde, estamos processando...</p>}
       <div className="container">
-        <h2 className="title-contrato">Adicionar Informações do Cliente</h2>
+        
         <form onSubmit={handleSubmit}>
           {step === 0 && (
+            <DadosEmpresa
+              form={form}
+              handleInputChange={handleInputChange}
+              tipoDocumento={tipoDocumento}
+            />
+            
+          )}
+          {step === 1 && (
             <Operador
               form={form}
               handleInputChange={handleInputChange}
               handleSelectChange={handleSelectChange}
               operadoresOpcoes={[]}
             />
-          )}
-          {step === 1 && (
-            <DadosEmpresa
-              form={form}
-              handleInputChange={handleInputChange}
-              tipoDocumento={tipoDocumento}
-            />
-          )}
-          {step === 2 && (
-            <>
-              <InfoAdicionais
-                form={form}
-                handleInputChange={handleInputChange}
-              />
-              <div className="parcelas-container mt-3">
-                <h4>Detalhes das Parcelas</h4>
-                {parcelasArray.length > 0 ? (
-                  <div className="scroll-tabela">
-                    <table className="table table-striped">
-                      <thead>
-                        <tr>
-                          <th>Parcela</th>
-                          <th>Valor</th>
-                          <th>Vencimento</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {parcelasArray.map((parcela, index) => (
-                          <tr key={index}>
-                            <td>{index + 1}</td>
-                            <td>
-                              R${" "}
-                              {(Number(parcela.valor) / 100).toLocaleString(
-                                "pt-BR",
-                                {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                                }
-                              )}
-                            </td>
-
-                            <td>{parcela.dataVencimento}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                ) : (
-                  <p>
-                    Informe o valor e a data de vencimento para calcular as
-                    parcelas
-                  </p>
-                )}
-              </div>
-            </>
           )}
 
           <div className="mt-4">
@@ -474,7 +428,7 @@ export const Add = () => {
               </button>
             )}
 
-            {step < 2 && (
+            {step < 1 && (
               <button
                 type="button"
                 className="btn btn-primary"
@@ -483,7 +437,7 @@ export const Add = () => {
                 Próximo
               </button>
             )}
-            {step === 2 && (
+            {step === 1 && (
               <button
                 type="button"
                 className="btn btn-success"

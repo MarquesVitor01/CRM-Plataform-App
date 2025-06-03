@@ -67,7 +67,7 @@ export const Condicoes: React.FC = () => {
         </div>
         <div className="">
           <p className="">
-            <a href="https://drive.google.com/file/d/10Q5zFIqR1l9YunhdawO2nhbSfALK_iih/view?usp=sharing">Termos de Serviço</a> e{" "}
+            <a href="https://drive.google.com/file/d/1JKeU06Ep7XzwfNS1mz1FjQ2xe7NxaqWK/view?usp=sharing">Termos de Serviço</a> e{" "}
             <a href="https://drive.google.com/file/d/1xTe9gL84D79-0OaayMUQPhiy3GFidxYO/view?usp=sharing">Política de Privacidade</a>
           </p>
         </div>
