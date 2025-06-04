@@ -46,23 +46,16 @@ export const Contrato: FC = () => {
 
   const downloadPDF = () => {
     const contratoElement = document.getElementById("contrato");
-    // const condicoesElement = document.querySelector(
-    //   ".condicoes p"
-    // ) as HTMLElement;
     const bgInfosContrato = document.querySelector(
       ".bg-infos-contrato"
     ) as HTMLElement;
 
     if (contratoElement && bgInfosContrato) {
-      // const originalCondicoesWidth = condicoesElement.style.width;
       const originalPadding = bgInfosContrato.style.padding;
-
-      // condicoesElement.style.width = "700px";
-      // bgInfosContrato.style.padding = "0";
 
       const opt = {
         margin: 0.5,
-        filename: `${clientData.razaoSocial}.pdf`,
+        filename: `${clientData?.razaoSocial || "contrato"}.pdf`,
         image: { type: "jpeg", quality: 0.98 },
         html2canvas: {
           scale: 2,
@@ -77,7 +70,6 @@ export const Contrato: FC = () => {
         .from(contratoElement)
         .save()
         .then(() => {
-          // condicoesElement.style.width = originalCondicoesWidth;
           bgInfosContrato.style.padding = originalPadding;
         })
         .catch((error: unknown) => {
@@ -88,13 +80,14 @@ export const Contrato: FC = () => {
       alert("Erro: Um ou mais elementos não foram encontrados.");
     }
   };
+
   const formatarCentavosParaReais = (
     valor: string | number | undefined
   ): string => {
     if (!valor) return "0,00";
 
     const valorString = typeof valor === "number" ? valor.toString() : valor;
-    const somenteNumeros = valorString.replace(/\D/g, ""); // remove tudo que não for número
+    const somenteNumeros = valorString.replace(/\D/g, "");
 
     if (somenteNumeros.length < 3) {
       return (parseInt(somenteNumeros || "0", 10) / 100)
@@ -151,7 +144,7 @@ export const Contrato: FC = () => {
     },
     {
       titulo: "MENSAGEM 4",
-      texto: `Pronto, segue seu QR-CODE!\n\nAproveite e baixe ele agora ou encaminhe para seus amigos, clientes e parentes.\n\nQuanto mais avaliações ⭐⭐⭐⭐⭐, mais destaque sua empresa ganha no Google!\n\n[inserir o link do Qr-code]`,
+      texto: `Pronto, segue seu QR-CODE!\n\nAproveite e baixe ele agora ou encaminhe para seus amigos, clientes e parentes.\n\nQuanto mais avaliações ⭐⭐⭐⭐⭐, mais destaque sua empresa ganha no Google!\n\n`,
     },
   ];
 
@@ -206,7 +199,25 @@ export const Contrato: FC = () => {
                   <h5 className="bg-primary text-white text-center py-2">
                     {mensagem.titulo}
                   </h5>
-                  <p>{mensagem.texto}</p>
+                  <p>
+                    {index === 3 ? (
+                      <>
+                        {mensagem.texto}
+                        {clientData?.linkGoogle && (
+                          <a
+                            href={clientData.linkGoogle}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ wordBreak: "break-all" }}
+                          >
+                            {clientData.linkGoogle}
+                          </a>
+                        )}
+                      </>
+                    ) : (
+                      mensagem.texto
+                    )}
+                  </p>
                 </div>
                 <div className="mt-3">
                   <button
