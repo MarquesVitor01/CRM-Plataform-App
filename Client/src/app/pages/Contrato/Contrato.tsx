@@ -17,6 +17,7 @@ import CampoLinkContrato from "./Components/LinkContrato";
 export const Contrato: FC = () => {
   const { id } = useParams<{ id: string }>();
   const [clientData, setClientData] = useState<any>(null);
+  const [equipeMsg, setEquipeMsg] = useState<string>("");
 
   useEffect(() => {
     const fetchClientData = async () => {
@@ -26,13 +27,17 @@ export const Contrato: FC = () => {
           const docSnap = await getDoc(docRef);
 
           if (docSnap.exists()) {
-            setClientData(docSnap.data());
+            const vendaData = docSnap.data();
+            setClientData(vendaData);
+
+            const equipe = vendaData.equipeMsg || "";
+            setEquipeMsg(equipe);
           } else {
-            console.log("Não encontrado");
+            console.log("Venda não encontrada");
           }
         }
       } catch (error) {
-        console.error("Erro ao buscar os dados do cliente: ", error);
+        console.error("Erro ao buscar dados: ", error);
       }
     };
 
@@ -41,19 +46,19 @@ export const Contrato: FC = () => {
 
   const downloadPDF = () => {
     const contratoElement = document.getElementById("contrato");
-    const condicoesElement = document.querySelector(
-      ".condicoes p"
-    ) as HTMLElement;
+    // const condicoesElement = document.querySelector(
+    //   ".condicoes p"
+    // ) as HTMLElement;
     const bgInfosContrato = document.querySelector(
       ".bg-infos-contrato"
     ) as HTMLElement;
 
-    if (contratoElement && condicoesElement && bgInfosContrato) {
-      const originalCondicoesWidth = condicoesElement.style.width;
+    if (contratoElement && bgInfosContrato) {
+      // const originalCondicoesWidth = condicoesElement.style.width;
       const originalPadding = bgInfosContrato.style.padding;
 
-      condicoesElement.style.width = "700px";
-      bgInfosContrato.style.padding = "0";
+      // condicoesElement.style.width = "700px";
+      // bgInfosContrato.style.padding = "0";
 
       const opt = {
         margin: 0.5,
@@ -72,7 +77,7 @@ export const Contrato: FC = () => {
         .from(contratoElement)
         .save()
         .then(() => {
-          condicoesElement.style.width = originalCondicoesWidth;
+          // condicoesElement.style.width = originalCondicoesWidth;
           bgInfosContrato.style.padding = originalPadding;
         })
         .catch((error: unknown) => {
@@ -130,7 +135,9 @@ export const Contrato: FC = () => {
         formatarCentavosParaReais(clientData?.valorVenda) || "[VALOR DA VENDA]"
       }* com vencimento para o dia *${
         formatarDataParaBR(clientData?.dataVencimento) || "[DATA DE VENCIMENTO]"
-      }*.\n\nPara que possamos dar início à otimização da sua página e à divulgação das fotos e vídeos da sua empresa em nossas campanhas no Google, precisamos da sua autorização.\n\nSegue abaixo o termo da autorização:\n ${clientData?.linkParaAssinatura || "[LINK PARA ASSINATURA]"}\n\n`,
+      }*.\n\nPara que possamos dar início à otimização da sua página e à divulgação das fotos e vídeos da sua empresa em nossas campanhas no Google, precisamos da sua autorização.\n\nSegue abaixo o termo da autorização:\n ${
+        clientData?.linkParaAssinatura || "[LINK PARA ASSINATURA]"
+      }\n\n`,
     },
     {
       titulo: "MENSAGEM 2",
@@ -148,20 +155,21 @@ export const Contrato: FC = () => {
     },
   ];
 
-  
-
   const celularComCodigo = `55${clientData?.celular.replace(/^55/, "") || ""}`;
 
   const handleEnviarMensagem = async (index: number) => {
     const mensagemSelecionada = mensagens[index];
+
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/enviar-texto-vendas",
+        "http://crm-plataform-app-6t3u.vercel.app/api/enviar-texto",
         {
           phone: celularComCodigo,
-          message: `${mensagemSelecionada.texto} `,
+          message: mensagemSelecionada.texto,
+          equipeMsg: equipeMsg,
         }
       );
+
       if (response.data.success) {
         alert("Mensagem enviada com sucesso!");
       } else {
@@ -179,14 +187,14 @@ export const Contrato: FC = () => {
         <div className="bg-infos-contrato" id="contrato">
           <Header />
           <DadosEmpresa />
-          <Bonus />
-          <div className="page-break"></div>
           <Infoqr />
+          {/* <Bonus /> */}
+          <div className="page-break"></div>
           <Condicoes />
         </div>
         <button className="btn btn-danger mt-4" onClick={downloadPDF}>
-        <FontAwesomeIcon icon={faFilePdf} /> Baixar PDF
-      </button>
+          <FontAwesomeIcon icon={faFilePdf} /> Baixar PDF
+        </button>
       </div>
 
       <div className="col-md-7">
@@ -198,35 +206,22 @@ export const Contrato: FC = () => {
                   <h5 className="bg-primary text-white text-center py-2">
                     {mensagem.titulo}
                   </h5>
-                  <p
-                    className="mt-3"
-                    dangerouslySetInnerHTML={{ __html: mensagem.texto }}
-                  />
+                  <p>{mensagem.texto}</p>
                 </div>
                 <div className="mt-3">
                   <button
-                     onClick={() => handleEnviarMensagem(index)}
-                    className="btn btn-primary w-100 d-flex justify-content-center align-items-center gap-4"
+                    onClick={() => handleEnviarMensagem(index)}
+                    className="btn btn-primary w-100"
                   >
                     ENVIAR MENSAGEM
-                    <img
-                      src="/img/whatsapp.png"
-                      alt="WhatsApp"
-                      width={25}
-                      height={25}
-                    />
                   </button>
                 </div>
               </div>
             </div>
           ))}
         </div>
-        <div className="col-md-12">
-          <CampoLinkContrato idVenda={id}  />
-        </div>
+        <CampoLinkContrato idVenda={id} />
       </div>
-
-      
     </div>
   );
 };

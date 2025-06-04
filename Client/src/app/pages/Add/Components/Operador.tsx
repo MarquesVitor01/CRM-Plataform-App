@@ -7,6 +7,7 @@ interface OperadorProps {
     data: string;
     dataVencimento: string;
     operador: string;
+    equipeMsg: string;
     equipe: string;
     validade: string;
     parcelas: string;
@@ -317,6 +318,18 @@ export const Operador: React.FC<OperadorProps> = ({
           id="operador"
           name="operador"
           value={form.operador}
+          onChange={handleInputChange}
+          readOnly
+        />
+      </div>
+      <div className="form-group mb-3 col-md-4">
+        <label htmlFor="equipeMsg">equipeMsg</label>
+        <input
+          type="text"
+          className="form-control text-capitalize"
+          id="equipeMsg"
+          name="equipeMsg"
+          value={form.equipeMsg}
           onChange={handleInputChange}
           readOnly
         />

@@ -52,6 +52,7 @@ interface ClientData {
   diaData: string;
   valorExtenso: string;
   numeroResidencial: string;
+  equipeMsg: string;
 }
 
 export const EditContrato = () => {

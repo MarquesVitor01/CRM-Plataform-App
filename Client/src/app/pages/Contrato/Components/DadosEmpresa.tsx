@@ -65,7 +65,7 @@ export const DadosEmpresa: React.FC = () => {
 
   return (
     clientData && (
-      <div className="dados-empresa card p-4 mb-1 upper">
+      <div className="dados-empresa  upper">
         <h5 className="text-center font-weight-bold">DADOS DA EMPRESA</h5>
         <div className="row">
           <div className="col-md-6 mb-1">
