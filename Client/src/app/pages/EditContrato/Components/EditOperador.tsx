@@ -8,6 +8,7 @@ interface VendaData {
   formaPagamento: string;
   data: string;
   operador: string;
+  equipeMsg: string;
   equipe: string;
   contrato: string;
   dataVencimento: string;
@@ -154,9 +155,9 @@ export const EditOperador: React.FC<EditOperadorProps> = ({
   return (
     <div className="row d-flex justify-content-center">
       <Header
-              title="Editar Plano e Condições de Pagamento"
-              img="/img/img-header-adicao-2.png"
-            />
+        title="Editar Plano e Condições de Pagamento"
+        img="/img/img-header-adicao-2.png"
+      />
       <h4 className="text-white">Informações do Contrato</h4>
       <InputField
         id="equipe"
@@ -285,6 +286,14 @@ export const EditOperador: React.FC<EditOperadorProps> = ({
         label="Operador"
         name="operador"
         value={form.operador}
+        onChange={handleInputChange}
+        readOnly
+      />
+      <InputField
+        id="equipeMsg"
+        label="equipeMsg"
+        name="equipeMsg"
+        value={form.equipeMsg}
         onChange={handleInputChange}
         readOnly
       />

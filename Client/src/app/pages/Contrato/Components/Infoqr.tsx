@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { db } from "../../../firebase/firebaseConfig";
 import { QRCodeSVG } from "qrcode.react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCheckCircle } from "@fortawesome/free-solid-svg-icons";
 
 export const Infoqr: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -31,7 +33,7 @@ export const Infoqr: React.FC = () => {
 
   const formatDateToBrazilian = (dateString: string) => {
     const date = new Date(dateString);
-    date.setHours(date.getHours() + 3); 
+    date.setHours(date.getHours() + 3);
     const day = String(date.getDate()).padStart(2, "0");
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const year = date.getFullYear();
@@ -43,43 +45,116 @@ export const Infoqr: React.FC = () => {
   };
   return (
     clientData && (
-      <div className="bonus card text-center gravacao p-4">
-        <h5 className="text-white ">CONDIÇÕES DE PAGAMENTO</h5>
+      <div className="bonus  text-center gravacao">
+        <h5 className="text-center text-uppercase">
+          Visualize sua página no Google
+        </h5>
+        <div className="img-google">
+          <img
+            src={require("../../../Assets/logo-google.png")}
+            alt="WhatsApp"
+            style={{ width: "50px" }}
+          />
+        </div>
+        <div className="qrcode-google">
+          {clientData.linkGoogle && (
+            <div className="d-flex flex-column align-items-center ">
+              <p className="">
+                Escanei o QrCOde Para Verificar e conferir a página ou clique no
+                link:
+              </p>
+              <QRCodeSVG
+                value={clientData.linkGoogle}
+                size={70}
+                className=" mb-1 qr-image"
+              />
+              <p className="">
+                Link da Página:{" "}
+                <a href={`${clientData.linkGoogle}`}>{clientData.linkGoogle}</a>
+              </p>
+            </div>
+          )}
+        </div>
+        {/* <div className="termos-servico">
+          <p className="">
+            <a href="https://drive.google.com/file/d/1JKeU06Ep7XzwfNS1mz1FjQ2xe7NxaqWK/view?usp=sharing">
+              Termos de Serviço
+            </a>{" "}
+            e{" "}
+            <a href="https://drive.google.com/file/d/1xTe9gL84D79-0OaayMUQPhiy3GFidxYO/view?usp=sharing">
+              Política de Privacidade
+            </a>
+          </p>
+        </div> */}
+
+        {/* <h5 className="mt-2 text-center">CENTRAL DE ATENDIMENTO</h5>
+        <div className="text-center">
+          <p>
+            0800 580 2766
+            <br />
+            <a href="mailto:MARKETING@GRUPOMAPSEMPRESAS.com.br">
+              MARKETING@GRUPOMAPSEMPRESAS.com.br
+            </a>
+            <br />
+            <a href="mailto:CONTATO@GRUPOMAPSEMPRESAS.com.br">
+              CONTATO@GRUPOMAPSEMPRESAS.com.br
+            </a>
+          </p>
+        </div> */}
+        <h5 className="text-white cond-pagamento">CONDIÇÕES DE PAGAMENTO</h5>
+        <div className="d-flex align-items-center check-termos">
+          <p className="mb-0 ms-1 ">
+            <FontAwesomeIcon icon={faCheckCircle} color="#007bff" size="lg" />
+            {"  "}
+            DECLARO TER RECEBIDO ATRAVÉS DA LIGAÇÃO TODAS INFORMAÇÕES REFERENTE
+            AO PLANO CONTRATADO.
+          </p>
+        </div>
         <div className="form-group-info">
-          <p className="text-uppercase">
+          <p className="text-uppercase text-pagamento">
             {clientData.parcelas <= 1 &&
               (clientData.contrato === "Base" ||
                 clientData.contrato === "Renovacao") && (
                 <strong>
-                  O plano escolhido foi o{" "}
-                  <u className="">{clientData.validade}</u>, no valor de{" "}
+                  O plano escolhido é o{" "}
+                  <u className="">{clientData.validade}</u>, com vigencia até{" "}
+                  {clientData.dataVigencia}
+                  <br />o valor do plano é de{" "}
                   <u>
                     R${" "}
                     {clientData.valorVenda
                       ? formatValor(clientData.valorVenda)
                       : ""}
                   </u>{" "}
-                  , com o vencimento para o dia{" "}
+                  , cujo vencimento ficou para o dia{" "}
                   {formatDateToBrazilian(clientData.dataVencimento)}.
                   <br />
-                  Sua renovação prevista para ocorrer em{" "}
-                  {clientData.dataVigencia}
-                  . <br /> salvo manifestação contrária por parte do contratante
-                  dentro do prazo legal de 30 dias antecedentes.
+                    <FontAwesomeIcon
+                      icon={faCheckCircle}
+                      color="#007bff"
+                      size="lg"
+                    />
+                    {"  "}
+                    RENOVAÇÃO AUTOMATICA
+                  . <br /> AUTORIZO QUE A EMPRESA CONTRATADA REALIZE TODA
+                  ASSESSORIA PARA OTIMIZAÇÃO DO PERFIL EM MINHA PAGINA DO GOOGLE
+                  MAPS, E ESTOU CIENTE DE TODAS INFORMAÇÕES PRESENTES NESTE
+                  DOCUMENTO.
                 </strong>
               )}
             {clientData.parcelas > 1 &&
               clientData.contrato === "Recorencia" && (
                 <strong>
-                  O plano escolhido foi o{" "}
-                  <u className="">{clientData.validade}</u>, no valor de{" "}
+                  O plano escolhido é o{" "}
+                  <u className="">{clientData.validade}</u>, com vigencia até{" "}
+                  {clientData.dataVigencia} <br />o valor do plano é de{" "}
                   <u>
                     R${" "}
                     {clientData.valorVenda
                       ? formatValor(clientData.valorVenda)
                       : ""}
                   </u>{" "}
-                  , com o vencimento para o dia{" "}
+                  , cujo vencimento ficou para o dia{" "}
                   {formatDateToBrazilian(clientData.dataVencimento)}. E suas
                   parcelas recorrentes no valor de{" "}
                   <u>
@@ -87,21 +162,29 @@ export const Infoqr: React.FC = () => {
                     {clientData.parcelaRecorrente
                       ? formatValor(clientData.parcelaRecorrente)
                       : ""}
-                  </u>{" "} com vencimento para o dia {clientData.diaData} dos
-                  meses subsequentes.
+                  </u>{" "}
+                  com vencimento para o dia {clientData.diaData} dos meses
+                  subsequentes.
                   <br />
-                  Sua renovação prevista para ocorrer em{" "}
-                  {clientData.dataVigencia}
-                  . <br /> salvo manifestação contrária por parte do contratante
-                  dentro do prazo legal de 30 dias antecedentes.
+                  <FontAwesomeIcon
+                    icon={faCheckCircle}
+                    color="#007bff"
+                    size="lg"
+                  />
+                  {"  "}
+                  RENOVAÇÃO AUTOMATICA . <br /> AUTORIZO QUE A EMPRESA
+                  CONTRATADA REALIZE TODA ASSESSORIA PARA OTIMIZAÇÃO DO PERFIL
+                  EM MINHA PAGINA DO GOOGLE MAPS, E ESTOU CIENTE DE TODAS
+                  INFORMAÇÕES PRESENTES NESTE DOCUMENTO.
                 </strong>
               )}
             {clientData.parcelas > 1 &&
               (clientData.contrato === "Base" ||
                 clientData.contrato === "Renovacao") && (
                 <strong>
-                  O plano escolhido foi o{" "}
-                  <u className="">{clientData.validade}</u>, no valor de{" "}
+                  O plano escolhido é o{" "}
+                  <u className="">{clientData.validade}</u>, com vigencia até{" "}
+                  {clientData.dataVigencia} <br />o valor do plano é de{" "}
                   <u>
                     R${" "}
                     {clientData.valorVenda
@@ -120,15 +203,28 @@ export const Infoqr: React.FC = () => {
                   parcelas com vencimento para o dia {clientData.diaData} dos
                   meses subsequentes.
                   <br />
-                  Sua renovação prevista para ocorrer em{" "}
-                  {clientData.dataVigencia}
-                  . <br /> salvo manifestação contrária por parte do contratante
-                  dentro do prazo legal de 30 dias antecedentes.
+                  <FontAwesomeIcon
+                    icon={faCheckCircle}
+                    color="#007bff"
+                    size="lg"
+                  />
+                  {"  "}
+                  RENOVAÇÃO AUTOMATICA
+                  <br /> AUTORIZO QUE A EMPRESA CONTRATADA REALIZE TODA
+                  ASSESSORIA PARA OTIMIZAÇÃO DO PERFIL EM MINHA PAGINA DO GOOGLE
+                  MAPS, E ESTOU CIENTE DE TODAS INFORMAÇÕES PRESENTES NESTE
+                  DOCUMENTO.
                 </strong>
               )}
           </p>
         </div>
-        <div className="boleto-container">
+        <div className="assinatura-section justify-content-center d-flex flex-column">
+          <div className="assinatura-section justify-content-center d-flex flex-column">
+            <div className="linha-assinatura mt-5"></div>
+          </div>
+        </div>
+
+        {/* <div className="boleto-container">
           <div className="boleto-logo">
             <img src={require("../../../Assets/logo-efi.png")} alt="EFI Pay" />
           </div>
@@ -170,7 +266,7 @@ export const Infoqr: React.FC = () => {
               </p>
             </div>
           </div>
-        </div>
+        </div> */}
         {/* <h5 className="text-white">GRAVAÇÃO</h5>
         <div className="form-group-info">
           <p>

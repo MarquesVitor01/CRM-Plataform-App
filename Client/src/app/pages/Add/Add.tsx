@@ -18,7 +18,7 @@ interface Parcela {
 
 export const Add = () => {
   const userId = auth.currentUser?.uid;
-  const { nome, cargo } = useAuth();
+  const { nome, cargo, equipe_msg } = useAuth();
   const [form, setForm] = useState({
     numeroContrato: "",
     data: new Date().toISOString().split("T")[0],
@@ -26,6 +26,7 @@ export const Add = () => {
     operador: nome,
     createdBy: userId,
     setor: cargo,
+    equipeMsg: equipe_msg,
     equipe: "G MARKETING DIGITAL",
     account: "",
     razaoSocial: "",
@@ -68,6 +69,7 @@ export const Add = () => {
     diaData: "",
     valorExtenso: "",
     monitoriaConcluidaYes: true,
+
   });
 
   const [parcelasArray, setParcelasArray] = useState<Parcela[]>([]);

@@ -1,25 +1,35 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { auth, db } from '../firebase/firebaseConfig';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { browserSessionPersistence } from 'firebase/auth';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
+import { auth, db } from "../firebase/firebaseConfig";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { browserSessionPersistence } from "firebase/auth";
 
 interface AuthContextType {
-  user: any; 
+  user: any;
   nome: string;
   avatar: string;
   cargo: string;
-  userId: string; 
+  equipe_msg: string;
+  userId: string;
   loading: boolean;
   logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [user, setUser] = useState<any>(null);
-  const [nome, setNome] = useState<string>('');
-  const [avatar, setAvatar] = useState<string>('');
-  const [cargo, setCargo] = useState<string>('');
+  const [nome, setNome] = useState<string>("");
+  const [avatar, setAvatar] = useState<string>("");
+  const [cargo, setCargo] = useState<string>("");
+  const [equipe_msg, setEquipe_msg] = useState<string>("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -36,39 +46,45 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {
         setUser(user);
-        const email = user.email || '';
-        const nome = email.split('@')[0];
-        const docRef = doc(db, 'usuarios', user.uid);
+        const email = user.email || "";
+        const nome = email.split("@")[0];
+        const docRef = doc(db, "usuarios", user.uid);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
-          const avatarUrl = docSnap.data()?.avatar || '';
-          const cargoUsuario = docSnap.data()?.cargo || '';
+          const avatarUrl = docSnap.data()?.avatar || "";
+          const cargoUsuario = docSnap.data()?.cargo || "";
+          const equipeUsuario = docSnap.data()?.equipe_msg || "";
           console.log("Avatar carregado:", avatarUrl);
           console.log("Cargo carregado:", cargoUsuario);
+          console.log("Equipe carregada:", equipeUsuario);
           setNome(nome);
           setAvatar(avatarUrl);
-          setCargo(cargoUsuario); 
+          setCargo(cargoUsuario);
+          setEquipe_msg(equipeUsuario);
         } else {
           await setDoc(docRef, {
             nome: nome,
             email: email,
-            avatar: '',
-            cargo: ''
+            avatar: "",
+            cargo: "",
+            equipe_msg: "",
           });
           setNome(nome);
-          setAvatar('');
-          setCargo('');
+          setAvatar("");
+          setCargo("");
+          setEquipe_msg("");
         }
       } else {
         setUser(null);
-        setNome('');
-        setAvatar('');
-        setCargo('');
+        setNome("");
+        setAvatar("");
+        setCargo("");
+        setEquipe_msg("");
       }
       setLoading(false);
     });
- 
+
     return () => unsubscribe();
   }, []);
 
@@ -76,16 +92,30 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       await auth.signOut();
       setUser(null);
-      setNome('');
-      setAvatar('');
-      setCargo('');
+      setNome("");
+      setAvatar("");
+      setCargo("");
+      setEquipe_msg("");
     } catch (error) {
       console.error("Erro ao deslogar:", error);
     }
   };
 
   return (
-    <AuthContext.Provider value={{ user, nome, avatar, cargo, userId: user?.uid || '', loading, logout }}> {/* Adicionando userId aqui */}
+    <AuthContext.Provider
+      value={{
+        user,
+        nome,
+        avatar,
+        cargo,
+        equipe_msg,
+        userId: user?.uid || "",
+        loading,
+        logout,
+      }}
+    >
+      {" "}
+      {/* Adicionando userId aqui */}
       {children}
     </AuthContext.Provider>
   );
@@ -94,7 +124,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth deve ser usado dentro de um AuthProvider');
+    throw new Error("useAuth deve ser usado dentro de um AuthProvider");
   }
   return context;
 };
