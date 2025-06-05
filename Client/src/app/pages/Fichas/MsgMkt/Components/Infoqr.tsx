@@ -34,7 +34,7 @@ export const Infoqr: React.FC = () => {
       <div className="bonus text-center">
         <br />
         {/* <img src="/img/estrelas.png" alt="Logo" width={200} /> */}
-        <div className="qrcode-container p-4">
+        <div className="qrcode-container p-5">
           {clientData.linkGoogle && (
             <div className="qrcode-mktservice">
               <QRCodeSVG value={clientData.linkGoogle} />
