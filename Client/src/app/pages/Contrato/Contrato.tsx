@@ -14,6 +14,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import CampoLinkContrato from "./Components/LinkContrato";
 import { ToastContainer } from "react-toastify";
+import { InfoqrMkt } from "../Fichas/MsgMkt/Components/InfoqrMkt";
 
 export const Contrato: FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -225,6 +226,57 @@ export const Contrato: FC = () => {
     }
   };
 
+  const downloadPDFAssinatura = () => {
+    const contratoElement = document.getElementById("assinatura");
+    const btn = document.getElementById("btn-baixar-pdf");
+
+    if (btn) {
+      btn.style.display = "none";
+    }
+
+    if (contratoElement) {
+      contratoElement.classList.add("modo-pdf");
+
+      const rect = contratoElement.getBoundingClientRect();
+      const widthInInches = rect.width / 96;
+      const heightInInches = rect.height / 96;
+
+      const opt: any = {
+        margin: 0,
+        filename: `${clientData.razaoSocial}.pdf`,
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          logging: false,
+        },
+        jsPDF: {
+          unit: "in",
+          format: [widthInInches, heightInInches],
+          orientation:
+            widthInInches > heightInInches ? "landscape" : "portrait",
+        },
+      };
+
+      html2pdf()
+        .set(opt)
+        .from(contratoElement)
+        .save()
+        .then(() => {
+          contratoElement.classList.remove("modo-pdf");
+          if (btn) btn.style.display = "flex";
+        })
+        .catch((error: unknown) => {
+          contratoElement.classList.remove("modo-pdf");
+          console.error("Erro ao gerar PDF:", error);
+          alert("Houve um erro ao gerar o PDF. Tente novamente.");
+          if (btn) btn.style.display = "flex";
+        });
+    } else {
+      alert("Erro: Um ou mais elementos não foram encontrados.");
+    }
+  };
+
   return (
     <div className="bg-contrato row align-items-start">
       <div className="col-md-5 d-flex flex-column align-items-center justify-content-center">
@@ -232,7 +284,6 @@ export const Contrato: FC = () => {
           <Header />
           <DadosEmpresa />
           <Infoqr />
-          {/* <Bonus /> */}
           <div className="page-break"></div>
           <Condicoes />
         </div>
@@ -282,26 +333,29 @@ export const Contrato: FC = () => {
             </div>
           ))}
         </div>
-        
+
         <CampoLinkContrato idVenda={id} />
         <div className="col-md-12">
-          <div className="bg-certificado">
-            <div className="bg-infos-certificado" id="certificado">
-              <div className="box-certificado">
-                <p className="text-uppercase text-center razao-social">
-                  {clientData?.nomeFantasia || "NOME FANTASIA"}
+          <div className="bg-mktservice">
+            <div className="bg-infos-mktservice" id="assinatura">
+              <div className="box-avaliacoes">
+                <p className="text-uppercase text-center ">
+                  Certificamos que o comércio:
+                  <span>
+                    {clientData?.nomeFantasia || "Nome Fantasia"}
+                  </span>{" "}
+                  <br />
+                  Está em dia com a atualização da sua página no Google Maps e
+                  conta com suporte da G MAPS CONTACT CENTER LTDA até{" "}
+                  {clientData?.dataVigencia} .
                 </p>
               </div>
-              <div className="box-assinatura">
-                <p className="text-uppercase text-center">
-                  {clientData?.nomeFantasia || "NOME FANTASIA"}
-                </p>
-              </div>
+              <InfoqrMkt />
             </div>
             <div className="btns-sections my-3" id="btn-baixar-pdf">
               <button
                 className="btn btn-danger"
-                onClick={downloadPDFCertificado}
+                onClick={downloadPDFAssinatura}
               >
                 <FontAwesomeIcon icon={faFilePdf} />
                 <span className="ms-1">Baixar PDF</span>
@@ -311,7 +365,6 @@ export const Contrato: FC = () => {
           </div>
         </div>
       </div>
-      
     </div>
   );
 };

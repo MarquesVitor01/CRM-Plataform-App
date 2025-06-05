@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import { db } from "../../../../firebase/firebaseConfig";
 import { QRCodeSVG } from "qrcode.react";
 
-export const Infoqr: React.FC = () => {
+export const InfoqrMkt: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [clientData, setClientData] = useState<any>(null);
 
