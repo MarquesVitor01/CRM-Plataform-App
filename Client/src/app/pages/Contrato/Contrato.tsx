@@ -289,12 +289,12 @@ export const Contrato: FC = () => {
             <div className="bg-infos-certificado" id="certificado">
               <div className="box-certificado">
                 <p className="text-uppercase text-center razao-social">
-                  {clientData.nomeFantasia}
+                  {clientData?.nomeFantasia || "NOME FANTASIA"}
                 </p>
               </div>
               <div className="box-assinatura">
                 <p className="text-uppercase text-center">
-                  {clientData.nomeFantasia}
+                  {clientData?.nomeFantasia || "NOME FANTASIA"}
                 </p>
               </div>
             </div>
