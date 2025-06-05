@@ -9,7 +9,7 @@ import axios from "axios";
 import { jsPDF } from "jspdf";
 import { faFilePdf, faFloppyDisk } from "@fortawesome/free-solid-svg-icons";
 import html2pdf from "html2pdf.js";
-import { Infoqr } from "./Components/Infoqr";
+import { InfoqrMkt } from "./Components/InfoqrMkt";
 import { toast, ToastContainer } from "react-toastify";
 import { db } from "../../../firebase/firebaseConfig";
 
@@ -236,14 +236,14 @@ Em caso de dúvidas, estou a disposição!`,
               <div className="bg-infos-mktservice" id="assinatura">
                 <div className="box-avaliacoes">
                   <p className="text-uppercase text-center ">
-                    Certificamos que o comércio:{" "}
+                    Certificamos que o comércio:
                     <span>{clientData.nomeFantasia}</span> <br />
                     Está em dia com a atualização da sua página no Google Maps e
                     conta com suporte da G MAPS CONTACT CENTER LTDA até{" "}
                     {clientData.dataVigencia} .
                   </p>
                 </div>
-                <Infoqr />
+                <InfoqrMkt />
               </div>
               <div className="btns-sections my-3" id="btn-baixar-pdf">
                 <button
