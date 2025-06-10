@@ -74,7 +74,7 @@ export const DadosEmpresa: React.FC = () => {
                 <strong>RAZÃO SOCIAL:</strong> {clientData.razaoSocial}
               </p>
               <p>
-                <strong>NOME FANTASIA:</strong> {clientData.nomeFantasia}
+                <strong>NOME FANTASIA:</strong> {clientData?.nomeFantasia}
               </p>
 
               <p>
