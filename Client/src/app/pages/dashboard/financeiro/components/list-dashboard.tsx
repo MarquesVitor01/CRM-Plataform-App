@@ -7,10 +7,8 @@ import {
   faEye,
   faSearch,
   faFilter,
-  faSync,
   faTableList,
   faX,
-  faCancel,
   faMinus,
   faDownload,
   faBroom,
@@ -18,17 +16,21 @@ import {
 import { Link } from "react-router-dom";
 import { ModalExcel } from "./modalExcel";
 import { db } from "../../../../firebase/firebaseConfig";
-import { collection, getDocs, doc, writeBatch } from "firebase/firestore";
-import { toast, ToastContainer } from "react-toastify";
+import { collection, getDocs } from "firebase/firestore";
+import { ToastContainer } from "react-toastify";
 import * as XLSX from "xlsx";
 import { Tooltip } from "react-tooltip";
+import { getAuth } from "firebase/auth";
 
 interface Parcela {
+  valorPago: string;
   valor: string;
   dataVencimento: string;
+  pagamento?: string;
 }
 
 interface Marketing {
+  createdBy: string;
   id: string;
   cnpj: string;
   cpf: string;
@@ -45,28 +47,6 @@ interface Marketing {
   encaminharCliente: string;
   rePagamento: string;
   account: string;
-  parcelasDetalhadas?: Parcela[]; // Adicione esta linha
-  posVendaConcuida: boolean;
-}
-
-interface Sale {
-  id: string;
-  cnpj: string;
-  responsavel: string;
-  email1: string;
-  email2: string;
-  operador: string;
-  data: string;
-  dataVencimento: string;
-  contrato: string;
-  nomeMonitor: string;
-  monitoriaConcluidaYes: boolean;
-  servicosConcluidos: boolean;
-  rePagamento: string;
-  dataPagamento: string;
-  operadorSelecionado: { value: string; label: string } | null;
-  account: string;
-  valorPago: string;
   parcelasDetalhadas?: Parcela[];
   posVendaConcuida: boolean;
 }
@@ -75,14 +55,14 @@ interface ListDashboardProps {
   setTotalFinanceiros: (total: number) => void;
   setTotalPagos: (total: number) => void;
   setTotalNegativados: (total: number) => void;
-  setTotalCancelados: (total: number) => void;
+  setTotalRecebido: (total: number) => void;
 }
 
 export const ListDashboard: React.FC<ListDashboardProps> = ({
   setTotalFinanceiros,
   setTotalPagos,
   setTotalNegativados,
-  setTotalCancelados,
+  setTotalRecebido,
 }) => {
   const [financeiros, setFinanceiros] = useState<Marketing[]>([]);
   const [selectedItems] = useState<Set<string>>(new Set());
@@ -91,18 +71,22 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
   const itemsPerPage = 5;
   const [loading, setLoading] = useState<boolean>(true);
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [syncLoading, setSyncLoading] = useState<boolean>(false);
   const [filters, setFilters] = useState({
     startDate: "",
     endDate: "",
-    dueDate: "",
+    dueStartDate: "",
+    dueEndDate: "",
     saleType: "",
     salesPerson: "",
     saleGroup: "",
   });
   const [activeSearchTerm, setActiveSearchTerm] = useState<string>("");
-  const [showCancelados, setShowCancelados] = useState(false);
   const [showNegativos, setShowNegativos] = useState(false);
+  const auth = getAuth();
+  const userId = auth.currentUser?.uid;
+  const adminUserId = process.env.REACT_APP_ADMIN_USER_ID;
+  const SupervisorUserId = "wWLmbV9TIUemmTkcMUSAQ4xGlju2";
+  const graziId = "nQwF9Uxh0lez9ETIOmP2gCgM0pf2";
 
   useEffect(() => {
     const fetchFinanceiros = async () => {
@@ -115,21 +99,20 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
           ...doc.data(),
         })) as Marketing[];
 
-        setFinanceiros(financeirosList);
-        setTotalFinanceiros(financeirosList.length);
+        const filteredVendas =
+          userId === adminUserId ||
+          userId === SupervisorUserId ||
+          userId === graziId
+            ? financeirosList
+            : financeirosList.filter(
+                (financeiro) => financeiro.createdBy === userId
+              );
 
-        const totalPagos = financeirosList.filter(
-          (financeiro) => financeiro.rePagamento === "sim"
-        ).length;
-        setTotalPagos(totalPagos);
-        const totalNegativados = financeirosList.filter(
-          (financeiro) => financeiro.rePagamento === "nao"
-        ).length;
-        setTotalNegativados(totalNegativados);
-        const totalCancelados = financeirosList.filter(
-          (financeiro) => financeiro.rePagamento === "cancelado"
-        ).length;
-        setTotalCancelados(totalCancelados);
+        // Limita a visualização para, por exemplo, 10 itens
+        const limitedList = filteredVendas.slice(0, 10);
+
+        setFinanceiros(limitedList);
+        setTotalFinanceiros(filteredVendas.length); // total considerando o filtro completo, não só a lista limitada
       } catch (error) {
         console.error("Erro ao buscar financeiros:", error);
       } finally {
@@ -138,16 +121,36 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
     };
 
     fetchFinanceiros();
-  }, [
-    setTotalFinanceiros,
-    setTotalPagos,
-    setTotalNegativados,
-    setTotalCancelados,
-  ]);
+  }, [setTotalFinanceiros]);
+
+  useEffect(() => {
+    const filtered = applyFilters();
+
+    const totalPagos = filtered.filter((f) =>
+      f.parcelasDetalhadas?.some((p) => p.pagamento === "pago")
+    ).length;
+
+    const totalNegativados = filtered.filter((f) =>
+      f.parcelasDetalhadas?.some((p) => p.pagamento === "inadimplente")
+    ).length;
+
+    const totalRecebido = filtered.reduce((total, f) => {
+      const soma = (f.parcelasDetalhadas || []).reduce((acc, parcela) => {
+        const valor = parseFloat(parcela.valorPago || "0");
+        return acc + (isNaN(valor) ? 0 : valor);
+      }, 0);
+      return total + soma;
+    }, 0);
+
+    setTotalPagos(totalPagos);
+    setTotalNegativados(totalNegativados);
+    setTotalRecebido(totalRecebido);
+  }, [financeiros, filters, activeSearchTerm, showNegativos]);
 
   const applyFilters = () => {
     let filteredClients = financeiros.filter((marketing) => {
       const lowerCaseTerm = activeSearchTerm.toLowerCase();
+
       const matchesSearchTerm =
         (marketing.cnpj &&
           marketing.cnpj.toLowerCase().includes(lowerCaseTerm)) ||
@@ -160,12 +163,19 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
         (marketing.email2 &&
           marketing.email2.toLowerCase().includes(lowerCaseTerm)) ||
         (marketing.operador &&
-          marketing.operador.toLowerCase().includes(lowerCaseTerm));
-      marketing.account &&
-        marketing.account.toLowerCase().includes(lowerCaseTerm);
+          marketing.operador.toLowerCase().includes(lowerCaseTerm)) ||
+        (marketing.account &&
+          marketing.account.toLowerCase().includes(lowerCaseTerm));
 
-      const { startDate, endDate, dueDate, saleType, salesPerson, saleGroup } =
-        filters;
+      const {
+        startDate,
+        endDate,
+        dueStartDate,
+        dueEndDate,
+        saleType,
+        salesPerson,
+        saleGroup,
+      } = filters;
 
       const marketingData = new Date(marketing.data);
       const isStartDateValid = startDate
@@ -178,19 +188,15 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
             marketingData <= new Date(endDate)
           : isStartDateValid;
 
-      // Verifica a data de vencimento principal ou nas parcelas
-      const isDueDateValid = dueDate
-        ? (marketing.dataVencimento &&
-            new Date(marketing.dataVencimento).toDateString() ===
-              new Date(dueDate).toDateString()) ||
-          (marketing.parcelasDetalhadas &&
-            marketing.parcelasDetalhadas.some(
-              (parcela) =>
-                parcela.dataVencimento &&
-                new Date(parcela.dataVencimento).toDateString() ===
-                  new Date(dueDate).toDateString()
-            ))
-        : true;
+      const isDueDateInRange = (marketing.parcelasDetalhadas || []).some(
+        (parcela) => {
+          if (!parcela.dataVencimento) return false;
+          const vencimento = new Date(parcela.dataVencimento);
+          const start = dueStartDate ? new Date(dueStartDate) : null;
+          const end = dueEndDate ? new Date(dueEndDate) : null;
+          return (!start || vencimento >= start) && (!end || vencimento <= end);
+        }
+      );
 
       const isSaleTypeValid = saleType ? marketing.contrato === saleType : true;
       const isSalesPersonValid = salesPerson
@@ -199,30 +205,31 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
       const isGroupTypeValid = saleGroup
         ? marketing.account === saleGroup
         : true;
+
       return (
         matchesSearchTerm &&
         isDateInRange &&
-        isDueDateValid &&
+        isDueDateInRange &&
         isSaleTypeValid &&
         isSalesPersonValid &&
         isGroupTypeValid
       );
     });
-    if (showCancelados) {
-      filteredClients = filteredClients.filter(
-        (marketing) => marketing.rePagamento === "cancelado"
-      );
-    }
+
     if (showNegativos) {
-      filteredClients = filteredClients.filter(
-        (marketing) => marketing.rePagamento === "nao"
+      filteredClients = filteredClients.filter((marketing) =>
+        marketing.parcelasDetalhadas?.some(
+          (parcela) => parcela.pagamento === "inadimplente"
+        )
       );
     }
+
     return filteredClients;
   };
+
   const handleSearchClick = () => {
     setActiveSearchTerm(searchTerm);
-    setCurrentPage(1); // Resetar para a primeira página ao realizar nova pesquisa
+    setCurrentPage(1);
   };
 
   const filteredClients = applyFilters();
@@ -241,46 +248,9 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
   const openModalExcel = () => setModalExcel(true);
   const closeModalExcel = () => setModalExcel(false);
 
-  const handleSyncClients = async () => {
-    setSyncLoading(true);
-    try {
-      const salesCollection = collection(db, "posVendas");
-      const salesSnapshot = await getDocs(salesCollection);
-      const salesList = salesSnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as Sale[];
-
-      const syncedSales = salesList.filter((sale) => sale.posVendaConcuida);
-      const batch = writeBatch(db);
-      for (const sale of syncedSales) {
-        const marketingDocRef = doc(db, "financeiros", sale.id);
-        batch.set(marketingDocRef, sale, { merge: true });
-      }
-
-      await batch.commit();
-
-      const financeirosSnapshot = await getDocs(collection(db, "financeiros"));
-      const financeirosList = financeirosSnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as Marketing[];
-
-      setFinanceiros(financeirosList);
-      setTotalFinanceiros(financeirosList.length);
-
-      toast.success("Sincronização concluída!");
-    } catch (error) {
-      console.error("Erro ao sincronizar clientes:", error);
-      toast.error("Erro na sincronização!");
-    } finally {
-      setSyncLoading(false);
-    }
-  };
-
   const handleApplyFilters = (newFilters: any) => {
     setFilters(newFilters);
-    localStorage.setItem("vendaFilters", JSON.stringify(newFilters)); // ← salvar no localStorage
+    localStorage.setItem("vendaFilters", JSON.stringify(newFilters));
     setModalExcel(false);
   };
 
@@ -330,10 +300,6 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
     XLSX.writeFile(wb, "planilha_vendas.xlsx");
   };
 
-  const toggleCancelado = () => {
-    setShowCancelados(!showCancelados);
-  };
-
   const toggleNegativo = () => {
     setShowNegativos(!showNegativos);
   };
@@ -357,6 +323,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
       .replace(/(\d{2})\.(\d{3})\.(\d{3})\/(\d{4})(\d)/, "$1.$2.$3/$4-$5")
       .substring(0, 18);
   };
+
   return (
     <div className="list-dashboard">
       {modalExcel && (
@@ -409,7 +376,8 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                 setFilters({
                   startDate: "",
                   endDate: "",
-                  dueDate: "",
+                  dueStartDate: "",
+                  dueEndDate: "",
                   saleType: "",
                   salesPerson: "",
                   saleGroup: "",
@@ -424,26 +392,6 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                 className="custom-tooltip"
               />
             </button>
-
-            {showCancelados ? (
-              <button
-                className="remove-btn"
-                onClick={toggleCancelado}
-                data-tooltip-id="tooltip-remove-cancelado"
-                data-tooltip-content="Remover cancelados"
-              >
-                <FontAwesomeIcon icon={faX} color="#fff" />
-              </button>
-            ) : (
-              <button
-                className="concluido-btn"
-                onClick={toggleCancelado}
-                data-tooltip-id="tooltip-add-cancelado"
-                data-tooltip-content="Mostrar cancelados"
-              >
-                <FontAwesomeIcon icon={faCancel} color="#fff" />
-              </button>
-            )}
 
             {showNegativos ? (
               <button
@@ -619,16 +567,30 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                         className="icon-spacing text-dark"
                       />
                     </Link>
-                    <Link
-                      to={`/fichafinanceiro/${marketing.id}`}
-                      data-tooltip-id="tooltip-financeiro"
-                      data-tooltip-content="Ficha financeiro"
-                    >
-                      <FontAwesomeIcon
-                        icon={faTableList}
-                        className="icon-spacing text-dark"
-                      />
-                    </Link>
+
+                    {!adminUserId ? (
+                      <Link
+                        to={`/fichafinanceiro/${marketing.id}`}
+                        data-tooltip-id="tooltip-financeiro"
+                        data-tooltip-content="Ficha financeiro"
+                      >
+                        <FontAwesomeIcon
+                          icon={faTableList}
+                          className="icon-spacing text-dark"
+                        />
+                      </Link>
+                    ) : (
+                      <Link
+                        to={`/vizufinanceiro/${marketing.id}`}
+                        data-tooltip-id="tooltip-vizu"
+                        data-tooltip-content="Vizualizar financeiro"
+                      >
+                        <FontAwesomeIcon
+                          icon={faTableList}
+                          className="icon-spacing text-dark"
+                        />
+                      </Link>
+                    )}
                   </td>
 
                   {/* Tooltip */}
@@ -639,6 +601,11 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                   />
                   <Tooltip
                     id="tooltip-financeiro"
+                    place="top"
+                    className="custom-tooltip"
+                  />
+                  <Tooltip
+                    id="tooltip-vizu"
                     place="top"
                     className="custom-tooltip"
                   />

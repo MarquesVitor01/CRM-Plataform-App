@@ -32,6 +32,7 @@ import { MsgMkt } from "../pages/Fichas/MsgMkt/MsgMkt";
 import { Analise } from "../pages/dashboard/analise/Analise";
 import { VizuMonitoria } from "../pages/Fichas/VizuMonitoria/VizuMonitoria";
 import { NovoMkt } from "../pages/dashboard/novo_mkt/NovoMkt";
+import { VizuFinanceiro } from "../pages/Fichas/VizuFinanceiro/VizuFinanceiro";
 
 
 export const LocalRoutes: React.FC = () => {
@@ -50,7 +51,7 @@ export const LocalRoutes: React.FC = () => {
           <Route path="/novomarketing" element={<PrivateRoute element={<NovoMkt />} />} />
           <Route path="/analises" element={<PrivateRoute element={<Analise />} />} />
           {/* <Route path="/pos-venda" element={<PrivateRoute element={<PosVenda />} />} /> */}
-          <Route path="/financeiro" element={<PrivateRoute element={<Financeiro />} requiredCargo="financeiro" />} />
+          <Route path="/financeiro" element={<PrivateRoute element={<Financeiro />} />} />
           <Route path="/cobranca" element={<PrivateRoute element={<Cobranca />} requiredCargo="cobranca" />} />
           <Route path="/relatorio" element={<PrivateRoute element={<Relatorio />} />} />
           <Route path="/add" element={<PrivateRoute element={<Add />} />} />
@@ -65,6 +66,7 @@ export const LocalRoutes: React.FC = () => {
           <Route path="/fichamarketing/:id" element={<PrivateRoute element={<FichaMarketing />} />} />
           <Route path="/fichaposvenda/:id" element={<PrivateRoute element={<FichaPosVenda />} />} />
           <Route path="/fichafinanceiro/:id" element={<PrivateRoute element={<FichaFinanceiro />} requiredCargo="financeiro" />} />
+          <Route path="/vizufinanceiro/:id" element={<PrivateRoute element={<VizuFinanceiro />} />} />
           <Route path="/fichacobranca/:id" element={<PrivateRoute element={<FichaCobranca />} requiredCargo="cobranca" />} />
           <Route path="/fichaboleto/:id" element={<PrivateRoute element={<FichaBoleto />} />} />
           <Route path="/fichacancelamento/:id" element={<PrivateRoute element={<FichaCancelamento />} />} />

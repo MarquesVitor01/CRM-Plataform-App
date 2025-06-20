@@ -67,6 +67,7 @@ const ListaDeParcelas: React.FC<ListaDeParcelasProps> = ({
                   name="pagamento"
                   value={parcela.pagamento || "inadimplente"}
                   onChange={(e) => handlePagamentoChange(e, index)}
+                  disabled
                 >
                   <option value="pendente">Pendente</option>
                   <option value="inadimplente">Inadimplente</option>
@@ -87,6 +88,8 @@ const ListaDeParcelas: React.FC<ListaDeParcelasProps> = ({
                     className="form-control"
                     value={formatarValorMonetario(parcela.valorPago || "")}
                     onChange={(e) => handleInputValorPago(e, index)}
+                    readOnly
+                    disabled
                   />
                 </div>
 
@@ -103,6 +106,8 @@ const ListaDeParcelas: React.FC<ListaDeParcelasProps> = ({
                         e.target.value
                       )
                     }
+                    readOnly
+                    disabled
                   />
                 </div>
                 <div className="mb-2">
@@ -117,6 +122,8 @@ const ListaDeParcelas: React.FC<ListaDeParcelasProps> = ({
                     onChange={(e) =>
                       handleParcelaChange(index, "link", e.target.value)
                     }
+                    readOnly
+                    disabled
                   />
                 </div>
               </div>
