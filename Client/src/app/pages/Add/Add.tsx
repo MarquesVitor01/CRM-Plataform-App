@@ -14,6 +14,7 @@ import { Button, Modal } from "react-bootstrap";
 interface Parcela {
   valor: string;
   dataVencimento: string;
+  pagamento: string
 }
 
 export const Add = () => {
@@ -147,6 +148,7 @@ export const Add = () => {
         novasParcelas.push({
           valor: Math.round(valorPrimeiraParcela).toString(),
           dataVencimento: dataBase.toISOString().split("T")[0],
+          pagamento: "pendente",
         });
 
         // Demais parcelas (11) com valor recorrente
@@ -162,6 +164,7 @@ export const Add = () => {
           novasParcelas.push({
             valor: Math.round(valorRecorrente).toString(),
             dataVencimento: dataParcela.toISOString().split("T")[0],
+            pagamento: "pendente",
           });
         }
 
@@ -185,6 +188,7 @@ export const Add = () => {
               {
                 valor: Math.round(valorVenda).toString(),
                 dataVencimento: dataVencimento,
+                pagamento: "pendente",
               },
             ]);
           } else {
@@ -210,6 +214,7 @@ export const Add = () => {
                 novasParcelas.push({
                   valor: valorParcela.toString(),
                   dataVencimento: dataParcela.toISOString().split("T")[0],
+                  pagamento: "pendente",
                 });
               }
             }

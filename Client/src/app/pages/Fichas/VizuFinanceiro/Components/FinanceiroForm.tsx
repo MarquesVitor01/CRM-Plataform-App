@@ -210,6 +210,8 @@ export const FinanceiroForm: React.FC<FinanceiroFormProps> = ({
               value={form.valorPago}
               onChange={handleValorPagoChange}
               onBlur={handleValorPagoBlur}
+              readOnly
+              disabled 
             />
             {/* <button
               type="button"
@@ -229,6 +231,7 @@ export const FinanceiroForm: React.FC<FinanceiroFormProps> = ({
               name="rePagamento"
               value={form.rePagamento}
               onChange={handleInputChange}
+              disabled 
             >
               <option value="">Selecione uma opção</option>
               <option value="sim">Sim</option>
@@ -246,6 +249,8 @@ export const FinanceiroForm: React.FC<FinanceiroFormProps> = ({
               className="form-control mb-3"
               value={form.dataPagamento}
               onChange={handleInputChange}
+              readOnly
+disabled 
             />
 
             <label htmlFor="comprovante" className="form-label">
@@ -258,6 +263,8 @@ export const FinanceiroForm: React.FC<FinanceiroFormProps> = ({
               className="form-control mb-3"
               value={form.comprovante}
               onChange={handleInputChange}
+              readOnly
+              disabled 
             />
 
             <hr className="w-50 mx-auto" />
@@ -273,6 +280,7 @@ export const FinanceiroForm: React.FC<FinanceiroFormProps> = ({
                 value={form.encaminharCliente}
                 onChange={handleInputChange}
                 required
+                disabled 
               >
                 <option value="">Selecione uma opção</option>
                 <option value="sim">Sim</option>
@@ -288,9 +296,9 @@ export const FinanceiroForm: React.FC<FinanceiroFormProps> = ({
               >
                 Sair
               </button>
-              <button type="submit" className="btn btn-primary mt-4">
+              {/* <button type="submit" className="btn btn-primary mt-4">
                 Salvar
-              </button>
+              </button> */}
             </div>
           </form>
         </div>

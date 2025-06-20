@@ -149,7 +149,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
       prevVendas.filter((venda) => !selectedItems.has(venda.id))
     );
     setSelectedItems(new Set());
-    setInfoCancelamento(""); // Resetar o motivo após a exclusão
+    setInfoCancelamento("");
     closeModalExclusao();
   };
 
@@ -207,7 +207,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
 
   const handleSearchClick = () => {
     setActiveSearchTerm(searchTerm);
-    setCurrentPage(1); // Resetar para a primeira página ao realizar nova pesquisa
+    setCurrentPage(1); 
   };
 
   const filteredClients = applyFilters();
@@ -232,7 +232,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
 
   const handleApplyFilters = (newFilters: any) => {
     setFilters(newFilters);
-    localStorage.setItem("vendaFilters", JSON.stringify(newFilters)); // ← salvar no localStorage
+    localStorage.setItem("vendaFilters", JSON.stringify(newFilters)); 
     setModalExcel(false);
   };
 
@@ -245,10 +245,8 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
   const formatarTelefone = (numero: any) => {
     if (!numero) return "";
 
-    // Remove tudo que não for número
     const numeros = numero.replace(/\D/g, "");
 
-    // Verifica se tem o tamanho correto para DDD + número
     if (numeros.length === 11) {
       return `(${numeros.slice(0, 2)}) ${numeros.slice(2, 7)}-${numeros.slice(
         7
@@ -259,7 +257,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
       )}`;
     }
 
-    return numero; // Retorna o número sem formatação se não for válido
+    return numero; 
   };
 
   const downloadClients = () => {

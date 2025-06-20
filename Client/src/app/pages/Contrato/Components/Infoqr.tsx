@@ -128,15 +128,19 @@ export const Infoqr: React.FC = () => {
                   </u>{" "}
                   , cujo vencimento ficou para o dia{" "}
                   {formatDateToBrazilian(clientData.dataVencimento)}.
-                  <br />
-                    <FontAwesomeIcon
-                      icon={faCheckCircle}
-                      color="#007bff"
-                      size="lg"
-                    />
-                    {"  "}
-                    RENOVAÇÃO AUTOMATICA
-                  . <br /> AUTORIZO QUE A EMPRESA CONTRATADA REALIZE TODA
+                  {clientData.renovacaoAutomatica === "sim" && (
+                    <>
+                      <br />
+                      <FontAwesomeIcon
+                        icon={faCheckCircle}
+                        color="#007bff"
+                        size="lg"
+                      />
+                      {"  "}
+                      RENOVAÇÃO AUTOMATICA.{" "}
+                    </>
+                  )}
+                  <br /> AUTORIZO QUE A EMPRESA CONTRATADA REALIZE TODA
                   ASSESSORIA PARA OTIMIZAÇÃO DO PERFIL EM MINHA PAGINA DO GOOGLE
                   MAPS, E ESTOU CIENTE DE TODAS INFORMAÇÕES PRESENTES NESTE
                   DOCUMENTO.
@@ -165,17 +169,22 @@ export const Infoqr: React.FC = () => {
                   </u>{" "}
                   com vencimento para o dia {clientData.diaData} dos meses
                   subsequentes.
-                  <br />
-                  <FontAwesomeIcon
-                    icon={faCheckCircle}
-                    color="#007bff"
-                    size="lg"
-                  />
-                  {"  "}
-                  RENOVAÇÃO AUTOMATICA . <br /> AUTORIZO QUE A EMPRESA
-                  CONTRATADA REALIZE TODA ASSESSORIA PARA OTIMIZAÇÃO DO PERFIL
-                  EM MINHA PAGINA DO GOOGLE MAPS, E ESTOU CIENTE DE TODAS
-                  INFORMAÇÕES PRESENTES NESTE DOCUMENTO.
+                  {clientData.renovacaoAutomatica === "sim" && (
+                    <>
+                      <br />
+                      <FontAwesomeIcon
+                        icon={faCheckCircle}
+                        color="#007bff"
+                        size="lg"
+                      />
+                      {"  "}
+                      RENOVAÇÃO AUTOMATICA.{" "}
+                    </>
+                  )}
+                  <br /> AUTORIZO QUE A EMPRESA CONTRATADA REALIZE TODA
+                  ASSESSORIA PARA OTIMIZAÇÃO DO PERFIL EM MINHA PAGINA DO GOOGLE
+                  MAPS, E ESTOU CIENTE DE TODAS INFORMAÇÕES PRESENTES NESTE
+                  DOCUMENTO.
                 </strong>
               )}
             {clientData.parcelas > 1 &&
@@ -202,14 +211,18 @@ export const Infoqr: React.FC = () => {
                   {formatDateToBrazilian(clientData.dataVencimento)}. E suas
                   parcelas com vencimento para o dia {clientData.diaData} dos
                   meses subsequentes.
-                  <br />
-                  <FontAwesomeIcon
-                    icon={faCheckCircle}
-                    color="#007bff"
-                    size="lg"
-                  />
-                  {"  "}
-                  RENOVAÇÃO AUTOMATICA
+                  {clientData.renovacaoAutomatica === "sim" && (
+                    <>
+                      <br />
+                      <FontAwesomeIcon
+                        icon={faCheckCircle}
+                        color="#007bff"
+                        size="lg"
+                      />
+                      {"  "}
+                      RENOVAÇÃO AUTOMATICA.{" "}
+                    </>
+                  )}
                   <br /> AUTORIZO QUE A EMPRESA CONTRATADA REALIZE TODA
                   ASSESSORIA PARA OTIMIZAÇÃO DO PERFIL EM MINHA PAGINA DO GOOGLE
                   MAPS, E ESTOU CIENTE DE TODAS INFORMAÇÕES PRESENTES NESTE

@@ -203,7 +203,7 @@ export const Navbar = () => {
                 </Link>
               </li>
             )} */}
-            {(cargo === "financeiro" || userId === adminId) && (
+            {(cargo === "financeiro" || cargo === "vendas" || userId === adminId || userId === supervisorId) && (
               <li className="nav-item">
                 <Link
                   className="nav-link icon-tooltip"
