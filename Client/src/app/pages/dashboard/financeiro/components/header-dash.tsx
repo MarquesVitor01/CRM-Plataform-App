@@ -25,6 +25,11 @@ const formatarValor = (valor: number | string) => {
   return valorStr.replace(/(\d+)(\d{2})$/, "$1,$2");
 };
 
+console.log("Total Recebido:", totalRecebido);
+console.log("Total Financeiros:", totalFinanceiros);
+console.log("Total Pagos:", totalPagos);
+console.log("Total Negativados:", totalNegativados);
+
 
   return (
     <>

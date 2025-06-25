@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Select from "react-select";
+import ListaDeParcelas from "./ListaDeParcelas";
 
 interface Form {
   valorPago: string;
@@ -9,6 +9,16 @@ interface Form {
   encaminharCliente: string;
   operadorSelecionado: { value: string; label: string } | null;
   comprovante: string;
+  parcelasDetalhadas?: ParcelaDetalhada[];
+}
+
+interface ParcelaDetalhada {
+  valor: string;
+  dataVencimento: string;
+  valorPago?: string;
+  dataPagamento?: string;
+  link?: string;
+  pagamento?: string;
 }
 
 interface FinanceiroFormProps {
@@ -16,51 +26,92 @@ interface FinanceiroFormProps {
   onSubmit: (data: Form) => void;
 }
 
-export const ComprovantesForm: React.FC<FinanceiroFormProps> = ({ form: initialForm, onSubmit }) => {
+export const ComprovantesForm: React.FC<FinanceiroFormProps> = ({
+  form: initialForm,
+  onSubmit,
+}) => {
+  const [parcelas, setParcelas] = useState<ParcelaDetalhada[]>([]);
   const [form, setForm] = useState<Form>({
+    parcelasDetalhadas: [],
     valorPago: "",
     acordo: "",
     rePagamento: "",
     dataPagamento: "",
     encaminharCliente: "",
     operadorSelecionado: null,
-    comprovante: ""
+    comprovante: "",
   });
-
-  const cobranca = [
-    { value: "miguel", label: "Miguel" },
-    { value: "isa", label: "Isa" },
-  ];
+  const handleParcelaChange = (
+    index: number,
+    field: "valorPago" | "dataPagamento" | "link" | "pagamento",
+    value: string
+  ) => {
+    const updatedParcelas = parcelas.map((parcela, i) =>
+      i === index ? { ...parcela, [field]: value } : parcela
+    );
+    setParcelas(updatedParcelas);
+    setForm((prevForm) => ({
+      ...prevForm,
+      parcelasDetalhadas: updatedParcelas,
+    }));
+  };
 
   const sairFicha = () => {
     window.history.back();
   };
 
-  useEffect(() => {
-    if (initialForm) {
-      setForm(initialForm);
-    }
-  }, [initialForm]);
+ useEffect(() => {
+  if (initialForm) {
+    setForm(initialForm);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    if (initialForm.parcelasDetalhadas?.length) {
+      setParcelas(initialForm.parcelasDetalhadas);
+    }
+  }
+}, [initialForm]);
+
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value, type } = e.target;
-    const checked = type === "checkbox" ? (e.target as HTMLInputElement).checked : undefined;
+    const checked =
+      type === "checkbox" ? (e.target as HTMLInputElement).checked : undefined;
     setForm((prevForm) => ({
       ...prevForm,
       [name]: type === "checkbox" ? checked : value,
     }));
   };
 
-
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(form);
   };
 
+  useEffect(() => {
+  const totalPago = parcelas.reduce((acc, parcela) => {
+    const valor = parcela.valorPago ? parseInt(parcela.valorPago, 10) : 0;
+    return acc + (isNaN(valor) ? 0 : valor);
+  }, 0);
+
+  setForm(prevForm => ({
+    ...prevForm,
+    valorPago: totalPago.toString(),
+  }));
+}, [parcelas]);
+
+const formatarValorMonetario = (valor: string) => {
+    if (!valor) return "0,00";
+    const number = parseInt(valor, 10) / 100;
+    return number.toLocaleString("pt-BR", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  };
+
   return (
-    <div className="row">
-      <div className="card card-cob d-flex justify-content-center p-4">
+    <div className="row d-flex gap-3">
+      <div className="card card-cob p-4" style={{ flex: "1" }}>
         <form onSubmit={handleSubmit}>
           <label htmlFor="valorInput" className="form-label">
             Valor Pago:
@@ -70,7 +121,7 @@ export const ComprovantesForm: React.FC<FinanceiroFormProps> = ({ form: initialF
             name="valorPago"
             id="valorInput"
             className="form-control mb-3"
-            value={form.valorPago}
+            value={formatarValorMonetario(form.valorPago || "")}
             onChange={handleInputChange}
           />
 
@@ -98,7 +149,7 @@ export const ComprovantesForm: React.FC<FinanceiroFormProps> = ({ form: initialF
             name="dataPagamento"
             id="dataPagamento"
             className="form-control mb-3"
-            value={form.dataPagamento}
+            value={form.dataPagamento || ""}
             onChange={handleInputChange}
           />
 
@@ -110,11 +161,15 @@ export const ComprovantesForm: React.FC<FinanceiroFormProps> = ({ form: initialF
             name="comprovante"
             id="comprovante"
             className="form-control mb-3"
-            value={form.comprovante}
+            value={form.comprovante || ""}
             onChange={handleInputChange}
           />
           <div className="d-flex gap-3 mx-auto">
-            <button type="button" className="btn btn-danger mt-4" onClick={sairFicha}>
+            <button
+              type="button"
+              className="btn btn-danger mt-4"
+              onClick={sairFicha}
+            >
               Sair
             </button>
             <button type="submit" className="btn btn-primary mt-4">
@@ -122,6 +177,12 @@ export const ComprovantesForm: React.FC<FinanceiroFormProps> = ({ form: initialF
             </button>
           </div>
         </form>
+      </div>
+      <div className="col-12 col-lg-6">
+        <ListaDeParcelas
+          parcelas={parcelas}
+          handleParcelaChange={handleParcelaChange}
+        />
       </div>
     </div>
   );

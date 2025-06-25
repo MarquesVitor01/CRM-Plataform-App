@@ -30,10 +30,9 @@ export const Comprovantes: React.FC = () => {
         setLoading(false);
       }
     };
-
     fetchClientData();
   }, [id]);
-
+  
   const handleFianceiroSubmit = async (data: any) => {
     try {
       if (id) {
