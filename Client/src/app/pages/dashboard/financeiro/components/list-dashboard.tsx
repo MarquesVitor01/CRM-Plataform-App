@@ -108,11 +108,9 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                 (financeiro) => financeiro.createdBy === userId
               );
 
-        // Limita a visualização para, por exemplo, 10 itens
-        const limitedList = filteredVendas.slice(0, 10);
-
-        setFinanceiros(limitedList);
-        setTotalFinanceiros(filteredVendas.length); // total considerando o filtro completo, não só a lista limitada
+        // const limitedList = filteredVendas.slice(0, 10);
+        setFinanceiros(filteredVendas);
+        setTotalFinanceiros(filteredVendas.length); 
       } catch (error) {
         console.error("Erro ao buscar financeiros:", error);
       } finally {
@@ -123,121 +121,142 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
     fetchFinanceiros();
   }, [setTotalFinanceiros]);
 
-  useEffect(() => {
-    const filtered = applyFilters();
 
-    const totalPagos = filtered.filter((f) =>
-      f.parcelasDetalhadas?.some((p) => p.pagamento === "pago")
-    ).length;
+ useEffect(() => {
+  const filtered = applyFilters();
 
-    const totalNegativados = filtered.filter((f) =>
-      f.parcelasDetalhadas?.some((p) => p.pagamento === "inadimplente")
-    ).length;
+  const totalPagos = filtered.filter((f) =>
+    f.parcelasDetalhadas?.some((p) => p.pagamento === "pago")
+  ).length;
 
-    const totalRecebido = filtered.reduce((total, f) => {
-      const soma = (f.parcelasDetalhadas || []).reduce((acc, parcela) => {
-        const valor = parseFloat(parcela.valorPago || "0");
-        return acc + (isNaN(valor) ? 0 : valor);
-      }, 0);
-      return total + soma;
+  const totalNegativados = filtered.filter((f) =>
+    f.parcelasDetalhadas?.some((p) => p.pagamento === "inadimplente")
+  ).length;
+
+  const totalRecebido = filtered.reduce((total, f) => {
+    const soma = (f.parcelasDetalhadas || []).reduce((acc, parcela) => {
+      const valorString = parcela?.valorPago;
+      const valor = parseFloat(valorString && valorString.trim() !== "" ? valorString : "0");
+      if (isNaN(valor)) {
+        console.log("❌ Valor inválido em parcela:", parcela);
+      }
+      return acc + (isNaN(valor) ? 0 : valor);
     }, 0);
+    return total + soma;
+  }, 0);
 
-    setTotalPagos(totalPagos);
-    setTotalNegativados(totalNegativados);
-    setTotalRecebido(totalRecebido);
-  }, [financeiros, filters, activeSearchTerm, showNegativos]);
+  console.log("✅ totalRecebido calculado:", totalRecebido);
+  setTotalPagos(totalPagos);
+  setTotalNegativados(totalNegativados);
+  setTotalRecebido(totalRecebido);
+}, [financeiros, filters, activeSearchTerm, showNegativos]);
 
   const applyFilters = () => {
-    let filteredClients = financeiros.filter((marketing) => {
-      const lowerCaseTerm = activeSearchTerm.toLowerCase();
+  let filteredClients = financeiros.filter((marketing, index) => {
+    const lowerCaseTerm = activeSearchTerm.toLowerCase();
 
-      const matchesSearchTerm =
-        (marketing.cnpj &&
-          marketing.cnpj.toLowerCase().includes(lowerCaseTerm)) ||
-        (marketing.cpf &&
-          marketing.cpf.toLowerCase().includes(lowerCaseTerm)) ||
-        (marketing.responsavel &&
-          marketing.responsavel.toLowerCase().includes(lowerCaseTerm)) ||
-        (marketing.email1 &&
-          marketing.email1.toLowerCase().includes(lowerCaseTerm)) ||
-        (marketing.email2 &&
-          marketing.email2.toLowerCase().includes(lowerCaseTerm)) ||
-        (marketing.operador &&
-          marketing.operador.toLowerCase().includes(lowerCaseTerm)) ||
-        (marketing.account &&
-          marketing.account.toLowerCase().includes(lowerCaseTerm));
+    const matchesSearchTerm =
+      (marketing.cnpj &&
+        marketing.cnpj.toLowerCase().includes(lowerCaseTerm)) ||
+      (marketing.cpf &&
+        marketing.cpf.toLowerCase().includes(lowerCaseTerm)) ||
+      (marketing.responsavel &&
+        marketing.responsavel.toLowerCase().includes(lowerCaseTerm)) ||
+      (marketing.email1 &&
+        marketing.email1.toLowerCase().includes(lowerCaseTerm)) ||
+      (marketing.email2 &&
+        marketing.email2.toLowerCase().includes(lowerCaseTerm)) ||
+      (marketing.operador &&
+        marketing.operador.toLowerCase().includes(lowerCaseTerm)) ||
+      (marketing.account &&
+        marketing.account.toLowerCase().includes(lowerCaseTerm));
 
-      const {
-        startDate,
-        endDate,
-        dueStartDate,
-        dueEndDate,
-        saleType,
-        salesPerson,
-        saleGroup,
-      } = filters;
+    const {
+      startDate,
+      endDate,
+      dueStartDate,
+      dueEndDate,
+      saleType,
+      salesPerson,
+      saleGroup,
+    } = filters;
 
-      const marketingData = new Date(marketing.data);
-      const isStartDateValid = startDate
-        ? marketingData.toDateString() === new Date(startDate).toDateString()
-        : true;
+    const marketingData = new Date(marketing.data);
+    const isStartDateValid = startDate
+      ? marketingData.toDateString() === new Date(startDate).toDateString()
+      : true;
 
-      const isDateInRange =
-        startDate && endDate
-          ? marketingData >= new Date(startDate) &&
-            marketingData <= new Date(endDate)
-          : isStartDateValid;
+    const isDateInRange =
+      startDate && endDate
+        ? marketingData >= new Date(startDate) &&
+          marketingData <= new Date(endDate)
+        : isStartDateValid;
 
-      const isDueDateInRange = (marketing.parcelasDetalhadas || []).some(
-        (parcela) => {
-          if (!parcela.dataVencimento) return false;
-          const vencimento = new Date(parcela.dataVencimento);
-          const start = dueStartDate ? new Date(dueStartDate) : null;
-          const end = dueEndDate ? new Date(dueEndDate) : null;
-          return (!start || vencimento >= start) && (!end || vencimento <= end);
-        }
+    let isDueDateInRange = true;
+if (dueStartDate || dueEndDate) {
+  isDueDateInRange = (marketing.parcelasDetalhadas || []).some((parcela) => {
+    if (!parcela.dataVencimento) return false;
+    const vencimento = new Date(parcela.dataVencimento);
+    const start = dueStartDate ? new Date(dueStartDate) : null;
+    const end = dueEndDate ? new Date(dueEndDate) : null;
+    return (!start || vencimento >= start) && (!end || vencimento <= end);
+  });
+}
+
+    const isSaleTypeValid = saleType ? marketing.contrato === saleType : true;
+    const isSalesPersonValid = salesPerson
+      ? marketing.operador === salesPerson
+      : true;
+    const isGroupTypeValid = saleGroup
+      ? marketing.account === saleGroup
+      : true;
+
+    const passed =
+      matchesSearchTerm &&
+      isDateInRange &&
+      isDueDateInRange &&
+      isSaleTypeValid &&
+      isSalesPersonValid &&
+      isGroupTypeValid;
+
+
+    return passed;
+  });
+
+  if (showNegativos) {
+    filteredClients = filteredClients.filter((marketing, index) => {
+      const hasInadimplente = marketing.parcelasDetalhadas?.some(
+        (parcela) => parcela.pagamento === "inadimplente"
       );
 
-      const isSaleTypeValid = saleType ? marketing.contrato === saleType : true;
-      const isSalesPersonValid = salesPerson
-        ? marketing.operador === salesPerson
-        : true;
-      const isGroupTypeValid = saleGroup
-        ? marketing.account === saleGroup
-        : true;
+      if (!hasInadimplente) {
+        console.log(`Cliente #${index} removido no filtro de inadimplentes`, {
+          nome: marketing.responsavel,
+        });
+      }
 
-      return (
-        matchesSearchTerm &&
-        isDateInRange &&
-        isDueDateInRange &&
-        isSaleTypeValid &&
-        isSalesPersonValid &&
-        isGroupTypeValid
-      );
+      return hasInadimplente;
     });
 
-    if (showNegativos) {
-      filteredClients = filteredClients.filter((marketing) =>
-        marketing.parcelasDetalhadas?.some(
-          (parcela) => parcela.pagamento === "inadimplente"
-        )
-      );
-    }
+    console.log("Clientes após filtro de inadimplente:", filteredClients.length);
+  }
 
-    return filteredClients;
-  };
+  return filteredClients;
+};
 
-  const handleSearchClick = () => {
-    setActiveSearchTerm(searchTerm);
-    setCurrentPage(1);
-  };
 
+  
   const filteredClients = applyFilters();
   const totalPages = Math.ceil(filteredClients.length / itemsPerPage);
   const currentClients = filteredClients.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
+  const handleSearchClick = () => {
+    setActiveSearchTerm(searchTerm);
+    setCurrentPage(1);
+  };
+
 
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages) {
@@ -581,7 +600,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                       </Link>
                     ) : (
                       <Link
-                        to={`/vizufinanceiro/${marketing.id}`}
+                        to={`/fichafinanceiro/${marketing.id}`}
                         data-tooltip-id="tooltip-vizu"
                         data-tooltip-content="Vizualizar financeiro"
                       >
