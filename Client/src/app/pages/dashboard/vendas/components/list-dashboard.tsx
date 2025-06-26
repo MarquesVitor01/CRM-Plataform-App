@@ -207,7 +207,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
 
   const handleSearchClick = () => {
     setActiveSearchTerm(searchTerm);
-    setCurrentPage(1); 
+    setCurrentPage(1);
   };
 
   const filteredClients = applyFilters();
@@ -232,7 +232,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
 
   const handleApplyFilters = (newFilters: any) => {
     setFilters(newFilters);
-    localStorage.setItem("vendaFilters", JSON.stringify(newFilters)); 
+    localStorage.setItem("vendaFilters", JSON.stringify(newFilters));
     setModalExcel(false);
   };
 
@@ -257,7 +257,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
       )}`;
     }
 
-    return numero; 
+    return numero;
   };
 
   const downloadClients = () => {
@@ -561,7 +561,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                       />
                     </Link>
 
-                    <Link to={`/comprovantes/${venda.id}`}>
+                    {/* <Link to={`/comprovantes/${venda.id}`}>
                       <FontAwesomeIcon
                         icon={faFile}
                         className="icon-spacing text-dark"
@@ -573,7 +573,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                         place="top"
                         className="custom-tooltip"
                       />
-                    </Link>
+                    </Link> */}
 
                     <Link to={`/contrato/${venda.id}`}>
                       <FontAwesomeIcon

@@ -16,29 +16,30 @@ interface ListaDeParcelasProps {
     field: "valorPago" | "dataPagamento" | "link" | "pagamento",
     value: string
   ) => void;
+  handleRemoverParcela: (index: number) => void;
 }
+
 const ListaDeParcelas: React.FC<ListaDeParcelasProps> = ({
   parcelas,
   handleParcelaChange,
+  handleRemoverParcela,
 }) => {
-  if (!parcelas || parcelas.length === 0) return null;
+  if (parcelas.length === 0) return null;
+
+  const formatarValorMonetario = (valor: string) => {
+    const numero = parseInt(valor.replace(/\D/g, "") || "0", 10) / 100;
+    return numero.toLocaleString("pt-BR", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  };
 
   const handleInputValorPago = (
     e: React.ChangeEvent<HTMLInputElement>,
     index: number
   ) => {
-    const input = e.target.value;
-    const onlyNumbers = input.replace(/\D/g, "");
-    handleParcelaChange(index, "valorPago", onlyNumbers);
-  };
-
-  const formatarValorMonetario = (valor: string) => {
-    if (!valor) return "0,00";
-    const number = parseInt(valor, 10) / 100;
-    return number.toLocaleString("pt-BR", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
+    const somenteNumeros = e.target.value.replace(/\D/g, "");
+    handleParcelaChange(index, "valorPago", somenteNumeros);
   };
 
   const handlePagamentoChange = (
@@ -47,18 +48,21 @@ const ListaDeParcelas: React.FC<ListaDeParcelasProps> = ({
   ) => {
     handleParcelaChange(index, "pagamento", e.target.value);
   };
+
   return (
     <div className="scroll-container">
       <div className="row gy-2">
         {parcelas.map((parcela, index) => (
           <div key={index} className="card shadow-sm p-3 rounded-2">
             <h3 className="text-center">Parcelas do Contrato</h3>
+
             <div className="card-body d-flex flex-column justify-content-between">
               <div>
                 <h6 className="card-title mb-2">
                   <strong>Parcela {index + 1}</strong>
                 </h6>
-                <label htmlFor="pagamento" className="form-label">
+
+                <label htmlFor={`pagamento-${index}`} className="form-label">
                   Situação do Pagamento:
                 </label>
                 <select
@@ -74,9 +78,7 @@ const ListaDeParcelas: React.FC<ListaDeParcelasProps> = ({
                 </select>
 
                 <p className="mb-3">
-                  <strong>Valor:</strong> R${" "}
-                  {(Number(parcela.valor) / 100).toFixed(2).replace(".", ",")}
-                  <br />
+                  <strong>Valor:</strong> R$ {formatarValorMonetario(parcela.valor)}<br />
                   <strong>Vencimento:</strong> {parcela.dataVencimento}
                 </p>
 
@@ -95,20 +97,15 @@ const ListaDeParcelas: React.FC<ListaDeParcelasProps> = ({
                   <input
                     type="date"
                     className="form-control"
-                    value={parcela.dataPagamento}
+                    value={parcela.dataPagamento || ""}
                     onChange={(e) =>
-                      handleParcelaChange(
-                        index,
-                        "dataPagamento",
-                        e.target.value
-                      )
+                      handleParcelaChange(index, "dataPagamento", e.target.value)
                     }
                   />
                 </div>
+
                 <div className="mb-2">
-                  <label className="form-label">
-                    Link do Comprovante (opcional):
-                  </label>
+                  <label className="form-label">Link do Comprovante (opcional):</label>
                   <input
                     type="text"
                     className="form-control"
@@ -118,6 +115,16 @@ const ListaDeParcelas: React.FC<ListaDeParcelasProps> = ({
                       handleParcelaChange(index, "link", e.target.value)
                     }
                   />
+                </div>
+
+                <div className="d-flex justify-content-end">
+                  <button
+                    type="button"
+                    className="btn btn-outline-danger btn-sm"
+                    onClick={() => handleRemoverParcela(index)}
+                  >
+                    Remover parcela
+                  </button>
                 </div>
               </div>
             </div>
