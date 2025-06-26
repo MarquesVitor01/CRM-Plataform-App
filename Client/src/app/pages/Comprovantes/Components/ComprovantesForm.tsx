@@ -1,6 +1,15 @@
 import React, { useEffect, useState } from "react";
 import ListaDeParcelas from "./ListaDeParcelas";
 
+interface ParcelaDetalhada {
+  valor: string;
+  dataVencimento: string;
+  valorPago?: string;
+  dataPagamento?: string;
+  link?: string;
+  pagamento?: string;
+}
+
 interface Form {
   valorPago: string;
   acordo: string;
@@ -10,15 +19,6 @@ interface Form {
   operadorSelecionado: { value: string; label: string } | null;
   comprovante: string;
   parcelasDetalhadas?: ParcelaDetalhada[];
-}
-
-interface ParcelaDetalhada {
-  valor: string;
-  dataVencimento: string;
-  valorPago?: string;
-  dataPagamento?: string;
-  link?: string;
-  pagamento?: string;
 }
 
 interface FinanceiroFormProps {
@@ -41,35 +41,52 @@ export const ComprovantesForm: React.FC<FinanceiroFormProps> = ({
     operadorSelecionado: null,
     comprovante: "",
   });
+
+  const formatarValorMonetario = (valor: string) => {
+    const numero = parseInt(valor.replace(/\D/g, "") || "0", 10) / 100;
+    return numero.toLocaleString("pt-BR", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  };
+
+  const parseToPureNumber = (valor: string) => valor.replace(/\D/g, "") || "0";
+
   const handleParcelaChange = (
     index: number,
     field: "valorPago" | "dataPagamento" | "link" | "pagamento",
     value: string
   ) => {
-    const updatedParcelas = parcelas.map((parcela, i) =>
-      i === index ? { ...parcela, [field]: value } : parcela
+    const atualizadas = parcelas.map((p, i) =>
+      i === index ? { ...p, [field]: value } : p
     );
-    setParcelas(updatedParcelas);
-    setForm((prevForm) => ({
-      ...prevForm,
-      parcelasDetalhadas: updatedParcelas,
+    setParcelas(atualizadas);
+    setForm((prev) => ({
+      ...prev,
+      parcelasDetalhadas: atualizadas,
     }));
   };
 
-  const sairFicha = () => {
-    window.history.back();
-  };
-
- useEffect(() => {
-  if (initialForm) {
-    setForm(initialForm);
-
-    if (initialForm.parcelasDetalhadas?.length) {
-      setParcelas(initialForm.parcelasDetalhadas);
+  useEffect(() => {
+    if (initialForm) {
+      setForm(initialForm);
+      if (initialForm.parcelasDetalhadas?.length) {
+        setParcelas(initialForm.parcelasDetalhadas);
+      }
     }
-  }
-}, [initialForm]);
+  }, [initialForm]);
 
+  useEffect(() => {
+    const totalPago = parcelas.reduce((acc, p) => {
+      const valor = parseInt(p.valorPago || "0", 10);
+      return acc + (isNaN(valor) ? 0 : valor);
+    }, 0);
+
+    setForm((prev) => ({
+      ...prev,
+      valorPago: totalPago.toString(),
+    }));
+  }, [parcelas]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -77,37 +94,23 @@ export const ComprovantesForm: React.FC<FinanceiroFormProps> = ({
     const { name, value, type } = e.target;
     const checked =
       type === "checkbox" ? (e.target as HTMLInputElement).checked : undefined;
-    setForm((prevForm) => ({
-      ...prevForm,
+
+    setForm((prev) => ({
+      ...prev,
       [name]: type === "checkbox" ? checked : value,
     }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(form);
+    const formToSend: Form = {
+      ...form,
+      valorPago: parseToPureNumber(form.valorPago),
+    };
+    onSubmit(formToSend);
   };
 
-  useEffect(() => {
-  const totalPago = parcelas.reduce((acc, parcela) => {
-    const valor = parcela.valorPago ? parseInt(parcela.valorPago, 10) : 0;
-    return acc + (isNaN(valor) ? 0 : valor);
-  }, 0);
-
-  setForm(prevForm => ({
-    ...prevForm,
-    valorPago: totalPago.toString(),
-  }));
-}, [parcelas]);
-
-const formatarValorMonetario = (valor: string) => {
-    if (!valor) return "0,00";
-    const number = parseInt(valor, 10) / 100;
-    return number.toLocaleString("pt-BR", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
-  };
+  const sairFicha = () => window.history.back();
 
   return (
     <div className="row d-flex gap-3">
@@ -164,6 +167,7 @@ const formatarValorMonetario = (valor: string) => {
             value={form.comprovante || ""}
             onChange={handleInputChange}
           />
+
           <div className="d-flex gap-3 mx-auto">
             <button
               type="button"
@@ -178,6 +182,7 @@ const formatarValorMonetario = (valor: string) => {
           </div>
         </form>
       </div>
+
       <div className="col-12 col-lg-6">
         <ListaDeParcelas
           parcelas={parcelas}
