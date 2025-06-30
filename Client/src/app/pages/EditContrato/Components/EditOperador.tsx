@@ -21,6 +21,7 @@ interface VendaData {
   responsavel: string;
   renovacaoAutomatica: string;
   cargo: string;
+  observacoes: string;
 }
 
 interface EditOperadorProps {
@@ -291,9 +292,17 @@ export const EditOperador: React.FC<EditOperadorProps> = ({
       />
       <InputField
         id="equipeMsg"
-        label="equipeMsg"
+        label="Equipe Mensagem"
         name="equipeMsg"
         value={form.equipeMsg}
+        onChange={handleInputChange}
+        readOnly
+      />
+      <InputField
+        id="observacoes"
+        label="Observações"
+        name="observacoes"
+        value={form.observacoes}
         onChange={handleInputChange}
         readOnly
       />

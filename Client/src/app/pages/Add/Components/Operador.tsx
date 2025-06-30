@@ -22,9 +22,12 @@ interface OperadorProps {
     renovacaoAutomatica: string;
     responsavel: string;
     cargo: string;
+    observacoes: string;
   };
   handleInputChange: (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
   ) => void;
   handleSelectChange: (selectedOption: any) => void;
   operadoresOpcoes: { value: string; label: string }[];
@@ -57,7 +60,6 @@ export const Operador: React.FC<OperadorProps> = ({
       const nomeSobrenomeRegex = /^[A-Za-zÀ-ÿ]{2,}( [A-Za-zÀ-ÿ]{2,})+$/;
 
       if (!nomeSobrenomeRegex.test(value.trim())) {
-        // Exibe erro (você deve ter um state de erros, exemplo: setErrors)
         setErrors((prev) => ({
           ...prev,
           responsavel: "Insira nome e sobrenome válidos.",
@@ -67,7 +69,7 @@ export const Operador: React.FC<OperadorProps> = ({
       }
     }
 
-    handleInputChange(e); // Chamada padrão para os demais campos
+    handleInputChange(e); 
   };
 
   const extractDayFromDate = (dataVencimento: string): string => {
@@ -198,7 +200,6 @@ export const Operador: React.FC<OperadorProps> = ({
           onChange={handleInputChange}
         >
           <option value="">Selecione uma opção</option>
-          {/* <option value="Pix">Pix</option> */}
           <option value="Boleto">Boleto</option>
           <option value="Crédito">Crédito</option>
         </select>
@@ -213,7 +214,7 @@ export const Operador: React.FC<OperadorProps> = ({
           onChange={handleInputChange}
         >
           {Array.from({
-            length: 12,
+            length: form.formaPagamento === "Boleto" ? 2 : 12,
           }).map((_, index) => {
             const parcela = index + 1;
             return (
@@ -334,37 +335,19 @@ export const Operador: React.FC<OperadorProps> = ({
           readOnly
         />
       </div>
-
-      {/* <div className="form-group mb-3 col-md-4">
-        <label htmlFor="account">Equipe</label>
-        <select
+      <div className="form-group mb-3">
+        <label htmlFor="observacoes" className="form-label text-white">
+          Observações
+        </label>
+        <textarea
           className="form-control"
-          id="account"
-          name="account"
-          value={form.account}
+          id="observacoes"
+          name="observacoes"
+          value={form.observacoes}
           onChange={handleInputChange}
-          disabled
-        >
-          <option value="">Selecione uma opção</option>
-          <option value="equipe_marcio">Equipe do Márcio</option>
-          <option value="equipe_kaio">Equipe do Kaio</option>
-          <option value="equipe_antony">Equipe do Antony</option>
-        </select>
-      </div> */}
-
-      {/* <div className="form-group mb-3 col-md-4">
-        <label htmlFor="account">Grupo</label>
-        <select
-          className="form-control"
-          id="account"
-          name="account"
-          value={form.account}
-          onChange={handleInputChange}
-        >
-          <option value="">Selecione uma opção</option>
-          <option value="equipe_marcio">Equipe do Márcio/Kaio</option>
-        </select>
-      </div> */}
+          rows={3}
+        />
+      </div>
     </div>
   );
 };
