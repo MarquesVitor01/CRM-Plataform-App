@@ -54,8 +54,8 @@ export const FichaBoleto: React.FC = () => {
   }, [fetchClientData]);
 
   const NomeRecorrente = clientData?.responsavel
-  ? `R - ${clientData.responsavel}`
-  : "Nome Padrão";
+    ? `R - ${clientData.responsavel}`
+    : "Nome Padrão";
 
   const generateBoletos = async (url: string, isCpf: boolean) => {
     setGeneratingBoleto(true);
@@ -78,23 +78,16 @@ export const FichaBoleto: React.FC = () => {
         throw new Error("Erro no formato da data de vencimento.");
       }
 
-      // Extrai o dia do vencimento base
       const diaVencimento = vencimentoBase.getDate();
 
-      // Geração dos boletos principais
       for (let i = 0; i < clientData.parcelas; i++) {
         try {
           const vencimento = new Date(vencimentoBase);
           vencimento.setMonth(vencimento.getMonth() + i);
-
-          // Ajusta o dia de vencimento
           vencimento.setDate(diaVencimento);
-
-          // Verifica se o dia de vencimento existe no mês
           if (vencimento.getDate() !== diaVencimento) {
-            // Se não existir, ajusta para o próximo dia útil
-            vencimento.setDate(0); // Último dia do mês anterior
-            vencimento.setDate(diaVencimento); // Tenta novamente
+            vencimento.setDate(0);
+            vencimento.setDate(diaVencimento);
           }
 
           const response = await fetch(url, {
@@ -128,7 +121,7 @@ export const FichaBoleto: React.FC = () => {
                 zipcode: clientData.cep,
                 city: clientData.cidade,
                 complement: "",
-                state: clientData.estado
+                state: clientData.estado,
               },
               items: [
                 {
@@ -148,11 +141,19 @@ export const FichaBoleto: React.FC = () => {
 
           if (!response.ok) {
             const responseData = await response.json();
-            throw new Error(
-              `Erro na API: ${response.status} - ${JSON.stringify(
-                responseData
-              )}`
+
+            console.error(
+              `🔴 Erro detalhado da API (status ${response.status}):`,
+              responseData
             );
+
+            const detalhes =
+              responseData?.detalhes?.description ||
+              responseData?.detalhes?.error ||
+              responseData?.message ||
+              "Erro desconhecido";
+
+            throw new Error(`Erro na API: ${detalhes}`);
           }
 
           const result = await response.json();
@@ -176,7 +177,7 @@ export const FichaBoleto: React.FC = () => {
             pdfLink: data.pdf.charge,
             status: data.status,
             chargeId: data.charge_id,
-            link: data.link
+            link: data.link,
           });
         } catch (error) {
           console.error(`Erro ao gerar boleto da parcela ${i + 1}:`, error);
@@ -184,7 +185,6 @@ export const FichaBoleto: React.FC = () => {
         }
       }
 
-      // Atualizar boletos no Firestore
       try {
         const docRef = doc(db, "vendas", id!);
         await updateDoc(docRef, { boleto: boletosGerados });
@@ -194,13 +194,17 @@ export const FichaBoleto: React.FC = () => {
       }
 
       setBoletoDataList(boletosGerados);
-      setShowRecorrencia(true); // Mostrar a seção de recorrência após a geração dos boletos principais
+      setShowRecorrencia(true);
       toast.success("Boletos gerados com sucesso!");
     } catch (error) {
       console.error("Erro ao gerar boletos:", error);
-      toast.error(
-        error instanceof Error ? error.message : "Erro desconhecido."
-      );
+
+      // Se o erro for um Error, exibe a mensagem detalhada (com erro da API)
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Erro desconhecido.");
+      }
     } finally {
       setGeneratingBoleto(false);
     }
@@ -265,7 +269,7 @@ export const FichaBoleto: React.FC = () => {
                   zipcode: clientData.cep,
                   city: clientData.cidade,
                   complement: "",
-                  state: clientData.estado
+                  state: clientData.estado,
                 },
                 items: [
                   {
@@ -298,7 +302,7 @@ export const FichaBoleto: React.FC = () => {
               !data?.billet_link ||
               !data?.pdf?.charge ||
               !data?.expire_at ||
-              !data?.link 
+              !data?.link
             ) {
               throw new Error("Resposta da API incompleta (Recorrência).");
             }
@@ -311,7 +315,7 @@ export const FichaBoleto: React.FC = () => {
               pdfLink: data.pdf.charge,
               status: data.status,
               chargeId: data.charge_id,
-              link: data.link
+              link: data.link,
             });
           } catch (error) {
             console.error(
@@ -441,7 +445,7 @@ export const FichaBoleto: React.FC = () => {
                         className="btn btn-primary"
                         onClick={() =>
                           generateBoletos(
-                            `https://crm-plataform-app-6t3u.vercel.app/generate-boleto-${type.toLowerCase()}`,
+                            `http://localhost:5000/generate-boleto-${type.toLowerCase()}`,
                             idx === 0
                           )
                         }

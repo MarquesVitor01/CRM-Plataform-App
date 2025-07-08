@@ -79,25 +79,42 @@ router.post("/", async (req, res) => {
     const response = await efipay.createOneStepCharge([], body);
     return res.status(200).json(response);
   } catch (error) {
-    console.error("❌ Erro ao gerar boleto:");
+  console.error("❌ Erro ao gerar boleto:");
 
-    if (error?.response) {
-      console.error("→ Status:", error.response.status);
-      console.error("→ Data:", JSON.stringify(error.response.data, null, 2));
-      console.error("→ Headers:", error.response.headers);
-    } else if (error?.request) {
-      console.error("→ Requisição feita, mas sem resposta:", error.request);
-    } else if (error?.message) {
-      console.error("→ Mensagem do erro:", error.message);
-    } else {
-      console.error("→ Erro desconhecido:", error);
-    }
+  let detalhes = "Erro desconhecido.";
 
-    return res.status(500).json({
-      message: "Erro ao gerar boleto.",
-      detalhes: error?.response?.data || error?.message || "Erro desconhecido.",
-    });
+  if (error?.response) {
+    const status = error.response.status;
+    const data = error.response.data;
+
+    console.error("→ Status:", status);
+    console.error("→ Data:", JSON.stringify(data, null, 2));
+    console.error("→ Headers:", error.response.headers);
+
+    // Aqui pegamos os campos úteis do erro da Efipay
+    detalhes = {
+      code: data?.code,
+      error: data?.error,
+      description: data?.error_description || data?.message || "Sem descrição detalhada.",
+    };
+  } else if (error?.request) {
+    console.error("→ Requisição feita, mas sem resposta:", error.request);
+    detalhes = { error: "Sem resposta do servidor." };
+  } else if (error?.message) {
+    console.error("→ Mensagem do erro:", error.message);
+    detalhes = { error: error.message };
+  } else {
+    console.error("→ Erro desconhecido:", error);
+    detalhes = { error: "Erro desconhecido." };
   }
+
+  return res.status(500).json({
+    message: "Erro ao gerar boleto.",
+    detalhes,
+  });
+}
+
+
 });
 
 module.exports = router;
