@@ -137,6 +137,7 @@ export const Operador: React.FC<OperadorProps> = ({
           <option value="Trimestral">Trimestral</option>
           <option value="Semestral">Semestral</option>
           <option value="Anual">Anual</option>
+          <option value="gestao-ads">Gestão ADS</option>
         </select>
       </div>
       <div className="form-group mb-3 col-md-4">
