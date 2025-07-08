@@ -229,7 +229,7 @@ export const Navbar = () => {
                 </Link>
               </li>
             )}
-            <li className="nav-item">
+            {/* <li className="nav-item">
               <Link
                 className="nav-link icon-tooltip"
                 to="https://dashboard-adm-front-end.vercel.app"
@@ -238,7 +238,7 @@ export const Navbar = () => {
                 <FontAwesomeIcon icon={faClock} />
                 <span>Ponto</span>
               </Link>
-            </li>
+            </li> */}
           </ul>
           <ul className="nav flex-column">
             {(cargo === "vendas" || userId === adminId) && (

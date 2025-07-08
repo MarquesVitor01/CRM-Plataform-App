@@ -214,7 +214,7 @@ export const Operador: React.FC<OperadorProps> = ({
           onChange={handleInputChange}
         >
           {Array.from({
-            length: form.formaPagamento === "Boleto" ? 2 : 12,
+            length: 12,
           }).map((_, index) => {
             const parcela = index + 1;
             return (

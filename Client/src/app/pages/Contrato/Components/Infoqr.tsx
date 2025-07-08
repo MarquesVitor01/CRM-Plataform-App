@@ -107,7 +107,10 @@ export const Infoqr: React.FC = () => {
             <FontAwesomeIcon icon={faCheckCircle} color="#007bff" size="lg" />
             {"  "}
             DECLARO TER RECEBIDO ATRAVÉS DA LIGAÇÃO TODAS INFORMAÇÕES REFERENTE
-            AO PLANO CONTRATADO.
+            AO PLANO CONTRATADO
+            {clientData.renovacaoAutomatica === "nao" &&
+              ", SEM RENOVAÇÃO AUTOMÁTICA"}
+            .
           </p>
         </div>
         <div className="form-group-info">

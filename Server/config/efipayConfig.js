@@ -25,6 +25,13 @@ const getEfiPayInstance = (account) => {
         sandbox: process.env.EFI_SANDBOX === "true",
       };
       break;
+    case "equipe_recebe":
+      efipayOptions = {
+        client_id: "Client_Id_e9298d82ecd99d69d39b41c98299a79f9b173156",
+        client_secret: "Client_Secret_e1a5e910ae612c40f4c1ca68694590423ae127e4",
+        sandbox: process.env.EFI_SANDBOX === "true",
+      };
+      break;
     default:
       efipayOptions = {
         client_id: process.env.EFI_DEFAULT_CLIENT_ID,
@@ -34,7 +41,20 @@ const getEfiPayInstance = (account) => {
       break;
   }
 
-  return new EfiPay(efipayOptions);
+  // Log para depuração
+  console.log(`[Efipay] Configuração usada para conta '${account}':`, efipayOptions);
+
+  if (!efipayOptions.client_id || !efipayOptions.client_secret) {
+    console.error(`[Efipay] Erro: credenciais incompletas para a conta '${account}'`);
+    return null; // ou lançar erro, se preferir
+  }
+
+  try {
+    return new EfiPay(efipayOptions);
+  } catch (error) {
+    console.error(`[Efipay] Erro ao criar instância para a conta '${account}':`, error);
+    return null;
+  }
 };
 
 module.exports = getEfiPayInstance;
