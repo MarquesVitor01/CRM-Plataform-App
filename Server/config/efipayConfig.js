@@ -27,8 +27,8 @@ const getEfiPayInstance = (account) => {
       break;
     case "equipe_recebe":
       efipayOptions = {
-        client_id: "Client_Id_e9298d82ecd99d69d39b41c98299a79f9b173156",
-        client_secret: "Client_Secret_e1a5e910ae612c40f4c1ca68694590423ae127e4",
+        client_id: process.env.EFI_ACCOUNT_RECEBE_CLIENT_ID,
+        client_secret: process.env.EFI_ACCOUNT_RECEBE_CLIENT_SECRET,
         sandbox: process.env.EFI_SANDBOX === "true",
       };
       break;
