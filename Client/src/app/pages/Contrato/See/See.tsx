@@ -337,8 +337,8 @@ export const See: FC = () => {
         <CampoLinkContrato idVenda={id} />
         <div className="col-md-12">
           <div className="bg-mktservice">
-            <div className="bg-infos-mktservice" id="assinatura">
-              <div className="box-avaliacoes">
+            <div className="bg-infos-mktservices" id="assinatura">
+              <div className="box-avaliacao">
                 <p className="text-uppercase text-center ">
                   Certificamos que o comércio:
                   <span>

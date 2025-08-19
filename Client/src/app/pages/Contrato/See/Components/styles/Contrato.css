@@ -191,3 +191,20 @@
 }
 
 
+.bg-infos-mktservices {
+  background-image: url(/public/img/certificado.png);
+  background-size: cover;
+  width: 850px;
+  height: 600px;
+  background-color: #fff;
+}
+
+.box-avaliacao{
+  margin-top: 140px;
+  margin-bottom: 25px;
+  padding: 20px;
+}
+.box-avaliacoes p {
+  font-size: large;
+  font-weight: 600;
+}
