@@ -11,18 +11,13 @@ import {
   FichaCobranca,
   FichaBoleto,
 } from "../pages";
-import { Financeiro } from "../pages/Dashboard/financeiro/Financeiro";
-import { Cobranca } from "../pages/Dashboard/cobranca/Cobranca";
 import { Comprovantes } from "../pages/Comprovantes/Comprovantes";
-import { Cancelados } from "../pages/Dashboard/cancelados/Cancelados";
 import { FichaCancelamento } from "../pages/Fichas/FichaCancelamento/FichaCancelamento";
 import { FichaPosVenda } from "../pages/Fichas/FichaPosVenda/FichaPosVenda";
 import { Assinatura } from "../pages/Estatico/Assinatura/Assinatura";
 import { MsgMonitoria } from "../pages/Estatico/MsgMonitoria/MsgMonitoria";
 import { MsgMkt } from "../pages/Estatico/MsgMkt/MsgMkt";
-import { Analise } from "../pages/Dashboard/analise/Analise";
 import { VizuMonitoria } from "../pages/Estatico/VizuMonitoria/VizuMonitoria";
-import { NovoMkt } from "../pages/Dashboard/novo_mkt/NovoMkt";
 import { VizuFinanceiro } from "../pages/Estatico/VizuFinanceiro/VizuFinanceiro";
 import { See } from "../pages/Contrato/See/See";
 import { Add } from "../pages/Contrato/Add/Add";
@@ -31,6 +26,11 @@ import { Login } from "../pages/User/login/Login";
 import { Setores } from "../pages/User/setores/setores";
 import { Perfil } from "../pages/User/perfil_funcionario/perfil";
 import { Relatorio } from "../pages/User/Relatório/Relatorio";
+import { Cancelados } from "../pages/dashboard/cancelados/Cancelados";
+import { NovoMkt } from "../pages/dashboard/novo_mkt/NovoMkt";
+import { Analise } from "../pages/dashboard/analise/Analise";
+import { Financeiro } from "../pages/dashboard/financeiro/Financeiro";
+import { Cobranca } from "../pages/dashboard/cobranca/Cobranca";
 
 
 export const LocalRoutes: React.FC = () => {

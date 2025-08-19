@@ -1,10 +1,32 @@
-import React from "react";
+import { doc, getDoc } from "firebase/firestore";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { useClientData } from "../../../../global/hooks/useClientData";
+import { db } from "../../../../global/Config/firebase/firebaseConfig";
 
 export const Bonus: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { clientData } = useClientData(id);
+  const [clientData, setClientData] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchClientData = async () => {
+      try {
+        if (id) {
+          const docRef = doc(db, "vendas", id);
+          const docSnap = await getDoc(docRef);
+
+          if (docSnap.exists()) {
+            setClientData(docSnap.data());
+          } else {
+            console.log("Não encontrado");
+          }
+        }
+      } catch (error) {
+        console.error("Erro ao buscar os dados do cliente: ", error);
+      }
+    };
+
+    fetchClientData();
+  }, [id]);
 
   return (
     clientData && (
@@ -20,6 +42,7 @@ export const Bonus: React.FC = () => {
             </strong>
           </p>
         </div>
+
         <div className="assinatura-section pt-5">
           <div className="linha-assinatura"></div>
         </div>

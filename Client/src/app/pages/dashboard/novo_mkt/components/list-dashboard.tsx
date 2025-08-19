@@ -19,7 +19,6 @@ import {
   faMessage,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
-import { ModalExcel } from "./modalExcel";
 import { db } from "../../../../global/Config/firebase/firebaseConfig";
 import {
   collection,
@@ -32,6 +31,7 @@ import {
 import { Tooltip } from "react-tooltip";
 import { getAuth } from "firebase/auth";
 import { formatCNPJ, formatCPF } from "../../../../global/utils/formatters";
+import { ModalExcel } from "./modalExcel";
 
 interface Venda {
   id: string;
