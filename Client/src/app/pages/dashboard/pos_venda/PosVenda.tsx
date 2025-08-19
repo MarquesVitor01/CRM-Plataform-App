@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "../marketing/components/dashboard.css";
+import "../styles.css";
 import { HeaderDash } from "./components/header-dash";
 import { ListDashboard } from "./components/list-dashboard";
 

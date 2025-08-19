@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Select from "react-select";
 import ListaDeParcelas from "./ListaDeParcelas";
 
 interface Parcela {
@@ -39,11 +38,6 @@ export const CobrancaForm: React.FC<CobrancaFormProps> = ({
   });
 
   const [parcelas, setParcelas] = useState<Parcela[]>([]);
-
-  const cobranca = [
-    { value: "miguel", label: "Miguel" },
-    { value: "isa", label: "Isa" },
-  ];
 
   const sairFicha = () => {
     window.history.back();
@@ -87,15 +81,6 @@ export const CobrancaForm: React.FC<CobrancaFormProps> = ({
     setForm((prevForm) => ({
       ...prevForm,
       [name]: type === "checkbox" ? checked : value,
-    }));
-  };
-
-  const handleSelectChange = (
-    selectedOption: { value: string; label: string } | null
-  ) => {
-    setForm((prevForm) => ({
-      ...prevForm,
-      operadorSelecionado: selectedOption,
     }));
   };
 

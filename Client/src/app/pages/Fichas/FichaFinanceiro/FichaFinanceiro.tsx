@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./Styles/FichaFinanceiro.css";
 import { FinanceiroForm } from "./Components/FinanceiroForm";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { db } from "../../../firebase/firebaseConfig";
+import { db } from "../../../global/Config/firebase/firebaseConfig";
 import { useNavigate, useParams } from "react-router-dom";
 
 interface Parcela {

@@ -3,25 +3,23 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowLeft,
   faArrowRight,
-  faEdit,
   faEye,
   faSearch,
   faTrashAlt,
   faFilter,
   faDownload,
-  faPlus,
   faFile,
-  faMoneyCheckDollar,
   faBan,
   faBroom,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { ModalExcel } from "./modalExcel";
-import { db } from "../../../../firebase/firebaseConfig";
+import { db } from "../../../../global/Config/firebase/firebaseConfig";
 import { collection, getDocs } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import * as XLSX from "xlsx";
 import { Tooltip } from "react-tooltip";
+import { formatCNPJ, formatCPF } from "../../../../global/utils/formatters";
 
 interface Cancelado {
   id: string;
@@ -99,7 +97,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
     };
 
     fetchCancelados();
-  }, [setTotalCancelados, userId]);
+  }, [adminUserId, setTotalCancelados, userId]);
 
   const handleCheckboxChange = (id: string) => {
     setSelectedItems((prevSelectedItems) => {
@@ -112,31 +110,6 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
       return newSelectedItems;
     });
   };
-
-  // const handleRemoveSelected = async () => {
-  //   if (selectedItems.size === 0) return;
-
-  //   const deletePromises = Array.from(selectedItems).map(async (id) => {
-  //     const vendaDoc = doc(db, "vendas", id);
-  //     const vendaData = (await getDoc(vendaDoc)).data();
-
-  //     if (vendaData) {
-  //       await setDoc(doc(db, "cancelados", id), {
-  //         ...vendaData,
-  //         deletedAt: new Date(),
-  //       });
-  //     }
-
-  //     await deleteDoc(vendaDoc);
-  //   });
-
-  //   await Promise.all(deletePromises);
-
-  //   setVendas((prevVendas) => {
-  //     return prevVendas.filter((venda) => !selectedItems.has(venda.id));
-  //   });
-  //   setSelectedItems(new Set());
-  // };
 
   const applyFilters = () => {
     const filteredClients = cancelados.filter((cancelado) => {
@@ -278,24 +251,6 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
     XLSX.writeFile(wb, "planilha_vendas.xlsx");
   };
 
-  const formatCPF = (value: string): string => {
-    return value
-      .replace(/\D/g, "")
-      .replace(/^(\d{3})(\d)/, "$1.$2")
-      .replace(/^(\d{3})\.(\d{3})(\d)/, "$1.$2.$3")
-      .replace(/^(\d{3})\.(\d{3})\.(\d{3})(\d)/, "$1.$2.$3-$4")
-      .substring(0, 14);
-  };
-
-  const formatCNPJ = (value: string): string => {
-    return value
-      .replace(/\D/g, "")
-      .replace(/^(\d{2})(\d)/, "$1.$2")
-      .replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3")
-      .replace(/^(\d{2})\.(\d{3})\.(\d{3})(\d)/, "$1.$2.$3/$4")
-      .replace(/(\d{2})\.(\d{3})\.(\d{3})\/(\d{4})(\d)/, "$1.$2.$3/$4-$5")
-      .substring(0, 18);
-  };
 
   return (
     <div className="list-dashboard">
@@ -366,14 +321,6 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
           </div>
 
           <div className="selects-container">
-            {/* <Link to="/add" className="create-btn" data-tooltip-id="add-tooltip"
-              data-tooltip-content="Nova venda">
-              <FontAwesomeIcon
-                icon={faPlus}
-
-              />
-              <Tooltip id="add-tooltip" place="top" className="custom-tooltip" />
-            </Link> */}
 
             {userId === adminUserId && (
               <button

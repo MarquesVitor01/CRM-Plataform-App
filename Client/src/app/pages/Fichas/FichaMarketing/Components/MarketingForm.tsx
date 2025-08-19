@@ -26,6 +26,7 @@ interface MarketingFormProps {
   onSubmit: (data: MarketingForm) => void;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-redeclare
 export const MarketingForm: React.FC<MarketingFormProps> = ({
   form: initialForm,
   onSubmit,

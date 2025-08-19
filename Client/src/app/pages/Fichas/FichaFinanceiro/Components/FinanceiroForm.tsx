@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ListaDeParcelas from "./ListaDeParcelas";
 import { doc, updateDoc } from "firebase/firestore";
-import { db } from "../../../../firebase/firebaseConfig";
+import { db } from "../../../../global/Config/firebase/firebaseConfig";
 import { useParams } from "react-router-dom";
 
 interface ParcelaDetalhada {

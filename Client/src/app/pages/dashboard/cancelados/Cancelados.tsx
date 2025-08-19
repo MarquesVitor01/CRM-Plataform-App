@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { HeaderDash } from "./components/header-dash";
-import "../cancelados/components/dashboard.css";
+import "../styles.css";
 import { ListDashboard } from "./components/list-dashboard";
 
 export const Cancelados = () => {

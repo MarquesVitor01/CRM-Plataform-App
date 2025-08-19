@@ -1,5 +1,5 @@
 /* eslint-disable no-mixed-operators */
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowLeft,
@@ -15,12 +15,13 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { ModalExcel } from "./modalExcel";
-import { db } from "../../../../firebase/firebaseConfig";
+import { db } from "../../../../global/Config/firebase/firebaseConfig";
 import { collection, getDocs } from "firebase/firestore";
 import { ToastContainer } from "react-toastify";
 import * as XLSX from "xlsx";
 import { Tooltip } from "react-tooltip";
 import { getAuth } from "firebase/auth";
+import { formatCNPJ, formatCPF } from "../../../../global/utils/formatters";
 
 interface Parcela {
   valorPago: string;
@@ -108,9 +109,8 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                 (financeiro) => financeiro.createdBy === userId
               );
 
-        // const limitedList = filteredVendas.slice(0, 10);
         setFinanceiros(filteredVendas);
-        setTotalFinanceiros(filteredVendas.length); 
+        setTotalFinanceiros(filteredVendas.length);
       } catch (error) {
         console.error("Erro ao buscar financeiros:", error);
       } finally {
@@ -119,144 +119,125 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
     };
 
     fetchFinanceiros();
-  }, [setTotalFinanceiros]);
+  }, [adminUserId, setTotalFinanceiros, userId]);
 
+  // useCallback para memorizar applyFilters
+  const applyFilters = useCallback(() => {
+    let filteredClients = financeiros.filter((marketing) => {
+      const lowerCaseTerm = activeSearchTerm.toLowerCase();
 
- useEffect(() => {
-  const filtered = applyFilters();
+      const matchesSearchTerm =
+        (marketing.cnpj &&
+          marketing.cnpj.toLowerCase().includes(lowerCaseTerm)) ||
+        (marketing.cpf &&
+          marketing.cpf.toLowerCase().includes(lowerCaseTerm)) ||
+        (marketing.responsavel &&
+          marketing.responsavel.toLowerCase().includes(lowerCaseTerm)) ||
+        (marketing.email1 &&
+          marketing.email1.toLowerCase().includes(lowerCaseTerm)) ||
+        (marketing.email2 &&
+          marketing.email2.toLowerCase().includes(lowerCaseTerm)) ||
+        (marketing.operador &&
+          marketing.operador.toLowerCase().includes(lowerCaseTerm)) ||
+        (marketing.account &&
+          marketing.account.toLowerCase().includes(lowerCaseTerm));
 
-  const totalPagos = filtered.filter((f) =>
-    f.parcelasDetalhadas?.some((p) => p.pagamento === "pago")
-  ).length;
+      const {
+        startDate,
+        endDate,
+        dueStartDate,
+        dueEndDate,
+        saleType,
+        salesPerson,
+        saleGroup,
+      } = filters;
 
-  const totalNegativados = filtered.filter((f) =>
-    f.parcelasDetalhadas?.some((p) => p.pagamento === "inadimplente")
-  ).length;
+      const marketingData = new Date(marketing.data);
+      const isStartDateValid = startDate
+        ? marketingData.toDateString() === new Date(startDate).toDateString()
+        : true;
 
-  const totalRecebido = filtered.reduce((total, f) => {
-    const soma = (f.parcelasDetalhadas || []).reduce((acc, parcela) => {
-      const valorString = parcela?.valorPago;
-      const valor = parseFloat(valorString && valorString.trim() !== "" ? valorString : "0");
-      if (isNaN(valor)) {
-        console.log("❌ Valor inválido em parcela:", parcela);
+      const isDateInRange =
+        startDate && endDate
+          ? marketingData >= new Date(startDate) &&
+            marketingData <= new Date(endDate)
+          : isStartDateValid;
+
+      let isDueDateInRange = true;
+      if (dueStartDate || dueEndDate) {
+        isDueDateInRange = (marketing.parcelasDetalhadas || []).some(
+          (parcela) => {
+            if (!parcela.dataVencimento) return false;
+            const vencimento = new Date(parcela.dataVencimento);
+            const start = dueStartDate ? new Date(dueStartDate) : null;
+            const end = dueEndDate ? new Date(dueEndDate) : null;
+            return (!start || vencimento >= start) && (!end || vencimento <= end);
+          }
+        );
       }
-      return acc + (isNaN(valor) ? 0 : valor);
-    }, 0);
-    return total + soma;
-  }, 0);
 
-  console.log("✅ totalRecebido calculado:", totalRecebido);
-  setTotalPagos(totalPagos);
-  setTotalNegativados(totalNegativados);
-  setTotalRecebido(totalRecebido);
-}, [financeiros, filters, activeSearchTerm, showNegativos]);
+      const isSaleTypeValid = saleType ? marketing.contrato === saleType : true;
+      const isSalesPersonValid = salesPerson
+        ? marketing.operador === salesPerson
+        : true;
+      const isGroupTypeValid = saleGroup ? marketing.account === saleGroup : true;
 
-  const applyFilters = () => {
-  let filteredClients = financeiros.filter((marketing, index) => {
-    const lowerCaseTerm = activeSearchTerm.toLowerCase();
-
-    const matchesSearchTerm =
-      (marketing.cnpj &&
-        marketing.cnpj.toLowerCase().includes(lowerCaseTerm)) ||
-      (marketing.cpf &&
-        marketing.cpf.toLowerCase().includes(lowerCaseTerm)) ||
-      (marketing.responsavel &&
-        marketing.responsavel.toLowerCase().includes(lowerCaseTerm)) ||
-      (marketing.email1 &&
-        marketing.email1.toLowerCase().includes(lowerCaseTerm)) ||
-      (marketing.email2 &&
-        marketing.email2.toLowerCase().includes(lowerCaseTerm)) ||
-      (marketing.operador &&
-        marketing.operador.toLowerCase().includes(lowerCaseTerm)) ||
-      (marketing.account &&
-        marketing.account.toLowerCase().includes(lowerCaseTerm));
-
-    const {
-      startDate,
-      endDate,
-      dueStartDate,
-      dueEndDate,
-      saleType,
-      salesPerson,
-      saleGroup,
-    } = filters;
-
-    const marketingData = new Date(marketing.data);
-    const isStartDateValid = startDate
-      ? marketingData.toDateString() === new Date(startDate).toDateString()
-      : true;
-
-    const isDateInRange =
-      startDate && endDate
-        ? marketingData >= new Date(startDate) &&
-          marketingData <= new Date(endDate)
-        : isStartDateValid;
-
-    let isDueDateInRange = true;
-if (dueStartDate || dueEndDate) {
-  isDueDateInRange = (marketing.parcelasDetalhadas || []).some((parcela) => {
-    if (!parcela.dataVencimento) return false;
-    const vencimento = new Date(parcela.dataVencimento);
-    const start = dueStartDate ? new Date(dueStartDate) : null;
-    const end = dueEndDate ? new Date(dueEndDate) : null;
-    return (!start || vencimento >= start) && (!end || vencimento <= end);
-  });
-}
-
-    const isSaleTypeValid = saleType ? marketing.contrato === saleType : true;
-    const isSalesPersonValid = salesPerson
-      ? marketing.operador === salesPerson
-      : true;
-    const isGroupTypeValid = saleGroup
-      ? marketing.account === saleGroup
-      : true;
-
-    const passed =
-      matchesSearchTerm &&
-      isDateInRange &&
-      isDueDateInRange &&
-      isSaleTypeValid &&
-      isSalesPersonValid &&
-      isGroupTypeValid;
-
-
-    return passed;
-  });
-
-  if (showNegativos) {
-    filteredClients = filteredClients.filter((marketing, index) => {
-      const hasInadimplente = marketing.parcelasDetalhadas?.some(
-        (parcela) => parcela.pagamento === "inadimplente"
+      return (
+        matchesSearchTerm &&
+        isDateInRange &&
+        isDueDateInRange &&
+        isSaleTypeValid &&
+        isSalesPersonValid &&
+        isGroupTypeValid
       );
-
-      if (!hasInadimplente) {
-        console.log(`Cliente #${index} removido no filtro de inadimplentes`, {
-          nome: marketing.responsavel,
-        });
-      }
-
-      return hasInadimplente;
     });
 
-    console.log("Clientes após filtro de inadimplente:", filteredClients.length);
-  }
+    if (showNegativos) {
+      filteredClients = filteredClients.filter((marketing) =>
+        marketing.parcelasDetalhadas?.some((parcela) => parcela.pagamento === "inadimplente")
+      );
+    }
 
-  return filteredClients;
-};
+    return filteredClients;
+  }, [financeiros, filters, activeSearchTerm, showNegativos]);
 
+  // useEffect que calcula totais
+  useEffect(() => {
+    const filtered = applyFilters();
 
-  
+    const totalPagos = filtered.filter((f) =>
+      f.parcelasDetalhadas?.some((p) => p.pagamento === "pago")
+    ).length;
+
+    const totalNegativados = filtered.filter((f) =>
+      f.parcelasDetalhadas?.some((p) => p.pagamento === "inadimplente")
+    ).length;
+
+    const totalRecebido = filtered.reduce((total, f) => {
+      const soma = (f.parcelasDetalhadas || []).reduce((acc, parcela) => {
+        const valor = parseFloat(parcela?.valorPago || "0");
+        return acc + (isNaN(valor) ? 0 : valor);
+      }, 0);
+      return total + soma;
+    }, 0);
+
+    setTotalPagos(totalPagos);
+    setTotalNegativados(totalNegativados);
+    setTotalRecebido(totalRecebido);
+  }, [applyFilters, setTotalPagos, setTotalNegativados, setTotalRecebido]);
+
+  // restante do componente permanece igual
   const filteredClients = applyFilters();
   const totalPages = Math.ceil(filteredClients.length / itemsPerPage);
   const currentClients = filteredClients.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
+
   const handleSearchClick = () => {
     setActiveSearchTerm(searchTerm);
     setCurrentPage(1);
   };
-
 
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages) {
@@ -280,9 +261,12 @@ if (dueStartDate || dueEndDate) {
     }
   }, []);
 
+  const toggleNegativo = () => {
+    setShowNegativos(!showNegativos);
+  };
+
   const downloadClients = () => {
     const clientsToDownload = applyFilters();
-
     const selectedFields = [
       "cnpj",
       "cpf",
@@ -317,30 +301,6 @@ if (dueStartDate || dueEndDate) {
     XLSX.utils.book_append_sheet(wb, ws, "vendas");
 
     XLSX.writeFile(wb, "planilha_vendas.xlsx");
-  };
-
-  const toggleNegativo = () => {
-    setShowNegativos(!showNegativos);
-  };
-
-  const formatCPF = (value: string): string => {
-    return value
-      .replace(/\D/g, "")
-      .replace(/^(\d{3})(\d)/, "$1.$2")
-      .replace(/^(\d{3})\.(\d{3})(\d)/, "$1.$2.$3")
-      .replace(/^(\d{3})\.(\d{3})\.(\d{3})(\d)/, "$1.$2.$3-$4")
-      .substring(0, 14);
-  };
-
-  // Função para formatar o CNPJ (visual)
-  const formatCNPJ = (value: string): string => {
-    return value
-      .replace(/\D/g, "")
-      .replace(/^(\d{2})(\d)/, "$1.$2")
-      .replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3")
-      .replace(/^(\d{2})\.(\d{3})\.(\d{3})(\d)/, "$1.$2.$3/$4")
-      .replace(/(\d{2})\.(\d{3})\.(\d{3})\/(\d{4})(\d)/, "$1.$2.$3/$4-$5")
-      .substring(0, 18);
   };
 
   return (
@@ -440,24 +400,6 @@ if (dueStartDate || dueEndDate) {
             >
               <FontAwesomeIcon icon={faDownload} color="#fff" />
             </button>
-
-            {/* <button
-              className="remove-btn"
-              onClick={handleSyncClients}
-              disabled={syncLoading}
-              data-tooltip-id="tooltip-sync"
-              data-tooltip-content={
-                syncLoading ? "Sincronizando..." : "Sincronizar clientes"
-              }
-            >
-              {syncLoading ? (
-                <FontAwesomeIcon icon={faSync} spin color="#fff" />
-              ) : (
-                <FontAwesomeIcon icon={faSync} color="#fff" />
-              )}
-            </button> */}
-
-            {/* Tooltips */}
             <Tooltip
               id="tooltip-filter"
               place="top"

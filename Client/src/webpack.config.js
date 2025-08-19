@@ -15,11 +15,24 @@ module.exports = {
           loader: 'babel-loader',
         },
       },
+      {
+        test: /\.js$/,
+        enforce: 'pre',
+        use: ['source-map-loader'],
+        exclude: [
+          /node_modules[\\/]html2pdf\.js/, 
+        ],
+      },
     ],
   },
   devtool: false,
   resolve: {
     extensions: ['.js'],
   },
-    ignoreWarnings: [/Failed to parse source map/],
+  ignoreWarnings: [
+    {
+      module: /html2pdf\.js/,
+      message: /Failed to parse source map/,
+    },
+  ],
 };

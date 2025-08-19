@@ -3,13 +3,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowLeft,
   faArrowRight,
-  faEdit,
   faEye,
   faSearch,
   faFilter,
-  faRectangleList,
-  faX,
-  faBars,
   faMoneyCheckDollar,
   faMarker,
   faBroom,
@@ -24,7 +20,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { ModalExcel } from "./modalExcel";
-import { db } from "../../../../firebase/firebaseConfig";
+import { db } from "../../../../global/Config/firebase/firebaseConfig";
 import {
   collection,
   deleteDoc,
@@ -35,6 +31,7 @@ import {
 } from "firebase/firestore";
 import { Tooltip } from "react-tooltip";
 import { getAuth } from "firebase/auth";
+import { formatCNPJ, formatCPF } from "../../../../global/utils/formatters";
 
 interface Venda {
   id: string;
@@ -70,7 +67,6 @@ interface ListDashboardProps {
 
 export const ListDashboard: React.FC<ListDashboardProps> = ({
   setTotalMarketings,
-  setTotalRealizados,
 }) => {
   const [vendas, setVendas] = useState<Venda[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -81,7 +77,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
   const [activeSearchTerm, setActiveSearchTerm] = useState<string>("");
   const [cargo, setCargo] = useState<string | null>(null);
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
-  const [marketings, setMarketings] = useState<Venda[]>([]);
+  const [, setMarketings] = useState<Venda[]>([]);
 
   const [filters, setFilters] = useState({
     startDate: "",
@@ -92,7 +88,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
     saleGroup: "",
   });
 
-  const [showConcluidas, setShowConcluidas] = useState(false);
+  const [showConcluidas] = useState(false);
   const auth = getAuth();
 
   useEffect(() => {
@@ -119,7 +115,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
         const nomeUsuario = userData.nome;
         setCargo(cargo);
 
-        const marketingsCollection = collection(db, "vendas");
+        const marketingsCollection = collection(db, "marketings");
         const marketingsSnapshot = await getDocs(marketingsCollection);
         const marketingsList = marketingsSnapshot.docs.map((doc) => ({
           id: doc.id,
@@ -143,7 +139,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
           );
         }
 
-        setVendas(filteredVendas); // Isso vai atualizar o estado que é usado para renderizar
+        setVendas(filteredVendas);
         setMarketings(filteredVendas);
         setTotalMarketings(filteredVendas.length);
       } catch (error) {
@@ -225,7 +221,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
 
   const handleSearchClick = () => {
     setActiveSearchTerm(searchTerm);
-    setCurrentPage(1); // Resetar para a primeira página ao realizar nova pesquisa
+    setCurrentPage(1);
   };
 
   const filteredClients = applyFilters();
@@ -251,28 +247,6 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
     }
   }, []);
 
-  const toggleConcluido = () => {
-    setShowConcluidas(!showConcluidas);
-  };
-
-  const formatCPF = (value: string): string => {
-    return value
-      .replace(/\D/g, "")
-      .replace(/^(\d{3})(\d)/, "$1.$2")
-      .replace(/^(\d{3})\.(\d{3})(\d)/, "$1.$2.$3")
-      .replace(/^(\d{3})\.(\d{3})\.(\d{3})(\d)/, "$1.$2.$3-$4")
-      .substring(0, 14);
-  };
-
-  const formatCNPJ = (value: string): string => {
-    return value
-      .replace(/\D/g, "")
-      .replace(/^(\d{2})(\d)/, "$1.$2")
-      .replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3")
-      .replace(/^(\d{2})\.(\d{3})\.(\d{3})(\d)/, "$1.$2.$3/$4")
-      .replace(/(\d{2})\.(\d{3})\.(\d{3})\/(\d{4})(\d)/, "$1.$2.$3/$4-$5")
-      .substring(0, 18);
-  };
   const [showConcluidos, setShowConcluidos] = useState(false);
   const [showIncompletos, setShowIncompletos] = useState(false);
   const [modalExclusao, setModalExclusao] = useState(false);
@@ -388,7 +362,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
       )}
       <div className="header-list">
         <div className="header-content">
-          <h2>Novo Marketing</h2>
+          <h2>Marketing | Pós Venda</h2>
           <div className="search-container">
             <button
               className="search-button"
@@ -481,18 +455,6 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
               <FontAwesomeIcon icon={faExclamation} />
             </button>
 
-            {/* <button
-               className="planilha-btn"
-               onClick={handleSyncClients}
-               disabled={syncLoading}
-               data-tooltip-id="tooltip-sync"
-               data-tooltip-content={
-                 syncLoading ? "Sincronizando..." : "Sincronizar clientes"
-               }
-             >
-               <FontAwesomeIcon icon={faSync} color="#fff" spin={syncLoading} />
-             </button> */}
-
             {cargo === "adm" && (
               <button
                 onClick={openModalExclusao}
@@ -560,9 +522,10 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                 <th>Nome</th>
                 <th>Email</th>
                 <th>Operador</th>
-                <th>Monitor</th>
+                {/* <th>Monitor</th> */}
                 <th>Encaminhamento</th>
-                <th></th>
+                <th>Itens/MKT</th>
+                <th>Itens/PÓS</th>
               </tr>
             </thead>
             <tbody>
@@ -647,7 +610,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                     >
                       {venda.operador.replace(/\./g, " ")}
                     </td>
-                    <td
+                    {/* <td
                       className={`${
                         selectedItems.has(venda.id) ? "selected" : ""
                       } ${
@@ -655,7 +618,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                       }`}
                     >
                       {venda.nomeMonitor}
-                    </td>
+                    </td> */}
                     <td
                       className={`${
                         selectedItems.has(venda.id) ? "selected" : ""
@@ -665,6 +628,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                     >
                       {venda.monitoriaHorario}
                     </td>
+
                     <td className="icon-container">
                       <Link
                         to={`/contrato/${venda.id}`}
@@ -674,6 +638,11 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                         <FontAwesomeIcon
                           icon={faEye}
                           className="icon-spacing text-dark"
+                        />
+                        <Tooltip
+                          id="tooltip-view-contract"
+                          place="top"
+                          className="custom-tooltip"
                         />
                       </Link>
 
@@ -686,16 +655,8 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                           icon={faTableList}
                           className="icon-spacing text-dark"
                         />
-                      </Link>
-                      <Link to={`/fichaboleto/${venda.id}`}>
-                        <FontAwesomeIcon
-                          icon={faMoneyCheckDollar}
-                          className="icon-spacing text-dark"
-                          data-tooltip-id="tooltip-boleto"
-                          data-tooltip-content="Ver ficha de boleto"
-                        />
                         <Tooltip
-                          id="tooltip-boleto"
+                          id="tooltip-marketing-file"
                           place="top"
                           className="custom-tooltip"
                         />
@@ -726,6 +687,21 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                           className="custom-tooltip"
                         />
                       </Link>
+                    </td>
+                    <td className="">
+                      <Link to={`/fichaboleto/${venda.id}`}>
+                        <FontAwesomeIcon
+                          icon={faMoneyCheckDollar}
+                          className="icon-spacing text-dark"
+                          data-tooltip-id="tooltip-boleto"
+                          data-tooltip-content="Ver ficha de boleto"
+                        />
+                        <Tooltip
+                          id="tooltip-boleto"
+                          place="top"
+                          className="custom-tooltip"
+                        />
+                      </Link>
                       <Link
                         to={`/fichaposVenda/${venda.id}`}
                         data-tooltip-id="tooltip-posVenda-file"
@@ -743,30 +719,6 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                           className="custom-tooltip"
                         />
                       </Link>
-                      {/* <Link to={`/assinatura/${marketing.id}`}>
-                        <FontAwesomeIcon
-                          icon={faPrint}
-                          className="icon-spacing text-dark"
-                          data-tooltip-id="tooltip-assinatura"
-                          data-tooltip-content="Visualizar Assinatura"
-                        />
-                        <Tooltip
-                          id="tooltip-assinatura"
-                          place="top"
-                          className="custom-tooltip"
-                        />
-                      </Link> */}
-
-                      <Tooltip
-                        id="tooltip-view-contract"
-                        place="top"
-                        className="custom-tooltip"
-                      />
-                      <Tooltip
-                        id="tooltip-marketing-file"
-                        place="top"
-                        className="custom-tooltip"
-                      />
                     </td>
                   </tr>
                 );

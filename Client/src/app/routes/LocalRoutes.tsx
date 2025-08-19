@@ -1,38 +1,36 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
-import { Navbar } from "../components/navbar/navbar";
-import { AuthProvider } from "../context/AuthContext";
+import { Navbar } from "../global/Components/navbar/navbar";
+import { AuthProvider } from "../global/Config/context/AuthContext";
 import PrivateRoute from "./PrivatesRoute";
 import {
-  Login,
-  Setores,
-  Perfil,
   Vendas,
   Monitoria,
-  Marketing,
-  Relatorio,
-  Add,
-  EditContrato,
   FichaMonitoria,
   FichaMarketing,
   FichaFinanceiro,
   FichaCobranca,
   FichaBoleto,
 } from "../pages";
-import { Contrato } from "../pages";
-import { Financeiro } from "../pages/dashboard/financeiro/Financeiro";
-import { Cobranca } from "../pages/dashboard/cobranca/Cobranca";
+import { Financeiro } from "../pages/Dashboard/financeiro/Financeiro";
+import { Cobranca } from "../pages/Dashboard/cobranca/Cobranca";
 import { Comprovantes } from "../pages/Comprovantes/Comprovantes";
-import { Cancelados } from "../pages/dashboard/cancelados/Cancelados";
+import { Cancelados } from "../pages/Dashboard/cancelados/Cancelados";
 import { FichaCancelamento } from "../pages/Fichas/FichaCancelamento/FichaCancelamento";
-import { PosVenda } from "../pages/dashboard/pos_venda/PosVenda";
 import { FichaPosVenda } from "../pages/Fichas/FichaPosVenda/FichaPosVenda";
-import { Assinatura } from "../pages/Assinatura/Assinatura";
-import { MsgMonitoria } from "../pages/Fichas/MsgMonitoria/MsgMonitoria";
-import { MsgMkt } from "../pages/Fichas/MsgMkt/MsgMkt";
-import { Analise } from "../pages/dashboard/analise/Analise";
-import { VizuMonitoria } from "../pages/Fichas/VizuMonitoria/VizuMonitoria";
-import { NovoMkt } from "../pages/dashboard/novo_mkt/NovoMkt";
-import { VizuFinanceiro } from "../pages/Fichas/VizuFinanceiro/VizuFinanceiro";
+import { Assinatura } from "../pages/Estatico/Assinatura/Assinatura";
+import { MsgMonitoria } from "../pages/Estatico/MsgMonitoria/MsgMonitoria";
+import { MsgMkt } from "../pages/Estatico/MsgMkt/MsgMkt";
+import { Analise } from "../pages/Dashboard/analise/Analise";
+import { VizuMonitoria } from "../pages/Estatico/VizuMonitoria/VizuMonitoria";
+import { NovoMkt } from "../pages/Dashboard/novo_mkt/NovoMkt";
+import { VizuFinanceiro } from "../pages/Estatico/VizuFinanceiro/VizuFinanceiro";
+import { See } from "../pages/Contrato/See/See";
+import { Add } from "../pages/Contrato/Add/Add";
+import { Edit } from "../pages/Contrato/Edit/Edit";
+import { Login } from "../pages/User/login/Login";
+import { Setores } from "../pages/User/setores/setores";
+import { Perfil } from "../pages/User/perfil_funcionario/perfil";
+import { Relatorio } from "../pages/User/Relatório/Relatorio";
 
 
 export const LocalRoutes: React.FC = () => {
@@ -47,17 +45,15 @@ export const LocalRoutes: React.FC = () => {
           <Route path="/vendas" element={<PrivateRoute element={<Vendas />}/>} />
           <Route path="/cancelados" element={<PrivateRoute element={<Cancelados />} />} />
           <Route path="/monitoria" element={<PrivateRoute element={<Monitoria />} />} />
-          <Route path="/marketing" element={<PrivateRoute element={<Marketing />} />} />
           <Route path="/novomarketing" element={<PrivateRoute element={<NovoMkt />} />} />
           <Route path="/analises" element={<PrivateRoute element={<Analise />} />} />
-          {/* <Route path="/pos-venda" element={<PrivateRoute element={<PosVenda />} />} /> */}
           <Route path="/financeiro" element={<PrivateRoute element={<Financeiro />} />} />
           <Route path="/cobranca" element={<PrivateRoute element={<Cobranca />} requiredCargo="cobranca" />} />
           <Route path="/relatorio" element={<PrivateRoute element={<Relatorio />} />} />
           <Route path="/add" element={<PrivateRoute element={<Add />} />} />
-          <Route path="/contrato/:id" element={<PrivateRoute element={<Contrato />} />} />
+          <Route path="/contrato/:id" element={<PrivateRoute element={<See />} />} />
           <Route path="/assinatura/:id" element={<PrivateRoute element={<Assinatura />} />} />
-          <Route path="/editcontrato/:id" element={<PrivateRoute element={<EditContrato />} />} />
+          <Route path="/editcontrato/:id" element={<PrivateRoute element={<Edit />} />} />
           <Route path="/comprovantes/:id" element={<PrivateRoute element={<Comprovantes />} />} />
           <Route path="/fichamonitoria/:id" element={<PrivateRoute element={<FichaMonitoria />} />} />
           <Route path="/vizumonitoria/:id" element={<PrivateRoute element={<VizuMonitoria />} />} />

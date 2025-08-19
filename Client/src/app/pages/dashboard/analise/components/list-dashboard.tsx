@@ -10,16 +10,15 @@ import {
   faRectangleList,
   faX,
   faBars,
-  faMoneyCheckDollar,
-  faMarker,
   faBroom,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { ModalExcel } from "./modalExcel";
-import { db } from "../../../../firebase/firebaseConfig";
+import { db } from "../../../../global/Config/firebase/firebaseConfig";
 import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 import { Tooltip } from "react-tooltip";
 import { getAuth } from "firebase/auth";
+import { formatCNPJ, formatCPF } from "../../../../global/utils/formatters";
 
 interface Venda {
   id: string;
@@ -57,9 +56,6 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
   const [activeSearchTerm, setActiveSearchTerm] = useState<string>("");
   const auth = getAuth();
   const userId = auth.currentUser?.uid;
-  const adminUserId = process.env.REACT_APP_ADMIN_USER_ID;
-  const SupervisorUserId = "wWLmbV9TIUemmTkcMUSAQ4xGlju2";
-  const graziId = "nQwF9Uxh0lez9ETIOmP2gCgM0pf2";
 
   const [filters, setFilters] = useState({
     startDate: "",
@@ -127,21 +123,10 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
 }, [setTotalVendas, setTotalRealizados, userId]);
 
 
-  // const handleCheckboxChange = (id: string) => {
-  //   setSelectedItems((prevSelectedItems) => {
-  //     const newSelectedItems = new Set(prevSelectedItems);
-  //     if (newSelectedItems.has(id)) {
-  //       newSelectedItems.delete(id);
-  //     } else {
-  //       newSelectedItems.add(id);
-  //     }
-  //     return newSelectedItems;
-  //   });
-  // };
 
   const applyFilters = () => {
     let filteredClients = vendas.filter((venda) => {
-      if (!venda.observacaoYes) return false; // <-- filtro aplicado aqui
+      if (!venda.observacaoYes) return false; 
 
       const lowerCaseTerm = activeSearchTerm.toLowerCase();
       const matchesSearchTerm =
@@ -197,7 +182,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
 
   const handleSearchClick = () => {
     setActiveSearchTerm(searchTerm);
-    setCurrentPage(1); // Resetar para a primeira página ao realizar nova pesquisa
+    setCurrentPage(1); 
   };
 
   const filteredClients = applyFilters();
@@ -230,25 +215,6 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
   }, []);
   const toggleConcluido = () => {
     setShowConcluidas(!showConcluidas);
-  };
-
-  const formatCPF = (value: string): string => {
-    return value
-      .replace(/\D/g, "")
-      .replace(/^(\d{3})(\d)/, "$1.$2")
-      .replace(/^(\d{3})\.(\d{3})(\d)/, "$1.$2.$3")
-      .replace(/^(\d{3})\.(\d{3})\.(\d{3})(\d)/, "$1.$2.$3-$4")
-      .substring(0, 14);
-  };
-
-  const formatCNPJ = (value: string): string => {
-    return value
-      .replace(/\D/g, "")
-      .replace(/^(\d{2})(\d)/, "$1.$2")
-      .replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3")
-      .replace(/^(\d{2})\.(\d{3})\.(\d{3})(\d)/, "$1.$2.$3/$4")
-      .replace(/(\d{2})\.(\d{3})\.(\d{3})\/(\d{4})(\d)/, "$1.$2.$3/$4-$5")
-      .substring(0, 18);
   };
 
   return (
@@ -339,7 +305,6 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
               </button>
             )}
 
-            {/* Tooltips */}
             <Tooltip
               id="tooltip-filter"
               place="top"
@@ -441,34 +406,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                         data-tooltip-content="Ficha de monitoria"
                       />
                     </Link>
-                    {/* <Link to={`/fichaboleto/${venda.id}`}>
-                      <FontAwesomeIcon
-                        icon={faMoneyCheckDollar}
-                        className="icon-spacing text-dark"
-                        data-tooltip-id="tooltip-boleto"
-                        data-tooltip-content="Ver ficha de boleto"
-                      />
-                      <Tooltip
-                        id="tooltip-boleto"
-                        place="top"
-                        className="custom-tooltip"
-                      />
-                    </Link> */}
-                    {/* <Link to={`/fichamsgmonitoria/${venda.id}`}>
-                      <FontAwesomeIcon
-                        icon={faMarker}
-                        className="icon-spacing text-dark"
-                        data-tooltip-id="tooltip-boleto"
-                        data-tooltip-content="Ver ficha de boleto"
-                      />
-                      <Tooltip
-                        id="tooltip-boleto"
-                        place="top"
-                        className="custom-tooltip"
-                      />
-                    </Link> */}
-
-                    {/* Tooltips */}
+                    
                     <Tooltip
                       id="tooltip-view"
                       place="top"

@@ -10,15 +10,14 @@ import {
   faRectangleList,
   faX,
   faBars,
-  faMoneyCheckDollar,
-  faMarker,
   faBroom,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { ModalExcel } from "./modalExcel";
-import { db } from "../../../../firebase/firebaseConfig";
+import { db } from "../../../../global/Config/firebase/firebaseConfig";
 import { collection, getDocs } from "firebase/firestore";
 import { Tooltip } from "react-tooltip";
+import { formatCNPJ, formatCPF } from "../../../../global/utils/formatters";
 
 interface Venda {
   id: string;
@@ -94,18 +93,6 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
     fetchvendas();
   }, [setTotalVendas, setTotalRealizados]);
 
-  // const handleCheckboxChange = (id: string) => {
-  //   setSelectedItems((prevSelectedItems) => {
-  //     const newSelectedItems = new Set(prevSelectedItems);
-  //     if (newSelectedItems.has(id)) {
-  //       newSelectedItems.delete(id);
-  //     } else {
-  //       newSelectedItems.add(id);
-  //     }
-  //     return newSelectedItems;
-  //   });
-  // };
-
   const applyFilters = () => {
     let filteredClients = vendas.filter((venda) => {
       const lowerCaseTerm = activeSearchTerm.toLowerCase();
@@ -162,7 +149,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
 
   const handleSearchClick = () => {
     setActiveSearchTerm(searchTerm);
-    setCurrentPage(1); // Resetar para a primeira página ao realizar nova pesquisa
+    setCurrentPage(1); 
   };
 
   const filteredClients = applyFilters();
@@ -183,7 +170,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
 
   const handleApplyFilters = (newFilters: any) => {
     setFilters(newFilters);
-    localStorage.setItem("vendaFilters", JSON.stringify(newFilters)); // ← salvar no localStorage
+    localStorage.setItem("vendaFilters", JSON.stringify(newFilters));
     setModalExcel(false);
   };
 
@@ -198,24 +185,6 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
     setShowConcluidas(!showConcluidas);
   };
 
-  const formatCPF = (value: string): string => {
-    return value
-      .replace(/\D/g, "")
-      .replace(/^(\d{3})(\d)/, "$1.$2")
-      .replace(/^(\d{3})\.(\d{3})(\d)/, "$1.$2.$3")
-      .replace(/^(\d{3})\.(\d{3})\.(\d{3})(\d)/, "$1.$2.$3-$4")
-      .substring(0, 14);
-  };
-
-  const formatCNPJ = (value: string): string => {
-    return value
-      .replace(/\D/g, "")
-      .replace(/^(\d{2})(\d)/, "$1.$2")
-      .replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3")
-      .replace(/^(\d{2})\.(\d{3})\.(\d{3})(\d)/, "$1.$2.$3/$4")
-      .replace(/(\d{2})\.(\d{3})\.(\d{3})\/(\d{4})(\d)/, "$1.$2.$3/$4-$5")
-      .substring(0, 18);
-  };
 
   return (
     <div className="list-dashboard">
@@ -228,7 +197,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
 
       <div className="header-list">
         <div className="header-content">
-          <h2>Monitoria</h2>
+          <h2>Auditoria</h2>
           <div className="search-container">
             <button
               className="search-button"
@@ -427,32 +396,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                         data-tooltip-content="Ficha de monitoria"
                       />
                     </Link>
-                    <Link to={`/fichaboleto/${venda.id}`}>
-                      <FontAwesomeIcon
-                        icon={faMoneyCheckDollar}
-                        className="icon-spacing text-dark"
-                        data-tooltip-id="tooltip-boleto"
-                        data-tooltip-content="Ver ficha de boleto"
-                      />
-                      <Tooltip
-                        id="tooltip-boleto"
-                        place="top"
-                        className="custom-tooltip"
-                      />
-                    </Link>
-                    <Link to={`/fichamsgmonitoria/${venda.id}`}>
-                      <FontAwesomeIcon
-                        icon={faMarker}
-                        className="icon-spacing text-dark"
-                        data-tooltip-id="tooltip-boleto"
-                        data-tooltip-content="Enviar mensagem"
-                      />
-                      <Tooltip
-                        id="tooltip-boleto"
-                        place="top"
-                        className="custom-tooltip"
-                      />
-                    </Link>
+                    
 
                     {/* Tooltips */}
                     <Tooltip

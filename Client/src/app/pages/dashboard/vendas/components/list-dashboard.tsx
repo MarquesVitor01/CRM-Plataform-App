@@ -10,14 +10,12 @@ import {
   faFilter,
   faDownload,
   faPlus,
-  faFile,
   faMoneyCheckDollar,
-  faPrint,
   faBroom,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { ModalExcel } from "./modalExcel";
-import { db } from "../../../../firebase/firebaseConfig";
+import { db } from "../../../../global/Config/firebase/firebaseConfig";
 import {
   collection,
   getDocs,
@@ -28,7 +26,8 @@ import {
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import * as XLSX from "xlsx";
-import { Tooltip } from "react-tooltip";
+import { Tooltip } from "react-tooltip";  
+import { formatCNPJ, formatCPF } from "../../../../global/utils/formatters";
 
 interface Venda {
   id: string;
@@ -108,7 +107,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
     };
 
     fetchVendas();
-  }, [setTotalVendas, userId]);
+  }, [adminUserId, setTotalVendas, userId]);
 
   const handleCheckboxChange = (id: string) => {
     setSelectedItems((prevSelectedItems) => {
@@ -302,25 +301,6 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
     XLSX.utils.book_append_sheet(wb, ws, "vendas");
 
     XLSX.writeFile(wb, "planilha_vendas.xlsx");
-  };
-
-  const formatCPF = (value: string): string => {
-    return value
-      .replace(/\D/g, "")
-      .replace(/^(\d{3})(\d)/, "$1.$2")
-      .replace(/^(\d{3})\.(\d{3})(\d)/, "$1.$2.$3")
-      .replace(/^(\d{3})\.(\d{3})\.(\d{3})(\d)/, "$1.$2.$3-$4")
-      .substring(0, 14);
-  };
-
-  const formatCNPJ = (value: string): string => {
-    return value
-      .replace(/\D/g, "")
-      .replace(/^(\d{2})(\d)/, "$1.$2")
-      .replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3")
-      .replace(/^(\d{2})\.(\d{3})\.(\d{3})(\d)/, "$1.$2.$3/$4")
-      .replace(/(\d{2})\.(\d{3})\.(\d{3})\/(\d{4})(\d)/, "$1.$2.$3/$4-$5")
-      .substring(0, 18);
   };
 
   return (

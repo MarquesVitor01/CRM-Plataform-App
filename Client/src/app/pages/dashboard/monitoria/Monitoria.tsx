@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { HeaderDash } from "./components/header-dash";
-import "../monitoria/components/dashboard.css";
+import "../styles.css";
 import { ListDashboard } from "./components/list-dashboard";
-import { getAuth } from "firebase/auth";
 import { collection, getDocs } from "firebase/firestore";
-import { db } from "../../../firebase/firebaseConfig";
+import { db } from "../../../global/Config/firebase/firebaseConfig";
 
 interface Venda {
   id: string;
@@ -22,22 +21,13 @@ interface Venda {
   observacaoYes: boolean;
 }
 
-
-
 export const Monitoria = () => {
-    const [totalVendas, setTotalVendas] = useState(0);
+  const [totalVendas, setTotalVendas] = useState(0);
   const [totalRealizados, setTotalRealizados] = useState(0);
   const [totalRealizadosDiario, setTotalRealizadosDiario] = useState(0);
   const [totalPendentesDiario, setTotalPendentesDiario] = useState(0);
 
-
-  const auth = getAuth();
-  const userId = auth.currentUser?.uid;
-  const adminUserId = process.env.REACT_APP_ADMIN_USER_ID;
-  const SupervisorUserId = "wWLmbV9TIUemmTkcMUSAQ4xGlju2";
-  const graziId = "nQwF9Uxh0lez9ETIOmP2gCgM0pf2";
-
-   useEffect(() => {
+  useEffect(() => {
     const fetchVendas = async () => {
       try {
         const vendasSnapshot = await getDocs(collection(db, "vendas"));
@@ -48,7 +38,9 @@ export const Monitoria = () => {
 
         setTotalVendas(vendasList.length);
 
-        const realizadas = vendasList.filter((v) => v.monitoriaConcluidaYes === true);
+        const realizadas = vendasList.filter(
+          (v) => v.monitoriaConcluidaYes === true
+        );
         setTotalRealizados(realizadas.length);
 
         const hojeStr = new Date().toISOString().split("T")[0];
@@ -71,13 +63,16 @@ export const Monitoria = () => {
   return (
     <div className="bg-dash">
       <div className="itens-dash">
-       <HeaderDash
+        <HeaderDash
           totalVendas={totalVendas}
           totalRealizados={totalRealizados}
           totalRealizadosDiario={totalRealizadosDiario}
           totalPendentesDiario={totalPendentesDiario}
         />
-        <ListDashboard setTotalVendas={setTotalVendas} setTotalRealizados={setTotalRealizados} />
+        <ListDashboard
+          setTotalVendas={setTotalVendas}
+          setTotalRealizados={setTotalRealizados}
+        />
       </div>
     </div>
   );

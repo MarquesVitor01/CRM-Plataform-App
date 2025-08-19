@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react"; // Importe useEffect
+import React, { useEffect, useState } from "react"; 
 import { Navigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../global/Config/context/AuthContext";
 import { CircularProgress } from "@mui/material";
 import { ModalRoutes } from "./components/ModalRoutes";
 
@@ -14,18 +14,18 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ element, requiredCargo }) =
   const adminId = process.env.REACT_APP_ADMIN_USER_ID;
   const supervisorId ="wWLmbV9TIUemmTkcMUSAQ4xGlju2"
   const graziId ="nQwF9Uxh0lez9ETIOmP2gCgM0pf2"
-  const [modalOpen, setModalOpen] = useState(false); // Estado para controlar o modal
-  const [redirect, setRedirect] = useState(false); // Estado para controle de redirecionamento
+  const [modalOpen, setModalOpen] = useState(false); 
+  const [redirect, setRedirect] = useState(false); 
 
   useEffect(() => {
     if (!loading && user && !((user.uid === adminId || user.uid === supervisorId || user.uid === graziId) || !requiredCargo || cargo === requiredCargo)) {
-      setModalOpen(true); // Abre o modal se o usuário não tiver permissão
+      setModalOpen(true); 
     }
-  }, [loading, user, requiredCargo, cargo, adminId]); // Adiciona dependências no useEffect
+  }, [loading, user, requiredCargo, cargo, adminId]); 
 
   const handleCloseModal = () => {
     setModalOpen(false);
-    setRedirect(true); // Define para redirecionar
+    setRedirect(true); 
   };
 
   if (loading) {

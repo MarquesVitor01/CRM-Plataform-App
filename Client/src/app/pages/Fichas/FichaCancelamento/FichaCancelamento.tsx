@@ -3,12 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { CancelamentoForm } from "./Components/CancelamentoForm";
 import "./Styles/FichaCancelamento.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFilePdf, faLeftLong } from "@fortawesome/free-solid-svg-icons";
+import { faLeftLong } from "@fortawesome/free-solid-svg-icons";
 import { useParams } from "react-router-dom";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { db } from "../../../firebase/firebaseConfig";
-import axios from "axios";
-import { jsPDF } from "jspdf";
+import { db } from "../../../global/Config/firebase/firebaseConfig";
 
 export const FichaCancelamento: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -57,21 +55,6 @@ export const FichaCancelamento: React.FC = () => {
     window.history.back();
   };
 
-  // const formatValor = (value: string | number | undefined): string => {
-  //   if (!value) return "0,00"; // Retorna um valor padrão caso seja undefined ou null
-  //   const num =
-  //     typeof value === "number" ? value.toFixed(2) : value.replace(/\D/g, "");
-  //   return num.replace(/(\d)(\d{2})$/, "$1,$2");
-  // };
-
-  // const formatDateToBrazilian = (dateString: string) => {
-  //   const date = new Date(dateString);
-  //   date.setHours(date.getHours() + 3); // Ajuste para o horário de Brasília
-  //   const day = String(date.getDate()).padStart(2, "0");
-  //   const month = String(date.getMonth() + 1).padStart(2, "0"); // meses começam do zero
-  //   const year = date.getFullYear();
-  //   return `${day}/${month}/${year}`;
-  // };
 
   if (loading) {
     return <p>Carregando...</p>;

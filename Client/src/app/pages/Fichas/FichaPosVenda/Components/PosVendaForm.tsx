@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { QRCodeSVG } from "qrcode.react";
 
 interface posVendaForm {
   contratoAssinado: string;
@@ -48,7 +47,7 @@ export const MarketingForm: React.FC<posVendaFormProps> = ({
     <form className="card p-4 mb-4" onSubmit={handleSubmit}>
       <h2 className="text-center">Informações de Pós Venda</h2>
 
-      <div className="form-group mb-3">
+      {/* <div className="form-group mb-3">
         <label htmlFor="contratoAssinado">Link do contrato assinado: </label>
         <input
           type="text"
@@ -59,7 +58,7 @@ export const MarketingForm: React.FC<posVendaFormProps> = ({
           onChange={handleInputChange}
           required
         />
-      </div>
+      </div> */}
 
       <label>Serviços Concluídos?</label>
       <div className="form-check">

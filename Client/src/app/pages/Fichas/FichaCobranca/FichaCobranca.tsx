@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./Styles/FichaCobranca.css";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { db } from "../../../firebase/firebaseConfig";
+import { db } from "../../../global/Config/firebase/firebaseConfig";
 import { useNavigate, useParams } from "react-router-dom";
 import { CobrancaForm } from "./Components/CobrancaForm";
 
