@@ -60,7 +60,7 @@ export default function SendEmailBrevo({
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/send-email-brevo",
+        "https://crm-plataform-app-6t3u.vercel.app/send-email-brevo",
         {
           to,
           htmlContent,
