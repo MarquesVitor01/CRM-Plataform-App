@@ -8,6 +8,7 @@ import "./Styles/FichaBoleto.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLeftLong } from "@fortawesome/free-solid-svg-icons";
 import BoletosGerados from "./componentes/boletoCard";
+import SendEmailBrevo from "./componentes/sendEmailBrevo";
 
 interface BoletoData {
   barcode: string;
@@ -463,11 +464,22 @@ export const FichaBoleto: React.FC = () => {
                 >
                   Disponibilizar Boletos Recorrentes
                 </button>
-                <BoletosGerados
-                  boletoDataList={boletoDataList}
-                  fetchBoletoDetails={fetchBoletoDetails}
-                  key={boletoDataList[0].chargeId}
-                />
+                <div className="row">
+                  <div className="col-md-6">
+                    <BoletosGerados
+                      boletoDataList={boletoDataList}
+                      fetchBoletoDetails={fetchBoletoDetails}
+                      key={boletoDataList[0].chargeId}
+                    />
+                  </div>
+
+                  <div className="col-md-6">
+                    <SendEmailBrevo
+                      to={clientData.email1}
+                      clientData={clientData}
+                    />
+                  </div>
+                </div>
                 {showRecorrencia && clientData.contrato === "Recorencia" && (
                   <div className="flex-column justify-content-center d-flex align-items-center gap-3 box-boleto">
                     <h2 className="text-center">

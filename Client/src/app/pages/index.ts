@@ -1,5 +1,5 @@
-export * from './Dashboard/vendas/Vendas'
-export * from './Dashboard/monitoria/Monitoria'
+export * from './dashboard/vendas/Vendas'
+export * from './dashboard/monitoria/Monitoria'
 export * from './User/login/Login'
 export * from './User/setores/setores'
 export * from './User/perfil_funcionario/perfil'
