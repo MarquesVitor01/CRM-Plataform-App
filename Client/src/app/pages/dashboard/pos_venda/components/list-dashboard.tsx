@@ -19,7 +19,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { ModalExcel } from "./modalExcel";
-import { db } from "../../../../firebase/firebaseConfig";
+import { db } from "../../../../global/Config/firebase/firebaseConfig";
 import {
   collection,
   getDocs,
@@ -33,6 +33,7 @@ import {
 import { toast, ToastContainer } from "react-toastify";
 import { Tooltip } from "react-tooltip";
 import { getAuth } from "firebase/auth";
+import { formatCNPJ, formatCPF } from "../../../../global/utils/formatters";
 
 interface PosVenda {
   id: string;
@@ -98,76 +99,9 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
   });
   const [showConcluidas, setShowConcluidas] = useState(false);
 
-  // useEffect(() => {
-  //   const fetchvendas = async () => {
-  //     setLoading(true);
-  //     try {
-  //       const vendasCollection = collection(db, "vendas");
-  //       const vendasSnapshot = await getDocs(vendasCollection);
-  //       const vendasList = vendasSnapshot.docs.map((doc) => ({
-  //         id: doc.id,
-  //         ...doc.data(),
-  //       })) as PosVenda[];
-
-  //       setPosVenda(vendasList);
-  //       setTotalPosVenda(vendasList.length);
-
-  //       const totalRealizados = vendasList.filter(
-  //         (venda) => venda.monitoriaConcluidaYes
-  //       ).length;
-  //       setTotalRealizados(totalRealizados);
-  //     } catch (error) {
-  //       console.error("Erro ao buscar vendas para o pós venda:", error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchvendas();
-  // }, [setTotalPosVenda, setTotalRealizados]);
-
   const auth = getAuth();
   const userId = auth.currentUser?.uid;
   const adminUserId = process.env.REACT_APP_ADMIN_USER_ID;
-  const SupervisorUserId = "wWLmbV9TIUemmTkcMUSAQ4xGlju2";
-
-  const handleSyncClients = async () => {
-    setSyncLoading(true);
-    try {
-      const vendasCollection = collection(db, "marketings");
-      const vendasSnapshot = await getDocs(vendasCollection);
-      const vendasList = vendasSnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as venda[];
-
-      const syncedvendas = vendasList.filter(
-        (venda) => venda.servicosConcluidos
-      );
-
-      const batch = writeBatch(db);
-      for (const venda of syncedvendas) {
-        const marketingDocRef = doc(db, "posVendas", venda.id);
-        batch.set(marketingDocRef, venda, { merge: true });
-      }
-
-      await batch.commit();
-
-      const posVendaSnapshot = await getDocs(collection(db, "posVendas"));
-      const posVendaList = posVendaSnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as PosVenda[];
-
-      setPosVenda(posVendaList);
-      setTotalPosVenda(posVendaList.length);
-    } catch (error) {
-      console.error("Erro ao sincronizar clientes:", error);
-      toast.error("Erro na sincronização!");
-    } finally {
-      setSyncLoading(false);
-    }
-  };
 
   console.log("PosVenda:", posVenda);
 
@@ -307,25 +241,6 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
     setShowConcluidas(!showConcluidas);
   };
 
-  const formatCPF = (value: string): string => {
-    return value
-      .replace(/\D/g, "")
-      .replace(/^(\d{3})(\d)/, "$1.$2")
-      .replace(/^(\d{3})\.(\d{3})(\d)/, "$1.$2.$3")
-      .replace(/^(\d{3})\.(\d{3})\.(\d{3})(\d)/, "$1.$2.$3-$4")
-      .substring(0, 14);
-  };
-
-  // Função para formatar o CNPJ (visual)
-  const formatCNPJ = (value: string): string => {
-    return value
-      .replace(/\D/g, "")
-      .replace(/^(\d{2})(\d)/, "$1.$2")
-      .replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3")
-      .replace(/^(\d{2})\.(\d{3})\.(\d{3})(\d)/, "$1.$2.$3/$4")
-      .replace(/(\d{2})\.(\d{3})\.(\d{3})\/(\d{4})(\d)/, "$1.$2.$3/$4-$5")
-      .substring(0, 18);
-  };
 
   useEffect(() => {
     const fetchPosVenda = async () => {
@@ -464,27 +379,6 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                 className="custom-tooltip"
               />
             </button>
-
-            {/* <button
-              className="planilha-btn"
-              onClick={handleSyncClients}
-              disabled={syncLoading}
-              data-tooltip-id="tooltip-sync"
-              data-tooltip-content={
-                syncLoading ? "Sincronizando..." : "Sincronizar clientes"
-              }
-            >
-              <FontAwesomeIcon icon={faSync} color="#fff" spin={syncLoading} />
-            </button> */}
-
-            {/* <button
-              className="filtros-btn"
-              onClick={syncVendasParaPosVenda}
-              data-tooltip-id="tooltip-filter"
-              data-tooltip-content="Aplicar filtros"
-            >
-              <FontAwesomeIcon icon={faBalanceScaleLeft} color="#fff" />
-            </button> */}
 
             {showConcluidas ? (
               <button

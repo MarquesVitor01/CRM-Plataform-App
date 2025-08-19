@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from "react";
 import "./Styles/fichamonitoria.css";
-import { FichaMonitoriaGrave } from "./Components/FichaMonitoriaGrave";
-import { FichaMonitoriaAuditoria } from "./Components/FichaMonitoriaAuditoria";
-import { FichaMonitoriaQualidade } from "./Components/fichaMonitoriaQualidade";
 import { FichaMonitoriaConfirmacao } from "./Components/FichaMonitoriaConfirmacao";
 import {
   collection,
@@ -10,13 +7,10 @@ import {
   getDoc,
   getDocs,
   setDoc,
-  updateDoc,
 } from "firebase/firestore";
-import { db } from "../../../firebase/firebaseConfig";
 import { useNavigate, useParams } from "react-router-dom";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { storage } from "googleapis/build/src/apis/storage";
-import { storage as firebaseStorage } from "../../../firebase/firebaseConfig";
+import { db, storage as firebaseStorage } from "../../../global/Config/firebase/firebaseConfig";
 import ConfirmModal from "../components/ConfirmModal";
 interface ClientData {
   googleInfoYes: boolean;
@@ -54,9 +48,9 @@ interface ClientData {
 export const FichaMonitoria: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [clientData, setClientData] = useState<ClientData | null>(null);
-  const [step, setStep] = useState(0);
+  const [step, ] = useState(0);
   const [showModalConfirmAdd, setShowModalConfirmAdd] = useState(false);
-  const [pendingMarketingCopy, setPendingMarketingCopy] = useState(false);
+  const [, setPendingMarketingCopy] = useState(false);
 
   const navigate = useNavigate();
 
@@ -68,7 +62,7 @@ export const FichaMonitoria: React.FC = () => {
       const operadoresMarketing = snapshot.docs
         .map((doc) => doc.data())
         .filter((user) => user.cargo === "marketing")
-        .sort((a, b) => a.nome.localeCompare(b.nome)); // ordena por nome, ou use createdAt
+        .sort((a, b) => a.nome.localeCompare(b.nome)); 
 
       if (operadoresMarketing.length === 0) return null;
 
@@ -83,10 +77,8 @@ export const FichaMonitoria: React.FC = () => {
 
       const operador = operadoresMarketing[indexAtual];
 
-      // Define o próximo índice
       const proximoIndex = (indexAtual + 1) % operadoresMarketing.length;
 
-      // Atualiza o índice no Firestore
       await setDoc(controleRef, { indexAtual: proximoIndex });
 
       return operador.nome;
@@ -272,24 +264,6 @@ export const FichaMonitoria: React.FC = () => {
     <div className="ficha-monitoria">
       <form onSubmit={handleSubmit}>
         {clientData && step === 0 && (
-          <FichaMonitoriaQualidade
-            form={clientData}
-            handleInputChange={handleInputChange}
-          />
-        )}
-        {clientData && step === 1 && (
-          <FichaMonitoriaAuditoria
-            form={clientData}
-            handleInputChange={handleInputChange}
-          />
-        )}
-        {clientData && step === 2 && (
-          <FichaMonitoriaGrave
-            form={clientData}
-            handleInputChange={handleInputChange}
-          />
-        )}
-        {clientData && step === 3 && (
           <FichaMonitoriaConfirmacao
             form={clientData}
             handleInputChange={handleInputChange}
@@ -298,33 +272,6 @@ export const FichaMonitoria: React.FC = () => {
         )}
         <div className="mt-4 d-flex gap-4 justify-content-center">
           {step === 0 && (
-            <button
-              type="button"
-              className="btn btn-danger"
-              onClick={() => window.history.back()}
-            >
-              Sair
-            </button>
-          )}
-          {step > 0 && (
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={() => setStep(step - 1)}
-            >
-              Voltar
-            </button>
-          )}
-          {step < 3 && (
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={() => setStep(step + 1)}
-            >
-              Próximo
-            </button>
-          )}
-          {step <= 3 && (
             <button type="submit" className="btn btn-success">
               Salvar
             </button>

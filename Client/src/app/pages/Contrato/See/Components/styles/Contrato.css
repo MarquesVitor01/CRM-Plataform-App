@@ -1,0 +1,189 @@
+/* Backgrounds */
+.bg-contrato {
+  background: linear-gradient(150deg, #494ba7 50%, #25bfb2 50%);
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+  padding: 50px;
+}
+
+.bg-infos-contrato {
+  background-color: #fff;
+}
+
+/* Page */
+.page-break {
+  page-break-before: always; 
+}
+
+/* Dados empresa */
+.dados-empresa {
+  margin-top: -30px;
+}
+
+.dados-empresa h5 {
+  background-color: #59afd6;
+  color: #fff;
+}
+
+.dados-empresa p {
+  font-size: 15px;
+}
+
+/* Header */
+.header img {
+  width: 90%;
+  height: 10vh;
+}
+
+.header p {
+  font-size: smaller;
+}
+
+/* Condições e bônus */
+.condicoes,
+.bonus {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.condicoes h5,
+.bonus h5 {
+  width: 100%;
+  background-color: #59afd6;
+  color: #fff;
+}
+
+.condicoes p,
+.bonus p {
+  width: 700px;
+  font-size: 12px;
+  text-align: center;
+}
+
+.condicoes .text-condicoes {
+  width: 900px;
+  text-align: justify;
+}
+
+.text-cond {
+  text-align: justify !important;
+}
+
+/* Uppercase */
+.upper p,
+.upper-span span {
+  text-transform: uppercase !important;
+}
+
+/* Boleto */
+.boleto-container {
+  font-family: Arial, sans-serif;
+  max-width: 700px;
+  border: 2px solid #333;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  margin-top: -25px;
+}
+
+.boleto-header {
+  display: flex;
+  justify-content: center;
+}
+
+.boleto-logo img {
+  width: 50px;
+}
+
+/* Checkbox */
+.checkbox-blue {
+  accent-color: #007bff !important;
+  width: 18px;
+  height: 18px;
+  cursor: not-allowed;
+}
+
+/* Gravação e QR Code */
+.gravacao,
+.qrcode-link {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.qrcode-container,
+.qrcode-google {
+  display: flex;
+  align-items: center;
+}
+
+.qrcode-container {
+  margin-top: -30px;
+}
+
+.qrcode-google {
+  margin-top: -15px;
+  margin-bottom: -25px;
+}
+
+.qrcode-link {
+  gap: 10px;
+}
+
+.qrcode img {
+  width: 100px;
+}
+
+.qrcode svg {
+  width: 70px;
+  height: 70px;
+}
+
+/* Assinatura e observações */
+.assinatura-section {
+  margin-top: 0 !important;
+}
+
+.obs {
+  font-size: 14px;
+}
+
+/* Margens negativas */
+.cond-pagamento { margin-top: -10px; }
+.bonus { margin-top: -12px; }
+.termos-servico { margin-top: -30px; }
+.check-termos { margin-top: -20px; }
+.img-google { margin-top: -25px; }
+.form-group-info { margin-top: -15px; }
+
+/* Image container */
+.image-container {
+  display: flex;
+  align-items: center;
+}
+
+.image-container .arrow {
+  font-size: 70px;
+}
+
+/* Card personalizado */
+.card-mensagem-custom {
+  background: #f8f9fa;
+  border-radius: 10px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Print */
+@media print {
+  a {
+    text-decoration: none;
+    color: black;
+    pointer-events: none;
+  }
+}

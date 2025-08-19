@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { faClose } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Select from 'react-select';
-import { db } from "../../../../firebase/firebaseConfig";
+import { db } from "../../../../global/Config/firebase/firebaseConfig";
 import { collection, getDocs, query, where } from 'firebase/firestore';
 
 interface ModalExcelProps {
@@ -44,7 +44,7 @@ export const ModalExcel: React.FC<ModalExcelProps> = ({ onClose, onApplyFilters 
       const q = query(salesPeopleRef, where('setor', '==', 'vendas'));
       const querySnapshot = await getDocs(q);
 
-      const uniqueOperators = new Set<string>(); // Usar um Set para garantir a unicidade
+      const uniqueOperators = new Set<string>(); 
       const options: Option[] = [];
 
       querySnapshot.docs.forEach(doc => {

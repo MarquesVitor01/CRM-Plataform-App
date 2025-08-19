@@ -9,6 +9,7 @@ interface CancelamentoFormProps {
   onSubmit: (data: CancelamentoForm) => void;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-redeclare
 export const CancelamentoForm: React.FC<CancelamentoFormProps> = ({
   form: initialForm,
   onSubmit,

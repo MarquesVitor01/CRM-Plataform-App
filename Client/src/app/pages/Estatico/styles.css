@@ -1,0 +1,290 @@
+/* =================== Backgrounds Gerais =================== */
+.bg-assinatura,
+.fichaMarketing,
+.bg-mktservice,
+.bg-certificado,
+.financeiro,
+.ficha-monitoria {
+  background: linear-gradient(150deg, #494ba7 50%, #25BFB2 50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* =================== Backgrounds Específicos =================== */
+.bg-infos-contrato,
+.bg-infos-mktservice,
+.bg-infos-certificado {
+  background-color: #fff;
+  background-size: cover;
+  width: 850px;
+  height: 600px;
+}
+
+/* =================== Page Break =================== */
+.page-break {
+  page-break-before: always;
+}
+
+/* =================== Header Assinatura =================== */
+.header-assinatura img {
+  width: 95%;
+  height: 130px;
+}
+
+/* =================== Dados Empresa =================== */
+.dados-empresa h6 {
+  background-color: #59afd6;
+  padding: 10px;
+  color: #fff;
+}
+
+.dados-empresa p {
+  font-size: 15px;
+}
+
+/* =================== Condições =================== */
+.condicoes {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin-top: 10px;
+}
+
+.condicoes .text-condicoes {
+  width: 900px;
+  font-size: 12px;
+  text-align: justify;
+  padding-inline: 20px;
+}
+
+/* =================== Image Container =================== */
+.image-container {
+  display: flex;
+  align-items: center;
+}
+
+.image-container .arrow {
+  font-size: 70px;
+}
+
+/* =================== QR Codes =================== */
+.qrcode-assinatura,
+.qrcode-mktservice {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.qrcode-assinatura svg {
+  width: 150px;
+  height: 150px;
+}
+
+.qrcode-mktservice svg {
+  width: 200px;
+  height: 200px;
+}
+
+/* =================== Bonus e Info Assinatura =================== */
+.bonus,
+.info-assinatura {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.info-assinatura {
+  text-align: center;
+  gap: 10px;
+}
+
+/* =================== Assinaturas =================== */
+.assinatura-section {
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+}
+
+.linha-assinatura {
+  width: 300px;
+  border-bottom: 2px solid #000;
+}
+
+/* =================== Botões =================== */
+.btns-sections,
+.container-mtkservice {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.btns-sections {
+  gap: 20px;
+}
+
+.container-mtkservice {
+  gap: 150px;
+}
+
+.btn-sair-marketing {
+  position: absolute;
+  top: 10px;
+  left: 20px;
+}
+
+/* =================== Certificado =================== */
+.certificado {
+  position: relative;
+  width: 82%;
+  height: 300px;
+  background-size: cover;
+  background-position: center;
+  margin-top: 20px;
+}
+
+.selo {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  width: 80px;
+  height: auto;
+}
+
+/* =================== Boxes =================== */
+.box-avaliacoes,
+.box-certificado,
+.box-assinatura,
+.box-quest,
+.card-parcelas,
+.parcela-box {
+  margin-bottom: 30px;
+  padding: 20px;
+  border-radius: 10px;
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.box-avaliacoes { margin-top: 140px; }
+.box-certificado { margin-top: 240px; }
+.box-assinatura { margin-top: 150px; margin-left: 470px; }
+
+.box-avaliacoes p,
+.box-certificado p {
+  font-size: large;
+  font-weight: 600;
+}
+
+.box-assinatura p {
+  font-size: 18px !important;
+  font-weight: 800 !important;
+  color: #1f402e;
+}
+
+.modo-pdf .box-avaliacoes { margin-top: 0 !important; }
+.modo-pdf .box-avaliacoes p { margin-top: 140px !important; }
+.modo-pdf .box-certificado { margin-top: 0 !important; }
+.modo-pdf .box-certificado p { margin-top: 240px !important; }
+.modo-pdf .box-assinatura { margin-top: 0 !important; margin-left: 0 !important; }
+.modo-pdf .box-assinatura p { margin-top: 120px !important; margin-left: 470px !important; }
+.modo-pdf * { outline: 1px dashed red; }
+
+/* =================== Textos =================== */
+.text-avalie { font-weight: 800; font-size: x-large; }
+.razao-social { font-size: x-large !important; font-weight: 800 !important; }
+
+/* =================== Print =================== */
+@media print {
+  a { text-decoration: none; color: black; pointer-events: none; }
+  .no-print { display: none !important; }
+}
+
+/* =================== Financeiro / Parcelas =================== */
+.encaminheCob { margin-top: 20px; }
+
+.card-parcelas { border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+
+.parcelas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.parcela-box {
+  border-left: 4px solid #4e73df;
+  transition: transform 0.2s;
+}
+
+.parcela-box:hover { transform: translateY(-3px); }
+
+.parcela-header {
+  border-bottom: 1px solid #eee;
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+}
+
+.parcela-header h5 {
+  margin: 0;
+  color: #4e73df;
+  font-size: 1rem;
+}
+
+.parcela-body p {
+  margin: 5px 0;
+  font-size: 0.9rem;
+}
+
+.parcela-body strong { color: #5a5c69; }
+
+.scroll-container {
+  margin-top: 10px;
+  max-height: 400px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: #c0c0c0 transparent;
+}
+
+.scroll-container::-webkit-scrollbar { width: 6px; }
+.scroll-container::-webkit-scrollbar-track { background: transparent; }
+.scroll-container::-webkit-scrollbar-thumb {
+  background-color: #c0c0c0;
+  border-radius: 4px;
+}
+.scroll-container::-webkit-scrollbar-thumb:hover { background-color: #a0a0a0; }
+
+/* =================== Ficha Monitoria =================== */
+.ficha-monitoria {
+  padding: 20px 50px;
+  border-radius: 10px;
+  justify-content: space-around;
+}
+
+.ficha-monitoria h2,
+.ficha-monitoria h3 { color: #fff; }
+
+.monitoria {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+}
+
+.box-quest { display: flex; justify-content: center; flex-direction: column; }
+
+.box-quest label { text-align: center; }
+
+.img-boleto {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 210px;
+}

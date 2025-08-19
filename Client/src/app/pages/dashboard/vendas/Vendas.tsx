@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { HeaderDash } from "./components/header-dash";
-import "../vendas/components/dashboard.css";
-import "./components/dashboard.css";
+import "../styles.css";
 import { ListDashboard } from "./components/list-dashboard";
-import { collection, getDocs, Timestamp } from "firebase/firestore";
-import { db } from "../../../firebase/firebaseConfig";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../../../global/Config/firebase/firebaseConfig";
 import { getAuth } from "firebase/auth";
 import { endOfDay, parse, startOfDay } from "date-fns";
 
@@ -69,7 +68,7 @@ export const Vendas = () => {
     };
 
     fetchVendas();
-  }, [userId]);
+  }, [adminUserId, userId]);
 
   return (
     <div className="bg-dash">
