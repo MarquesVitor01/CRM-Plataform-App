@@ -1,7 +1,7 @@
 exports.validateBoletoRequest = (req, res, next) => {
   const { account, email, items, juridical_person, name, cpf, dataVencimento } = req.body;
 
-  if (!account || !["equipe_6110", "equipe_2535", "equipe_9272"].includes(account)) {
+  if (!account || !["equipe_6110", "equipe_2535", "equipe_9272", "equipe_nova"].includes(account)) {
     return res.status(400).send("Account selection is required and must be valid.");
   }
 
