@@ -110,7 +110,7 @@ export const Navbar = () => {
               </Link>
             </li>
             {(cargo === "vendas" ||
-            cargo === "supervisor" ||
+              cargo === "supervisor" ||
               userId === adminId ||
               userId === graziId) && (
               <li className="nav-item">
@@ -159,6 +159,7 @@ export const Navbar = () => {
               )}
 
             {(cargo === "monitoria" ||
+              cargo === "supervisor" ||
               userId === adminId ||
               userId === supervisorId) && (
               <li className="nav-item">
@@ -174,6 +175,7 @@ export const Navbar = () => {
             )}
 
             {(cargo === "marketing" ||
+              cargo === "supervisor" ||
               userId === adminId ||
               userId === supervisorId) && (
               <li className="nav-item">
@@ -201,7 +203,10 @@ export const Navbar = () => {
                 </Link>
               </li>
             )} */}
-            {(cargo === "financeiro" || cargo === "vendas" || userId === adminId || userId === supervisorId) && (
+            {(cargo === "financeiro" ||
+              cargo === "vendas" ||
+              userId === adminId ||
+              userId === supervisorId) && (
               <li className="nav-item">
                 <Link
                   className="nav-link icon-tooltip"

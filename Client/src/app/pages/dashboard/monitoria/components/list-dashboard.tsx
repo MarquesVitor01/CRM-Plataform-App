@@ -18,8 +18,11 @@ import { db } from "../../../../global/Config/firebase/firebaseConfig";
 import { collection, getDocs } from "firebase/firestore";
 import { Tooltip } from "react-tooltip";
 import { formatCNPJ, formatCPF } from "../../../../global/utils/formatters";
+import { useAuth } from "../../../../global/Config/context/AuthContext";
+import { getAuth } from "firebase/auth";
 
 interface Venda {
+  equipeSupervisor: string;
   id: string;
   cnpj: string;
   cpf: string;
@@ -59,12 +62,18 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
     endDate: "",
     dueDate: "",
     saleType: "",
+    saleEquipe: "",
     salesPerson: "",
     saleGroup: "",
   });
 
   const [showConcluidas, setShowConcluidas] = useState(false);
+  const { nome, cargo } = useAuth();
 
+  const auth = getAuth();
+  const userId = auth.currentUser?.uid;
+  const adminUserId = process.env.REACT_APP_ADMIN_USER_ID;
+  const graziId = "nQwF9Uxh0lez9ETIOmP2gCgM0pf2";
   useEffect(() => {
     const fetchvendas = async () => {
       setLoading(true);
@@ -76,10 +85,32 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
           ...doc.data(),
         })) as Venda[];
 
-        setVendas(vendasList);
-        setTotalVendas(vendasList.length);
+        let filteredVendas: Venda[] = [];
 
-        const totalRealizados = vendasList.filter(
+        if (userId === adminUserId || userId === graziId || cargo === "admin") {
+          filteredVendas = vendasList;
+        } else if (cargo === "supervisor") {
+          if (nome === "supervisor.frank") {
+            filteredVendas = vendasList.filter(
+              (venda) => venda.equipeSupervisor === "equipe_frank"
+            );
+          } else if (nome === "supervisor.rodrigo") {
+            filteredVendas = vendasList.filter(
+              (venda) => venda.equipeSupervisor === "equipe_rodrigo"
+            );
+          } else {
+            filteredVendas = []; 
+          }
+        } else {
+          filteredVendas = vendasList.filter(
+            (venda) => venda.operador === nome
+          );
+        }
+
+        setVendas(filteredVendas);
+        setTotalVendas(filteredVendas.length);
+
+        const totalRealizados = filteredVendas.filter(
           (venda) => venda.monitoriaConcluidaYes
         ).length;
         setTotalRealizados(totalRealizados);
@@ -91,7 +122,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
     };
 
     fetchvendas();
-  }, [setTotalVendas, setTotalRealizados]);
+  }, [setTotalVendas, setTotalRealizados, userId, cargo, nome]);
 
   const applyFilters = () => {
     let filteredClients = vendas.filter((venda) => {
@@ -106,7 +137,8 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
         (venda.operador &&
           venda.operador.toLowerCase().includes(lowerCaseTerm));
 
-      const { startDate, endDate, dueDate, saleType, salesPerson } = filters;
+      const { startDate, endDate, dueDate, saleType, saleEquipe, salesPerson } =
+        filters;
 
       const vendaData = new Date(venda.data);
       const isStartDateValid = startDate
@@ -125,6 +157,10 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
         : true;
 
       const isSaleTypeValid = saleType ? venda.contrato === saleType : true;
+      const isSaleEquipeValid = saleEquipe
+        ? venda.equipeSupervisor === saleEquipe
+        : true;
+
       const isSalesPersonValid = salesPerson
         ? venda.operador === salesPerson
         : true;
@@ -134,6 +170,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
         isDateInRange &&
         isDueDateValid &&
         isSaleTypeValid &&
+        isSaleEquipeValid &&
         isSalesPersonValid
       );
     });
@@ -149,7 +186,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
 
   const handleSearchClick = () => {
     setActiveSearchTerm(searchTerm);
-    setCurrentPage(1); 
+    setCurrentPage(1);
   };
 
   const filteredClients = applyFilters();
@@ -184,7 +221,6 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
   const toggleConcluido = () => {
     setShowConcluidas(!showConcluidas);
   };
-
 
   return (
     <div className="list-dashboard">
@@ -240,6 +276,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                   endDate: "",
                   dueDate: "",
                   saleType: "",
+                  saleEquipe: "",
                   salesPerson: "",
                   saleGroup: "",
                 });
@@ -396,7 +433,6 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                         data-tooltip-content="Ficha de monitoria"
                       />
                     </Link>
-                    
 
                     {/* Tooltips */}
                     <Tooltip

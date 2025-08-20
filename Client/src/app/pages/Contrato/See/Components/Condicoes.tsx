@@ -1,14 +1,11 @@
 import {
   faCheckCircle,
-  faLeftLong,
-  faRightLong,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { doc, getDoc } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { db } from "../../../../global/Config/firebase/firebaseConfig";
-import { QRCodeSVG } from "qrcode.react";
 
 export const Condicoes: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -40,11 +37,16 @@ export const Condicoes: React.FC = () => {
         <h5 className="text-center">Visualize sua página no Google</h5>
         <div className="">
           <p className="text-cond">
-            G.MAPS CONTACT CENTER LTDA CNPJ: 40.407.753/0001-30 Endereço: Rua
-            Coronel José Eusébio, 95 Higienópolis, São Paulo – SP E-mail:
-            marketing@grupomapsempresas.com.br 1. OBJETO O presente Termo de Uso
-            regula a contratação dos serviços prestados pela G.MAPS CONTACT
-            CENTER LTDA, consistentes em ações de marketing digital, com foco em
+            {clientData.equipeSupervisor === "equipe_antiga"
+              ? "G.MAPS CONTACT CENTER LTDA CNPJ: 40.407.753/0001-30"
+              : "G MAPS MARKETING DIGITAL LTDA CNPJ: 59.224.266/0001-60"}
+            Endereço: Rua Coronel José Eusébio, 95 Higienópolis, São Paulo – SP
+            E-mail: marketing@grupomapsempresas.com.br 1. OBJETO O presente
+            Termo de Uso regula a contratação dos serviços prestados pela{" "}
+            {clientData.equipeSupervisor === "equipe_antiga"
+              ? "G.MAPS CONTACT CENTER LTDA"
+              : "G MAPS MARKETING DIGITAL LTDA"}
+            , consistentes em ações de marketing digital, com foco em
             otimização, atualização e manutenção de perfis comerciais no Google
             Maps (Google Business Profile). 2. ACEITE E NATUREZA DA CONTRATAÇÃO
             Ao aceitar este termo, o CONTRATANTE declara ciência de que está
@@ -66,7 +68,9 @@ export const Condicoes: React.FC = () => {
             pagamento deverá ser efetuado na data de vencimento conforme
             combinado no momento da adesão, O Boleto para pagamento será enviado
             através das opções existentes no e-mail e whatsapp, que será enviado
-            ao CLIENTE pela G MAPS CONTACT CENTER LTDA, nominado como “LEMBRETE
+            ao CLIENTE pela {clientData.equipeSupervisor === "equipe_antiga"
+              ? "G.MAPS CONTACT CENTER LTDA"
+              : "G MAPS MARKETING DIGITAL LTDA"}, nominado como “LEMBRETE
             DE VENCIMENTO ”. Este e-mail/mensagem será disparado aos e-mails de
             cadastro do CLIENTE em no mínimo 3 dias antes da data do vencimento,
             o valor do plano refere-se somente para a gestão e otimização da
@@ -83,7 +87,9 @@ export const Condicoes: React.FC = () => {
             contratado, podendo ser renovados automaticamente se não houver
             manifestação expressa em contrário por qualquer das partes, com
             antecedência mínima de 30 (Trinta) dias do término do contrato. 6.
-            LIMITAÇÕES DE RESPONSABILIDADE A G.MAPS CONTACT CENTER LTDA não se
+            LIMITAÇÕES DE RESPONSABILIDADE A {clientData.equipeSupervisor === "equipe_antiga"
+              ? "G.MAPS CONTACT CENTER LTDA"
+              : "G MAPS MARKETING DIGITAL LTDA"} não se
             responsabiliza por alterações, suspensões ou bloqueios realizados
             diretamente pelo Google em perfis de empresas, tampouco por
             políticas ou critérios de indexação e ranqueamento definidos pela

@@ -3,7 +3,6 @@ import "./Components/styles/Contrato.css";
 import { Header } from "./Components/Header";
 import { DadosEmpresa } from "./Components/DadosEmpresa";
 import { Condicoes } from "./Components/Condicoes";
-import { Bonus } from "./Components/Bonus";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFilePdf } from "@fortawesome/free-solid-svg-icons";
 import html2pdf from "html2pdf.js";
@@ -173,56 +172,6 @@ export const See: FC = () => {
     } catch (error) {
       console.error("Erro ao enviar mensagem:", error);
       alert("Ocorreu um erro ao enviar a mensagem.");
-    }
-  };
-  const downloadPDFCertificado = () => {
-    const contratoElement = document.getElementById("certificado");
-    const btn = document.getElementById("btn-baixar-pdf");
-
-    if (btn) {
-      btn.style.display = "none";
-    }
-
-    if (contratoElement) {
-      contratoElement.classList.add("modo-pdf");
-
-      const rect = contratoElement.getBoundingClientRect();
-      const widthInInches = rect.width / 96;
-      const heightInInches = rect.height / 96;
-
-      const opt: any = {
-        margin: 0,
-        filename: `${clientData.razaoSocial}.pdf`,
-        image: { type: "jpeg", quality: 0.98 },
-        html2canvas: {
-          scale: 2,
-          useCORS: true,
-          logging: false,
-        },
-        jsPDF: {
-          unit: "in",
-          format: [widthInInches, heightInInches],
-          orientation:
-            widthInInches > heightInInches ? "landscape" : "portrait",
-        },
-      };
-
-      html2pdf()
-        .set(opt)
-        .from(contratoElement)
-        .save()
-        .then(() => {
-          contratoElement.classList.remove("modo-pdf");
-          if (btn) btn.style.display = "flex";
-        })
-        .catch((error: unknown) => {
-          contratoElement.classList.remove("modo-pdf");
-          console.error("Erro ao gerar PDF:", error);
-          alert("Houve um erro ao gerar o PDF. Tente novamente.");
-          if (btn) btn.style.display = "flex";
-        });
-    } else {
-      alert("Erro: Um ou mais elementos não foram encontrados.");
     }
   };
 

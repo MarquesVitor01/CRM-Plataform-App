@@ -58,6 +58,7 @@ interface Venda {
   operadorMkt: string;
   posVendaConcuida: boolean;
   monitoriaHorario: string;
+  equipeSupervisor: string;
 }
 
 interface ListDashboardProps {
@@ -84,6 +85,8 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
     endDate: "",
     dueDate: "",
     saleType: "",
+    saleEquipe: "",
+
     salesPerson: "",
     saleGroup: "",
   });
@@ -124,15 +127,29 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
 
         let filteredVendas: Venda[] = [];
 
-        if (cargo === "adm" || cargo === "supervisor") {
+        if (cargo === "adm" || cargo === "marketing") {
           filteredVendas = marketingsList;
-        } else if (cargo === "marketing") {
-          filteredVendas = marketingsList.filter(
-            (venda) =>
-              !venda.operadorMkt ||
-              venda.operadorMkt.trim() === "" ||
-              venda.operadorMkt === nomeUsuario
-          );
+        } else if (cargo === "supervisor") {
+          if (nomeUsuario === "supervisor.frank") {
+            filteredVendas = marketingsList.filter(
+              (venda) => venda.equipeSupervisor === "equipe_frank"
+            );
+          } else if (nomeUsuario === "supervisor.rodrigo") {
+            filteredVendas = marketingsList.filter(
+              (venda) => venda.equipeSupervisor === "equipe_rodrigo"
+            );
+          } else {
+            filteredVendas = marketingsList.filter(
+              (venda) => venda.createdBy === userId
+            );
+          }
+        // } else if (cargo === "marketing") {
+        //   filteredVendas = marketingsList.filter(
+        //     (venda) =>
+        //       !venda.operadorMkt ||
+        //       venda.operadorMkt.trim() === "" ||
+        //       venda.operadorMkt === nomeUsuario
+        //   );
         } else {
           filteredVendas = marketingsList.filter(
             (venda) => venda.createdBy === userId
@@ -177,7 +194,8 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
         (venda.operador &&
           venda.operador.toLowerCase().includes(lowerCaseTerm));
 
-      const { startDate, endDate, dueDate, saleType, salesPerson } = filters;
+      const { startDate, endDate, dueDate, saleType, saleEquipe, salesPerson } =
+        filters;
 
       const marketingData = new Date(venda.data);
       const isStartDateValid = startDate
@@ -197,6 +215,10 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
         : true;
 
       const issaleTypeValid = saleType ? venda.contrato === saleType : true;
+      const isSaleEquipeValid = saleEquipe
+        ? venda.equipeSupervisor === saleEquipe
+        : true;
+
       const issalesPersonValid = salesPerson
         ? venda.operador === salesPerson
         : true;
@@ -206,6 +228,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
         isDateInRange &&
         isDueDateValid &&
         issaleTypeValid &&
+        isSaleEquipeValid &&
         issalesPersonValid
       );
     });
@@ -415,6 +438,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                   endDate: "",
                   dueDate: "",
                   saleType: "",
+                  saleEquipe: "",
                   salesPerson: "",
                   saleGroup: "",
                 });

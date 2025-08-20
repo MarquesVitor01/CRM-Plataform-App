@@ -1,7 +1,6 @@
 import axios from "axios";
 import React from "react";
 import { toast, ToastContainer } from "react-toastify";
-import QRCode from "qrcode";
 import { formatValor } from "../../../../global/utils/formatters";
 
 interface SendEmailBrevoProps {
