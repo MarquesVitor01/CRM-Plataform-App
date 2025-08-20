@@ -26,8 +26,9 @@ import {
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import * as XLSX from "xlsx";
-import { Tooltip } from "react-tooltip";  
+import { Tooltip } from "react-tooltip";
 import { formatCNPJ, formatCPF } from "../../../../global/utils/formatters";
+import { useAuth } from "../../../../global/Config/context/AuthContext";
 
 interface Venda {
   id: string;
@@ -45,6 +46,7 @@ interface Venda {
   account: string;
   whatsapp: string;
   infoCancelamento: string;
+  equipeSupervisor: string;
 }
 
 interface ListDashboardProps {
@@ -68,15 +70,17 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
     endDate: "",
     dueDate: "",
     saleType: "",
+    saleEquipe: "",
+
     salesPerson: "",
     saleGroup: "",
   });
   const [activeSearchTerm, setActiveSearchTerm] = useState<string>("");
+  const { nome, cargo } = useAuth();
 
   const auth = getAuth();
   const userId = auth.currentUser?.uid;
   const adminUserId = process.env.REACT_APP_ADMIN_USER_ID;
-  const SupervisorUserId = "wWLmbV9TIUemmTkcMUSAQ4xGlju2";
   const graziId = "nQwF9Uxh0lez9ETIOmP2gCgM0pf2";
 
   useEffect(() => {
@@ -90,12 +94,27 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
           ...doc.data(),
         })) as Venda[];
 
-        const filteredVendas =
-          userId === adminUserId ||
-          userId === SupervisorUserId ||
-          userId === graziId
-            ? vendasList
-            : vendasList.filter((venda) => venda.createdBy === userId);
+        let filteredVendas: Venda[] = [];
+
+        if (userId === adminUserId || userId === graziId || cargo === "admin") {
+          filteredVendas = vendasList;
+        } else if (cargo === "supervisor") {
+          if (nome === "supervisor.frank") {
+            filteredVendas = vendasList.filter(
+              (venda) => venda.equipeSupervisor === "equipe_frank"
+            );
+          } else if (nome === "supervisor.rodrigo") {
+            filteredVendas = vendasList.filter(
+              (venda) => venda.equipeSupervisor === "equipe_rodrigo"
+            );
+          } else {
+            filteredVendas = [];
+          }
+        } else {
+          filteredVendas = vendasList.filter(
+            (venda) => venda.createdBy === userId
+          );
+        }
 
         setVendas(filteredVendas);
         setTotalVendas(filteredVendas.length);
@@ -107,7 +126,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
     };
 
     fetchVendas();
-  }, [adminUserId, setTotalVendas, userId]);
+  }, [adminUserId, setTotalVendas, userId, nome, cargo]);
 
   const handleCheckboxChange = (id: string) => {
     setSelectedItems((prevSelectedItems) => {
@@ -166,8 +185,15 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
           venda.operador.toLowerCase().includes(lowerCaseTerm));
       venda.account && venda.account.toLowerCase().includes(lowerCaseTerm);
 
-      const { startDate, endDate, dueDate, saleType, salesPerson, saleGroup } =
-        filters;
+      const {
+        startDate,
+        endDate,
+        dueDate,
+        saleType,
+        saleEquipe,
+        saleGroup,
+        salesPerson,
+      } = filters;
 
       const vendaData = new Date(venda.data);
       const isStartDateValid = startDate
@@ -186,6 +212,10 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
         : true;
 
       const isSaleTypeValid = saleType ? venda.contrato === saleType : true;
+      const isSaleEquipeValid = saleEquipe
+        ? venda.equipeSupervisor === saleEquipe
+        : true;
+
       const isSalesPersonValid = salesPerson
         ? venda.operador === salesPerson
         : true;
@@ -196,6 +226,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
         isDateInRange &&
         isDueDateValid &&
         isSaleTypeValid &&
+        isSaleEquipeValid &&
         isSalesPersonValid &&
         isGroupTypeValid
       );
@@ -399,7 +430,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
             </Link>
 
             {(userId === adminUserId ||
-              userId === SupervisorUserId ||
+              cargo === "supervisor" ||
               userId === graziId) && (
               <button
                 onClick={openModalExclusao}
@@ -440,6 +471,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                   endDate: "",
                   dueDate: "",
                   saleType: "",
+                  saleEquipe: "",
                   salesPerson: "",
                   saleGroup: "",
                 });

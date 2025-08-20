@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react"; 
+import React, { useState, useEffect } from "react";
 import { faClose } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Select from 'react-select';
+import Select from "react-select";
 import { db } from "../../../../global/Config/firebase/firebaseConfig";
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { collection, getDocs, query, where } from "firebase/firestore";
 
 interface ModalExcelProps {
   onClose: () => void;
@@ -12,6 +12,7 @@ interface ModalExcelProps {
     endDate?: string;
     dueDate?: string;
     saleType?: string;
+    saleEquipe?: string;
     salesPerson?: string;
     sorting?: string;
   }) => void;
@@ -22,32 +23,41 @@ interface Option {
   label: string;
 }
 
-export const ModalExcel: React.FC<ModalExcelProps> = ({ onClose, onApplyFilters }) => {
+export const ModalExcel: React.FC<ModalExcelProps> = ({
+  onClose,
+  onApplyFilters,
+}) => {
   const [startDate, setStartDate] = useState<string | undefined>();
   const [endDate, setEndDate] = useState<string | undefined>();
   const [dueDate, setDueDate] = useState<string | undefined>();
   const [saleType, setSaleType] = useState<string | undefined>();
+  const [saleEquipe, setSaleEquipe] = useState<string | undefined>();
+
   const [salesPerson, setSalesPerson] = useState<string | undefined>();
   const [sorting, setSorting] = useState<string | undefined>();
   const [salesPeopleOptions, setSalesPeopleOptions] = useState<Option[]>([]);
-  
-  const tipoVendaOptions: Option[] = [
-    { value: 'Base', label: 'Base' },
-    { value: 'Renovacao', label: 'Renovação' }
-  ];
-  
 
+  const tipoVendaOptions: Option[] = [
+    { value: "Base", label: "Base" },
+    { value: "Renovacao", label: "Renovação" },
+  ];
+
+    const tipoEquipeOptions: Option[] = [
+    { value: "equipe_antiga", label: "Equipe Antiga" },
+    { value: "equipe_frank", label: "Equipe Frank" },
+    { value: "equipe_ricardo", label: "Equipe Ricardo" },
+  ];
 
   useEffect(() => {
     const fetchSalesPeople = async () => {
-      const salesPeopleRef = collection(db, 'vendas');
-      const q = query(salesPeopleRef, where('setor', '==', 'vendas'));
+      const salesPeopleRef = collection(db, "vendas");
+      const q = query(salesPeopleRef, where("setor", "==", "vendas"));
       const querySnapshot = await getDocs(q);
 
       const uniqueOperators = new Set<string>(); // Usar um Set para garantir a unicidade
       const options: Option[] = [];
 
-      querySnapshot.docs.forEach(doc => {
+      querySnapshot.docs.forEach((doc) => {
         const data = doc.data();
         if (data.operador && !uniqueOperators.has(data.operador)) {
           uniqueOperators.add(data.operador);
@@ -62,17 +72,28 @@ export const ModalExcel: React.FC<ModalExcelProps> = ({ onClose, onApplyFilters 
   }, []);
 
   useEffect(() => {
-    const savedFilters = JSON.parse(localStorage.getItem("excelFilters") || "{}");
+    const savedFilters = JSON.parse(
+      localStorage.getItem("excelFilters") || "{}"
+    );
     setStartDate(savedFilters.startDate || undefined);
     setEndDate(savedFilters.endDate || undefined);
     setDueDate(savedFilters.dueDate || undefined);
     setSaleType(savedFilters.saleType || undefined);
+    setSaleEquipe(savedFilters.saleEquipe || undefined);
     setSalesPerson(savedFilters.salesPerson || undefined);
     setSorting(savedFilters.sorting || undefined);
   }, []);
 
   const handleApplyFilters = () => {
-    const filters = { startDate, endDate, dueDate, saleType, salesPerson, sorting };
+    const filters = {
+      startDate,
+      endDate,
+      dueDate,
+      saleType,
+      saleEquipe,
+      salesPerson,
+      sorting,
+    };
     localStorage.setItem("excelFilters", JSON.stringify(filters)); // Salva os filtros
     onApplyFilters(filters);
     onClose();
@@ -83,9 +104,10 @@ export const ModalExcel: React.FC<ModalExcelProps> = ({ onClose, onApplyFilters 
     setEndDate(undefined);
     setDueDate(undefined);
     setSaleType(undefined);
+    setSaleEquipe(undefined);
     setSalesPerson(undefined);
     setSorting(undefined);
-    localStorage.removeItem("excelFilters"); 
+    localStorage.removeItem("excelFilters");
   };
 
   return (
@@ -99,7 +121,9 @@ export const ModalExcel: React.FC<ModalExcelProps> = ({ onClose, onApplyFilters 
         <div className="datas mt-3">
           <div className="row">
             <div className="col-md-6 mb-3">
-              <label htmlFor="startDate" className="form-label">Início</label>
+              <label htmlFor="startDate" className="form-label">
+                Início
+              </label>
               <input
                 type="date"
                 id="startDate"
@@ -110,7 +134,9 @@ export const ModalExcel: React.FC<ModalExcelProps> = ({ onClose, onApplyFilters 
             </div>
 
             <div className="col-md-6 mb-3">
-              <label htmlFor="endDate" className="form-label">Fim</label>
+              <label htmlFor="endDate" className="form-label">
+                Fim
+              </label>
               <input
                 type="date"
                 id="endDate"
@@ -122,7 +148,9 @@ export const ModalExcel: React.FC<ModalExcelProps> = ({ onClose, onApplyFilters 
           </div>
 
           <div className="mb-3">
-            <label htmlFor="dueDate" className="form-label">Data de Vencimento</label>
+            <label htmlFor="dueDate" className="form-label">
+              Data de Vencimento
+            </label>
             <input
               type="date"
               id="dueDate"
@@ -134,30 +162,66 @@ export const ModalExcel: React.FC<ModalExcelProps> = ({ onClose, onApplyFilters 
 
           <div className="row">
             <div className="col-md-6 mb-3">
-              <label htmlFor="saleType" className="form-label">Tipo de Venda</label>
+              <label htmlFor="saleType" className="form-label">
+                Tipo de Venda
+              </label>
               <Select
                 options={tipoVendaOptions}
                 placeholder="Selecione"
                 isClearable
-                value={tipoVendaOptions.find(option => option.value === saleType) || null}
+                value={
+                  tipoVendaOptions.find(
+                    (option) => option.value === saleType
+                  ) || null
+                }
                 onChange={(option) => setSaleType(option?.value)}
               />
             </div>
 
             <div className="col-md-6 mb-3">
-              <label htmlFor="salesPerson" className="form-label">Vendedor</label>
+              <label htmlFor="saleEquipe" className="form-label">
+                Tipo de Equipe
+              </label>
+              <Select
+                options={tipoEquipeOptions}
+                placeholder="Selecione"
+                isClearable
+                value={
+                  tipoEquipeOptions.find(
+                    (option) => option.value === saleEquipe
+                  ) || null
+                }
+                onChange={(option) => setSaleEquipe(option?.value)}
+              />
+            </div>
+
+            <div className="col-md-6 mb-3">
+              <label htmlFor="salesPerson" className="form-label">
+                Vendedor
+              </label>
               <Select
                 options={salesPeopleOptions}
                 placeholder="Selecione"
                 isClearable
-                value={salesPeopleOptions.find(option => option.value === salesPerson) || null}
+                value={
+                  salesPeopleOptions.find(
+                    (option) => option.value === salesPerson
+                  ) || null
+                }
                 onChange={(option) => setSalesPerson(option?.value)}
               />
             </div>
           </div>
           <div className="d-flex justify-content-center mt-3">
-            <button className="btn btn-primary" onClick={handleApplyFilters}>Aplicar Filtros</button>
-            <button className="btn btn-secondary ms-3" onClick={handleClearFilters}>Limpar Filtros</button>
+            <button className="btn btn-primary" onClick={handleApplyFilters}>
+              Aplicar Filtros
+            </button>
+            <button
+              className="btn btn-secondary ms-3"
+              onClick={handleClearFilters}
+            >
+              Limpar Filtros
+            </button>
           </div>
         </div>
       </div>

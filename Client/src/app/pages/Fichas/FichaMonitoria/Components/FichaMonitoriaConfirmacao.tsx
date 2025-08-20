@@ -1,5 +1,5 @@
 import React from "react";
-// import { QRCodeSVG } from "qrcode.react";
+import { QRCodeSVG } from "qrcode.react";
 
 interface InfoConfirmacao {
   monitoriaConcluidaYes: boolean;
@@ -59,18 +59,6 @@ export const FichaMonitoriaConfirmacao: React.FC<InfoConfirmacaoProps> = ({
                 Sim
               </label>
             </div>
-            {/* <div className="form-check">
-              <input
-                className="form-check-input"
-                type="checkbox"
-                id={noId}
-                checked={noChecked(form)}
-                onChange={handleInputChange}
-              />
-              <label className="form-check-label" htmlFor={noId}>
-                Não
-              </label>
-            </div> */}
           </div>
         ))}
         <div className="col-md-6 box-quest">
@@ -95,42 +83,12 @@ export const FichaMonitoriaConfirmacao: React.FC<InfoConfirmacaoProps> = ({
             placeholder="Insira o link da gravação"
           />
         </div>
-        {/* <div className="col-md-6 box-quest">
-          <label>Informe o Link da Gravação:</label>
-          <input
-            className="form-control"
-            id="linkGravacao"
-            name="linkGravacao"
-            value={form.linkGravacao}
-            onChange={handleInputChange}
-            placeholder="Digite seu nome aqui"
-          />
-        </div> */}
-        {/* <div className="col-md-6 box-quest">
-          <label>Upload de Imagem:</label>
-          <input
-            className="form-control"
-            type="file"
-            id="imagemUpload"
-            accept="image/*"
-            onChange={handleImageUpload}
-          />
-          {form.imagemUrl && (
-            <div className="mt-3 img-boleto">
-              <img
-                src={form.imagemUrl}
-                alt="Preview"
-                className="img-fluid mt-2"
-              />
-            </div>
-          )}
-        </div> */}
-        {/* {form.qrcodeText && (
+        {form.linkGravacao && (
           <div className="mt-3 justify-content-center d-flex flex-column align-items-center">
             <h5>QR Code:</h5>
-            <QRCodeSVG value={form.qrcodeText} size={128} />
+            <QRCodeSVG value={form.linkGravacao} size={128} />
           </div>
-        )} */}
+        )}
       </div>
     </>
   );
