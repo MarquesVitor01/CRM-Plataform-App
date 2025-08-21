@@ -21,11 +21,11 @@ router.post("/", async (req, res) => {
 
     const sendSmtpEmail = {
       sender: {
-        email: 'lembrete1@grupomapsempresas.com.br',
-        name: 'Financeiro',
+        email: 'comercialgmaps@grupomapsempresas.com.br',
+        name: 'Comercial',
       },
       to: [{ email: to }],
-      subject: "Aviso: Vencimento próximo do seu pagamento",
+      subject: "SEJA BEM VINDO AO GRUPO MAPS",
       htmlContent,
     };
 
