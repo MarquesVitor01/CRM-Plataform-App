@@ -17,7 +17,7 @@ const auth = new google.auth.GoogleAuth({
     token_uri: process.env.SERVICE_TOKEN_URI_1,
     auth_provider_x509_cert_url: process.env.AUTH_PROVIDER_X509_CERT_URL_1,
     client_x509_cert_url: process.env.CLIENT_X509_CERT_URL_1,
-    universe_domain: process.env.UNIVERSE_DOMAIN_1
+    universe_domain: process.env.UNIVERSE_DOMAIN_1,
   },
   scopes: SCOPES,
 });
@@ -26,13 +26,13 @@ const sheets = google.sheets({ version: "v4", auth });
 
 const writeToSheet = async (data) => {
   try {
-    const spreadsheetId = "1FqWGW8hSEHs7pBPtKR2NdjRHYJ24heY323FflklcB9s";
-    const range = "Gmaps - Automação!A2";
+    const spreadsheetId = "1CgC8ZsionpVsf2Q-J5McB_pShVgQ4eHuUL459n_kWvs";
+    const range = "Venda - PowerBI!A2";
     const valueInputOption = "RAW";
 
     const existingData = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range: "Gmaps - Automação!A2:A",
+      range: "Venda - PowerBI!A2:A",
     });
 
     const existingNumeroContratos = existingData.data.values
@@ -46,25 +46,26 @@ const writeToSheet = async (data) => {
     if (uniqueData.length > 0) {
       const batchedData = uniqueData.map((row) => [
         row.numeroContrato,
-        row.cnpj,
-        row.cpf,
+        row.nomeFantasia,
+        row.razaoSocial,
         row.responsavel,
+        row.cargo,
+        row.celular,
         row.email1,
-        row.email2,
-        row.operador,
+        row.cidade,
+        row.estado,
+        row.enderecoComercial,
+        row.contrato,
         row.data,
         row.dataVencimento,
-        row.contrato,
-        row.nomeMonitor,
-        row.artLink,
-        row.contratoLink,
-        row.celular,
+        row.dataVigencia,
         row.validade,
+        row.valorParcelado,
         row.valorVenda,
-        row.linkGoogle,
-        row.anuncio ? "Sim" : "Não",
-        row.monitoriaConcluidaYes ? "Sim" : "Não",
-        row.servicosConcluidos ? "Sim" : "Não",
+        row.formaPagamento,
+        row.operador,
+        row.equipe,
+        row.equipeSupervisor,
       ]);
 
       const resource = { values: batchedData };
