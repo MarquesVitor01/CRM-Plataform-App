@@ -1,10 +1,10 @@
 const cron = require("node-cron");
-const { fetchMarketingData } = require("./marketingService");
+const { fetchMarketingData, fetchVendasData } = require("./marketingService");
 const { writeToSheet } = require("./googleSheetsService");
 
 const checkForChanges = async () => {
   try {
-    const marketingData = await fetchMarketingData();
+    const marketingData = await fetchVendasData();
 
     const newData = marketingData.filter((item) => {
       return (

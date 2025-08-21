@@ -17,6 +17,23 @@ const fetchMarketingData = async () => {
   }
 };
 
+const fetchVendasData = async () => {
+  try {
+    const vendasRef = firebaseAdmin.firestore().collection("vendas");
+    const snapshot = await vendasRef.get();
+
+    if (snapshot.empty) {
+      console.log("Nenhum documento encontrado.");
+      return [];
+    }
+
+    return snapshot.docs.map((doc) => doc.data());
+  } catch (error) {
+    console.error("Erro ao pegar dados do Firestore:", error);
+    throw error;
+  }
+};
+
 const fetchPosVendaData = async () => {
   try {
     const posVendaRef = firebaseAdmin.firestore().collection("posVendas");
@@ -35,4 +52,4 @@ const fetchPosVendaData = async () => {
 };
 
 
-module.exports = { fetchMarketingData, fetchPosVendaData };
+module.exports = { fetchMarketingData, fetchPosVendaData, fetchVendasData };
