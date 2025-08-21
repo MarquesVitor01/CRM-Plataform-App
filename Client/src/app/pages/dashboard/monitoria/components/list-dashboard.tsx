@@ -11,6 +11,7 @@ import {
   faX,
   faBars,
   faBroom,
+  faMoneyCheckDollar,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { ModalExcel } from "./modalExcel";
@@ -73,6 +74,8 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
   const auth = getAuth();
   const userId = auth.currentUser?.uid;
   const adminUserId = process.env.REACT_APP_ADMIN_USER_ID;
+    const SupervisorUserId = "wWLmbV9TIUemmTkcMUSAQ4xGlju2";
+
   const graziId = "nQwF9Uxh0lez9ETIOmP2gCgM0pf2";
   useEffect(() => {
     const fetchvendas = async () => {
@@ -87,7 +90,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
 
         let filteredVendas: Venda[] = [];
 
-        if (userId === adminUserId || userId === graziId || cargo === "admin") {
+        if (userId === adminUserId || userId === graziId || userId === SupervisorUserId || cargo === "admin") {
           filteredVendas = vendasList;
         } else if (cargo === "supervisor") {
           if (nome === "supervisor.frank") {
@@ -99,7 +102,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
               (venda) => venda.equipeSupervisor === "equipe_rodrigo"
             );
           } else {
-            filteredVendas = []; 
+            filteredVendas = [];
           }
         } else {
           filteredVendas = vendasList.filter(
@@ -433,6 +436,25 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
                         data-tooltip-content="Ficha de monitoria"
                       />
                     </Link>
+                    {venda.equipeSupervisor === "equipe_frank" ||
+                      (venda.equipeSupervisor === "equipe_rodrigo" && (
+                        <>
+                          {" "}
+                          <Link to={`/fichaboleto/${venda.id}`}>
+                            <FontAwesomeIcon
+                              icon={faMoneyCheckDollar}
+                              className="icon-spacing text-dark"
+                              data-tooltip-id="tooltip-boleto"
+                              data-tooltip-content="Ver ficha de boleto"
+                            />
+                            <Tooltip
+                              id="tooltip-boleto"
+                              place="top"
+                              className="custom-tooltip"
+                            />
+                          </Link>
+                        </>
+                      ))}
 
                     {/* Tooltips */}
                     <Tooltip

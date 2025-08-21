@@ -106,11 +106,9 @@
 
 /* =================== Assinaturas =================== */
 .assinatura-section {
-  margin-top: 40px;
-  display: flex;
+    display: flex;
   justify-content: center;
   align-items: center;
-  gap: 5px;
 }
 
 .linha-assinatura {
