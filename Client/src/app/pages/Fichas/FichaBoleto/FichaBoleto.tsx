@@ -185,7 +185,6 @@ export const FichaBoleto: React.FC = () => {
         }
       }
 
-      // Atualizar boletos no Firestore
       try {
         const docRef = doc(db, "vendas", id!);
         await updateDoc(docRef, { boleto: boletosGerados });
@@ -195,7 +194,7 @@ export const FichaBoleto: React.FC = () => {
       }
 
       setBoletoDataList(boletosGerados);
-      setShowRecorrencia(true); // Mostrar a seção de recorrência após a geração dos boletos principais
+      setShowRecorrencia(true); 
       toast.success("Boletos gerados com sucesso!");
     } catch (error) {
       console.error("Erro ao gerar boletos:", error);
@@ -228,7 +227,6 @@ export const FichaBoleto: React.FC = () => {
         throw new Error("Erro no formato da data de vencimento.");
       }
 
-      // Verificar se contrato é "Recorencia" e gerar boletos extras
       if (clientData.contrato === "Recorencia") {
         let vencimentoRecorrencia = new Date(vencimentoBase);
 
@@ -402,12 +400,12 @@ export const FichaBoleto: React.FC = () => {
     clientData && (
       <div className="fichaBoleto">
         <div className="container flex-column d-flex">
-          <button
+          {/* <button
             className="btn btn-danger btn-sair-marketing"
             onClick={sairFicha}
           >
             <FontAwesomeIcon icon={faLeftLong} />
-          </button>
+          </button> */}
           <div
             className={`boletos-container ${
               boletoDataList.length >= 12 ? "with-twelve" : ""

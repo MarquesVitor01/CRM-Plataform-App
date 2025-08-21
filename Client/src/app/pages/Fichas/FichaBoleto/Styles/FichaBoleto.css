@@ -6,6 +6,8 @@
 
 .fichaBoleto {
   background: linear-gradient(150deg, #494ba7 50%, #25bfb2 50%);
+  height: max-content;
+  padding: 200px;
 }
 
 .box-boleto {

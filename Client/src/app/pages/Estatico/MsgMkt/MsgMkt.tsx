@@ -3,18 +3,22 @@ import "../styles.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLeftLong } from "@fortawesome/free-solid-svg-icons";
 import { useParams } from "react-router-dom";
-import { doc, getDoc} from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import axios from "axios";
-import { faFilePdf } from "@fortawesome/free-solid-svg-icons";
-import html2pdf from "html2pdf.js";
-import { InfoqrMkt } from "./Components/InfoqrMkt";
-import { ToastContainer } from "react-toastify";
 import { db } from "../../../global/Config/firebase/firebaseConfig";
+import { Certificado } from "../../../global/Components/Certificado/Certificado";
 
 export const MsgMkt: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [clientData, setClientData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+
+  // status de mensagens enviadas
+  const [sentStatus, setSentStatus] = useState({
+    apresentacao: false,
+    solicitacao: false,
+    qr: false,
+  });
 
   useEffect(() => {
     const fetchClientData = async () => {
@@ -26,11 +30,11 @@ export const MsgMkt: React.FC = () => {
           if (docSnap.exists()) {
             setClientData(docSnap.data());
           } else {
-            console.log("Não encontrado");
+            console.log("Cliente não encontrado");
           }
         }
       } catch (error) {
-        console.error("Erro ao buscar os dados do cliente: ", error);
+        console.error("Erro ao buscar dados do cliente: ", error);
       } finally {
         setLoading(false);
       }
@@ -39,11 +43,13 @@ export const MsgMkt: React.FC = () => {
     fetchClientData();
   }, [id]);
 
-  const sairFicha = () => {
-    window.history.back();
-  };
+  const sairFicha = () => window.history.back();
 
-  const Msg = async () => {
+  // função genérica para envio de mensagem
+  const enviarMensagem = async (
+    tipo: "apresentacao" | "solicitacao" | "qr",
+    message: string
+  ) => {
     try {
       const celularComCodigo = `55${clientData.celular.replace(/^55/, "")}`;
 
@@ -51,23 +57,13 @@ export const MsgMkt: React.FC = () => {
         "https://crm-plataform-app-6t3u.vercel.app/api/enviar-texto-mkt",
         {
           phone: celularComCodigo,
-          message: `Segue o link de sua página no Google Maps:
-👉🏻 ${clientData.linkGoogle}
-
-Estamos criando o seu QR Code avaliativo e Certificado de perfil atualizado que pode ser impresso e colado em seu estabelecimento para que seus clientes possam avaliar sua empresa com ⭐⭐⭐⭐⭐ na plataforma de buscas do Google Maps. 
-
-Além do QR-Code, vamos encaminhar uma arte personalizada que pode ser utilizada para postagem em suas redes sociais, facilitando assim a divulgação de sua empresa. 
-
-Lembrando que  durante o período do seu plano ${clientData.validade} você pode solicitar mensalmente artes personalizadas para divulgação nas suas redes sociais e enviar mensalmente as 30 fotos e os 5 vídeos com duração de até 30 segundos, para serem incluídos em seu perfil de empresa, contribuindo assim para o aumento do seu desempenho dentro da plataforma de buscas. 📈
-
-Assim que ficar pronto te envio aqui mesmo no WhatsApp ok.
-
-Em caso de dúvidas, estou a disposição!`,
+          message,
         }
       );
+
       if (response.data.success) {
         alert("Mensagem enviada com sucesso!");
-        console.log("mensagem enviada")
+        setSentStatus((prev) => ({ ...prev, [tipo]: true }));
       } else {
         alert("Falha ao enviar a mensagem.");
       }
@@ -77,111 +73,7 @@ Em caso de dúvidas, estou a disposição!`,
     }
   };
 
-  if (loading) {
-    return <p>Carregando...</p>;
-  }
-
-  const downloadPDFAssinatura = () => {
-    const contratoElement = document.getElementById("assinatura");
-    const btn = document.getElementById("btn-baixar-pdf");
-
-    if (btn) {
-      btn.style.display = "none";
-    }
-
-    if (contratoElement) {
-      contratoElement.classList.add("modo-pdf");
-
-      const rect = contratoElement.getBoundingClientRect();
-      const widthInInches = rect.width / 96;
-      const heightInInches = rect.height / 96;
-
-      const opt: any = {
-        margin: 0,
-        filename: `${clientData.razaoSocial}.pdf`,
-        image: { type: "jpeg", quality: 0.98 },
-        html2canvas: {
-          scale: 2,
-          useCORS: true,
-          logging: false,
-        },
-        jsPDF: {
-          unit: "in",
-          format: [widthInInches, heightInInches],
-          orientation:
-            widthInInches > heightInInches ? "landscape" : "portrait",
-        },
-      };
-
-      html2pdf()
-        .set(opt)
-        .from(contratoElement)
-        .save()
-        .then(() => {
-          contratoElement.classList.remove("modo-pdf");
-          if (btn) btn.style.display = "flex";
-        })
-        .catch((error: unknown) => {
-          contratoElement.classList.remove("modo-pdf");
-          console.error("Erro ao gerar PDF:", error);
-          alert("Houve um erro ao gerar o PDF. Tente novamente.");
-          if (btn) btn.style.display = "flex";
-        });
-    } else {
-      alert("Erro: Um ou mais elementos não foram encontrados.");
-    }
-  };
-
-  const downloadPDFCertificado = () => {
-    const contratoElement = document.getElementById("certificado");
-    const btn = document.getElementById("btn-baixar-pdf");
-
-    if (btn) {
-      btn.style.display = "none";
-    }
-
-    if (contratoElement) {
-      contratoElement.classList.add("modo-pdf");
-
-      const rect = contratoElement.getBoundingClientRect();
-      const widthInInches = rect.width / 96;
-      const heightInInches = rect.height / 96;
-
-      const opt: any = {
-        margin: 0,
-        filename: `${clientData.razaoSocial}.pdf`,
-        image: { type: "jpeg", quality: 0.98 },
-        html2canvas: {
-          scale: 2,
-          useCORS: true,
-          logging: false,
-        },
-        jsPDF: {
-          unit: "in",
-          format: [widthInInches, heightInInches],
-          orientation:
-            widthInInches > heightInInches ? "landscape" : "portrait",
-        },
-      };
-
-      html2pdf()
-        .set(opt)
-        .from(contratoElement)
-        .save()
-        .then(() => {
-          contratoElement.classList.remove("modo-pdf");
-          if (btn) btn.style.display = "flex";
-        })
-        .catch((error: unknown) => {
-          contratoElement.classList.remove("modo-pdf");
-          console.error("Erro ao gerar PDF:", error);
-          alert("Houve um erro ao gerar o PDF. Tente novamente.");
-          if (btn) btn.style.display = "flex";
-        });
-    } else {
-      alert("Erro: Um ou mais elementos não foram encontrados.");
-    }
-  };
+  if (loading) return <p>Carregando...</p>;
 
   return (
     clientData && (
@@ -193,94 +85,77 @@ Em caso de dúvidas, estou a disposição!`,
           >
             <FontAwesomeIcon icon={faLeftLong} />
           </button>
+
+          {/* Info Cliente */}
           <div className="col-md-4">
             <div className="card mb-4 p-4">
               <h2 className="text-center">Informações do Cliente</h2>
-              <p>
-                <strong>CNPJ:</strong> {clientData.cnpj}
-              </p>
-              <p>
-                <strong>Razão Social:</strong> {clientData.razaoSocial}
-              </p>
-              <p>
-                <strong>Nome Fantasia:</strong> {clientData.nomeFantasia}
-              </p>
-              <p>
-                <strong>Operador:</strong> {clientData.operador}
-              </p>
-              <p>
-                <strong>Telefone:</strong>{" "}
-                {clientData.telefone || clientData.celular}
-              </p>
-              <p>
-                <strong>Whatsapp:</strong> {clientData.whatsapp}
-              </p>
-              <p>
-                <strong>Valor da Venda:</strong> {clientData.valorVenda}
-              </p>
-              <p>
-                <strong>Vencimento:</strong> {clientData.dataVencimento}
-              </p>
-              <p>
-                <strong>Observações:</strong> {clientData.observacoes}
-              </p>
-              <button className="btn btn-primary mt-3" onClick={Msg}>
-                Enviar Mensagem De Apresentação do Marketing
-              </button>
-            </div>
-          </div>
-          <div className="col-md-6">
-            <div className="bg-mktservice">
-              <div className="bg-infos-mktservice" id="assinatura">
-                <div className="box-avaliacoes">
-                  <p className="text-uppercase text-center ">
-                    Certificamos que o comércio:
-                    <span>{clientData.nomeFantasia}</span> <br />
-                    Está em dia com a atualização da sua página no Google Maps e
-                    conta com suporte da G MAPS CONTACT CENTER LTDA até{" "}
-                    {clientData.dataVigencia} .
-                  </p>
-                </div>
-                <InfoqrMkt />
-              </div>
-              <div className="btns-sections my-3" id="btn-baixar-pdf">
-                <button
-                  className="btn btn-danger"
-                  onClick={downloadPDFAssinatura}
-                >
-                  <FontAwesomeIcon icon={faFilePdf} />
-                  <span className="ms-1">Baixar PDF</span>
-                </button>
-              </div>
-              <ToastContainer />
-            </div>
-          </div>
-        </div>
+              <p><strong>CNPJ:</strong> {clientData.cnpj}</p>
+              <p><strong>Razão Social:</strong> {clientData.razaoSocial}</p>
+              <p><strong>Nome Fantasia:</strong> {clientData.nomeFantasia}</p>
+              <p><strong>Operador:</strong> {clientData.operador}</p>
+              <p><strong>Telefone:</strong> {clientData.telefone || clientData.celular}</p>
+              <p><strong>Whatsapp:</strong> {clientData.whatsapp}</p>
+              <p><strong>Valor da Venda:</strong> {clientData.valorVenda}</p>
+              <p><strong>Vencimento:</strong> {clientData.dataVencimento}</p>
+              <p><strong>Observações:</strong> {clientData.observacoes}</p>
 
-        <div className="col-md-12">
-          <div className="bg-certificado">
-            <div className="bg-infos-certificado" id="certificado">
-              <div className="box-certificado">
-                <p className="text-uppercase text-center razao-social">
-                  {clientData.nomeFantasia}
-                </p>
-              </div>
-              <div className="box-assinatura">
-                <p className="text-uppercase text-center">
-                  {clientData.nomeFantasia}
-                </p>
-              </div>
-            </div>
-            <div className="btns-sections my-3" id="btn-baixar-pdf">
+              {/* Botões */}
               <button
-                className="btn btn-danger"
-                onClick={downloadPDFCertificado}
+                className="btn btn-primary mt-3 d-flex justify-content-between align-items-center"
+                onClick={() =>
+                  enviarMensagem(
+                    "apresentacao",
+                    `Olá, ${clientData?.responsavel} EU me chamo (NOME DO ATENDENTE DO MARKETING)
+Vou seguir com seu atendimento ok!`
+                  )
+                }
               >
-                <FontAwesomeIcon icon={faFilePdf} />
-                <span className="ms-1">Baixar PDF</span>
+                Enviar Apresentação
+                <span className="ms-2">
+                  {sentStatus.apresentacao ? "✅" : "❌"}
+                </span>
+              </button>
+
+              <button
+                className="btn btn-primary mt-3 d-flex justify-content-between align-items-center"
+                onClick={() =>
+                  enviarMensagem(
+                    "solicitacao",
+                    `Lembre-se: durante todo o seu plano ${clientData?.validade}, você pode solicitar as atualizações em sua página! 
+Nos envie até 30 fotos e 5 vídeos (máx. 30s) por mês para adicionarmos ao seu perfil. Isso ajuda a aumentar seu desempenho e visibilidade no Google!`
+                  )
+                }
+              >
+                Enviar Solicitação
+                <span className="ms-2">
+                  {sentStatus.solicitacao ? "✅" : "❌"}
+                </span>
+              </button>
+
+              <button
+                className="btn btn-primary mt-3 d-flex justify-content-between align-items-center"
+                onClick={() =>
+                  enviarMensagem(
+                    "qr",
+                    `Agora vou enviar o seu QR-CODE. Você pode:
+- Imprimir e colar no balcão da loja
+- Usar no cartão digital
+- Mandar por WhatsApp para clientes após o atendimento  
+
+Quanto mais avaliações ⭐⭐⭐⭐⭐, mais destaque sua empresa ganha no Google!`
+                  )
+                }
+              >
+                Enviar QR Code
+                <span className="ms-2">{sentStatus.qr ? "✅" : "❌"}</span>
               </button>
             </div>
-            <ToastContainer />
+          </div>
+
+          {/* Certificado */}
+          <div className="col-md-7">
+            <Certificado />
           </div>
         </div>
       </div>
