@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from "react";
 import "./Styles/fichamonitoria.css";
 import { FichaMonitoriaConfirmacao } from "./Components/FichaMonitoriaConfirmacao";
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  setDoc,
-} from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, setDoc } from "firebase/firestore";
 import { useNavigate, useParams } from "react-router-dom";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { db, storage as firebaseStorage } from "../../../global/Config/firebase/firebaseConfig";
+import {
+  db,
+  storage as firebaseStorage,
+} from "../../../global/Config/firebase/firebaseConfig";
 import ConfirmModal from "../components/ConfirmModal";
+import { FichaBoleto } from "../FichaBoleto/FichaBoleto";
+import { See } from "../../Contrato/See/See";
 interface ClientData {
   googleInfoYes: boolean;
   googleInfoNo: boolean;
@@ -48,11 +47,11 @@ interface ClientData {
 export const FichaMonitoria: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [clientData, setClientData] = useState<ClientData | null>(null);
-  const [step, ] = useState(0);
   const [showModalConfirmAdd, setShowModalConfirmAdd] = useState(false);
   const [, setPendingMarketingCopy] = useState(false);
 
   const navigate = useNavigate();
+  const [step, setStep] = useState(0);
 
   const getProximoOperadorMarketing = async (): Promise<string | null> => {
     try {
@@ -62,7 +61,7 @@ export const FichaMonitoria: React.FC = () => {
       const operadoresMarketing = snapshot.docs
         .map((doc) => doc.data())
         .filter((user) => user.cargo === "marketing")
-        .sort((a, b) => a.nome.localeCompare(b.nome)); 
+        .sort((a, b) => a.nome.localeCompare(b.nome));
 
       if (operadoresMarketing.length === 0) return null;
 
@@ -270,12 +269,37 @@ export const FichaMonitoria: React.FC = () => {
             handleImageUpload={handleImageUpload}
           />
         )}
+        {clientData && step === 1 && <See />}
+        {clientData && step === 2 && <FichaBoleto />}
         <div className="mt-4 d-flex gap-4 justify-content-center">
-          {step === 0 && (
-            <button type="submit" className="btn btn-success">
-              Salvar
+          <button
+            type="button"
+            className="btn btn-danger"
+            onClick={() => window.history.back()}
+          >
+            Sair
+          </button>
+          {step > 0 && (
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={() => setStep(step - 1)}
+            >
+              Voltar
             </button>
           )}
+          {step < 2 && (
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() => setStep(step + 1)}
+            >
+              Próximo
+            </button>
+          )}
+          <button type="submit" className="btn btn-success">
+            Salvar
+          </button>
         </div>
       </form>
       <ConfirmModal

@@ -61,13 +61,13 @@ function CampoLinkContrato({ idVenda }: CampoLinkContratoProps) {
   };
 
   return (
-    <div className="col-md-12 card p-3">
-      <div className="row">
+    <div className="card p-3 card-link">
+      <div className="justify-content-center d-flex text-center">
         {[
-          { label: "Link para assinatura do contrato", campo: "linkParaAssinatura", btnClass: "btn-primary" },
-          { label: "Link do contrato assinado", campo: "contratoAssinado", btnClass: "btn-success" },
+          { label: "Link do contrato", campo: "linkParaAssinatura", btnClass: "btn-primary" },
+          // { label: "Link do contrato assinado", campo: "contratoAssinado", btnClass: "btn-success" },
         ].map(({ label, campo, btnClass }) => (
-          <div className="col-md-6 mb-4" key={campo}>
+          <div className="mb-4" key={campo}>
             <label className="form-label fw-bold">{label}</label>
             <input
               type="url"
