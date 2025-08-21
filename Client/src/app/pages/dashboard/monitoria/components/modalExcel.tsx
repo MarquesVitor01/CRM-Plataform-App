@@ -44,7 +44,7 @@ export const ModalExcel: React.FC<ModalExcelProps> = ({
     const tipoEquipeOptions: Option[] = [
     { value: "equipe_antiga", label: "Equipe Antiga" },
     { value: "equipe_frank", label: "Equipe Frank" },
-    { value: "equipe_ricardo", label: "Equipe Ricardo" },
+    { value: "equipe_rodrigo", label: "Equipe Rodrigo" },
   ];
   useEffect(() => {
     const fetchSalesPeople = async () => {

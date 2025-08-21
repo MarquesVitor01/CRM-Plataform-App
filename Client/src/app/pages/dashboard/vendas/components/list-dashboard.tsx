@@ -81,6 +81,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
   const auth = getAuth();
   const userId = auth.currentUser?.uid;
   const adminUserId = process.env.REACT_APP_ADMIN_USER_ID;
+    const SupervisorUserId = "wWLmbV9TIUemmTkcMUSAQ4xGlju2";
   const graziId = "nQwF9Uxh0lez9ETIOmP2gCgM0pf2";
 
   useEffect(() => {
@@ -96,7 +97,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
 
         let filteredVendas: Venda[] = [];
 
-        if (userId === adminUserId || userId === graziId || cargo === "admin") {
+        if (userId === adminUserId || userId === graziId || userId === SupervisorUserId || cargo === "admin") {
           filteredVendas = vendasList;
         } else if (cargo === "supervisor") {
           if (nome === "supervisor.frank") {

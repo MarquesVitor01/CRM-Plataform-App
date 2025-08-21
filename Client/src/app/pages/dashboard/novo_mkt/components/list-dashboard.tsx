@@ -93,6 +93,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
 
   const [showConcluidas] = useState(false);
   const auth = getAuth();
+    const SupervisorUserId = "wWLmbV9TIUemmTkcMUSAQ4xGlju2";
 
   useEffect(() => {
     const fetchVendas = async () => {
@@ -127,7 +128,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
 
         let filteredVendas: Venda[] = [];
 
-        if (cargo === "adm" || cargo === "marketing") {
+        if (cargo === "adm" || cargo === "marketing" || userId === SupervisorUserId) {
           filteredVendas = marketingsList;
         } else if (cargo === "supervisor") {
           if (nomeUsuario === "supervisor.frank") {

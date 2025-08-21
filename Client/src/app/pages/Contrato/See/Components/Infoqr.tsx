@@ -4,8 +4,11 @@ import { useParams } from "react-router-dom";
 import { db } from "../../../../global/Config/firebase/firebaseConfig";
 import { QRCodeSVG } from "qrcode.react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheckCircle } from "@fortawesome/free-solid-svg-icons";
-import { formatDateToBrazilian, formatValor } from "../../../../global/utils/formatters";
+import { faCheckCircle, faPlayCircle } from "@fortawesome/free-solid-svg-icons";
+import {
+  formatDateToBrazilian,
+  formatValor,
+} from "../../../../global/utils/formatters";
 
 export const Infoqr: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -199,10 +202,24 @@ export const Infoqr: React.FC = () => {
         </div>
         <div className="assinatura-section justify-content-center d-flex flex-column">
           <div className="assinatura-section justify-content-center d-flex flex-column">
-            <div className="linha-assinatura mt-5"></div>
+            <div className="d-flex flex-row justify-content-center align-items-center gap-5">
+              {" "}
+              <a href={clientData.linkGravacao} className="text-black">
+                <FontAwesomeIcon
+                  icon={faPlayCircle}
+                  className="icon-play-gravacao"
+                />
+              </a>
+              <QRCodeSVG
+                value={clientData.linkGravacao}
+                size={60}
+                className="qr-image"
+              />
+            </div>
+
+            <div className="linha-assinatura mt-4"></div>
           </div>
         </div>
-
       </div>
     )
   );

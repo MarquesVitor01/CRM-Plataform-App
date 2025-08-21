@@ -257,7 +257,7 @@ export const EditOperador: React.FC<EditOperadorProps> = ({
       />
       <InputField
         id="cargo"
-        label="Nome do Responsável"
+        label="Cargo do Responsável"
         name="cargo"
         value={form.cargo}
         onChange={handleDocumentChange}
