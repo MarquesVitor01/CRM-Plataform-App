@@ -9,8 +9,8 @@ import {
   storage as firebaseStorage,
 } from "../../../global/Config/firebase/firebaseConfig";
 import ConfirmModal from "../components/ConfirmModal";
-import { FichaBoleto } from "../FichaBoleto/FichaBoleto";
 import { See } from "../../Contrato/See/See";
+import { Boleto } from "./Components/Boleto";
 interface ClientData {
   googleInfoYes: boolean;
   googleInfoNo: boolean;
@@ -203,7 +203,6 @@ export const FichaMonitoria: React.FC = () => {
       let newId = `${id}_copia${copyNumber}`;
       let newDocRef = doc(db, "marketings", newId);
 
-      // Procura um ID disponível
       while ((await getDoc(newDocRef)).exists()) {
         copyNumber++;
         newId = `${id}_copia${copyNumber}`;
@@ -260,46 +259,35 @@ export const FichaMonitoria: React.FC = () => {
   };
 
   return (
-    <div className="ficha-monitoria">
+    <div className="ficha-monitoria row">
       <form onSubmit={handleSubmit}>
-        {clientData && step === 0 && (
-          <FichaMonitoriaConfirmacao
-            form={clientData}
-            handleInputChange={handleInputChange}
-            handleImageUpload={handleImageUpload}
-          />
-        )}
-        {clientData && step === 1 && <See />}
-        {clientData && step === 2 && <FichaBoleto />}
-        <div className="mt-4 d-flex gap-4 justify-content-center">
-          <button
-            type="button"
-            className="btn btn-danger"
-            onClick={() => window.history.back()}
-          >
-            Sair
-          </button>
-          {step > 0 && (
+        <div>
+          <div className="row">
+            <div className="col-md-6">
+              <See />
+            </div>
+            <div className="col-md-6">
+              <FichaMonitoriaConfirmacao
+                form={clientData}
+                handleInputChange={handleInputChange}
+                handleImageUpload={handleImageUpload}
+              />
+              
+            </div>
+          </div>
+
+          <div className="mt-4 d-flex gap-4 justify-content-center">
             <button
               type="button"
-              className="btn btn-secondary"
-              onClick={() => setStep(step - 1)}
+              className="btn btn-danger"
+              onClick={() => window.history.back()}
             >
-              Voltar
+              Sair
             </button>
-          )}
-          {step < 2 && (
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={() => setStep(step + 1)}
-            >
-              Próximo
+            <button type="submit" className="btn btn-success">
+              Salvar
             </button>
-          )}
-          <button type="submit" className="btn btn-success">
-            Salvar
-          </button>
+          </div>
         </div>
       </form>
       <ConfirmModal

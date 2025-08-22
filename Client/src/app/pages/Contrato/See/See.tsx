@@ -78,9 +78,9 @@ export const See: FC = () => {
   };
 
   return (
-    <div className="bg-contrato row align-items-start">
+    <div className="bg-contrato">
       <div className="row">
-        <div className="col-md-5 d-flex flex-column align-items-center justify-content-center">
+        <div className=" d-flex flex-column align-items-center justify-content-center">
           <div className="bg-infos-contrato-principal" id="contrato">
             <Header />
             <DadosEmpresa />
@@ -92,14 +92,12 @@ export const See: FC = () => {
             <FontAwesomeIcon icon={faFilePdf} /> Baixar PDF
           </button>
         </div>
-        <div className="col-md-7">
+        {/* <div className="col-md-7">
           <Mensagens />
           <CampoLinkContrato idVenda={id} />
           <Certificado />
-        </div>
+        </div> */}
       </div>
-
-      
     </div>
   );
 };

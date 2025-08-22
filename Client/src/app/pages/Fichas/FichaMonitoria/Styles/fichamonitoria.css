@@ -1,45 +1,157 @@
 .ficha-monitoria {
     background: linear-gradient(150deg, #494ba7 50%, #25BFB2 50%); 
-    height: max-content;
-    padding: 20px;
-    border-radius: 10px;
-    padding-inline: 50px;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    flex-direction: column;
-}
-
-.ficha-monitoria h2 ,
-.ficha-monitoria h3{
-    color: #fff;
-}
-
-.monitoria{
-    display: flex;
-    justify-content: space-around;
+    height: 100vh; /* altura única da tela */
     width: 100%;
+    padding: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    overflow-y: auto; /* rolagem caso passe da tela */
+    box-sizing: border-box;
+    
+}
+.auditoria-bg{
+    padding: 30px;
+}
+.ficha-monitoria h2,
+.ficha-monitoria h3 {
+    color: #fff;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.row.monitoria {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    width: 100%;
+    max-width: 1000px;
 }
 
 .box-quest {
-    background-color: #fff;
-    padding: 15px;
-    border-radius: 5px;
-    margin: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    min-width: 280px;
+    flex: 1;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     display: flex;
-    justify-content: center;
     flex-direction: column;
+    justify-content: center;
+    transition: transform 0.2s ease-in-out;
 }
 
-.box-quest label{
+.box-quest:hover {
+    transform: translateY(-4px);
+}
+
+.box-quest label {
+    font-weight: 600;
     text-align: center;
+    margin-bottom: 10px;
+    color: #333;
 }
 
-.img-boleto{
-    justify-content: center;
+.box-msg {
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     display: flex;
-    align-items: center;
     flex-direction: column;
-    width: 210px;
+    align-items: center;
+}
+
+.btn {
+    border-radius: 8px !important;
+    padding: 10px 20px;
+    font-weight: 600;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s ease-in-out;
+}
+
+.btn:hover {
+    transform: scale(1.05);
+}
+
+
+
+
+
+.btn-sair-marketing {
+  position: absolute;
+  top: 10px;
+  left: 20px;
+}
+
+.fichaBoleto {
+  background: linear-gradient(150deg, #494ba7 50%, #25bfb2 50%);
+  height: max-content;
+  padding: 200px;
+}
+
+.box-boleto {
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.boleto-card {
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  padding: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  filter: invert(100%);
+}
+
+.carousel-control-prev-icon {
+  margin-left: -200px;
+}
+
+.carousel-control-next-icon {
+  margin-right: -200px;
+}
+
+.boletos-container.with-twelve .boleto-card p {
+  font-size: 12px !important;
+}
+
+.boletos-container.with-twelve .boleto-card a {
+  font-size: 12px !important;
+}
+
+.boletos-container.with-twelve .boleto-card button {
+  font-size: 12px !important;
+  padding: 5px 10px;
+}
+
+.carousel-indicators {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.carousel-indicators button {
+  background-color: #007bff!important; 
+  color: white;
+  margin: 0 5px;
+  padding: 2px!important; 
+  font-size: 16px; 
+  display: inline-flex; 
+  justify-content: center;
+  align-items: center; 
+}
+.carousel-indicators button:hover {
+  background-color: #000000!important; 
+}
+
+.carousel-indicators button.active {
+  background-color: #007bff!important; 
 }
