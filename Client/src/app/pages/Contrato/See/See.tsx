@@ -10,9 +10,6 @@ import { Infoqr } from "./Components/Infoqr";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../../../global/Config/firebase/firebaseConfig";
 import { useParams } from "react-router-dom";
-import CampoLinkContrato from "./Components/LinkContrato";
-import { Certificado } from "../../../global/Components/Certificado/Certificado";
-import { Mensagens } from "../../../global/Components/Mensagens/Mensagens";
 
 export const See: FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -80,7 +77,7 @@ export const See: FC = () => {
   return (
     <div className="bg-contrato">
       <div className="row">
-        <div className=" d-flex flex-column align-items-center justify-content-center">
+        <div className="d-flex flex-column align-items-center justify-content-center">
           <div className="bg-infos-contrato-principal" id="contrato">
             <Header />
             <DadosEmpresa />
