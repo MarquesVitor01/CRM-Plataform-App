@@ -1,9 +1,7 @@
 .bg-contrato {
   background: linear-gradient(150deg, #494ba7 50%, #25bfb2 50%);
-  display: flex;
-  justify-content: space-between;
-  flex-direction: row;
   padding: 50px;
+  height: max-content;
 }
 
 .bg-infos-contrato-principal {

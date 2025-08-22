@@ -13,7 +13,6 @@ export const MsgMkt: React.FC = () => {
   const [clientData, setClientData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  // status de mensagens enviadas
   const [sentStatus, setSentStatus] = useState({
     apresentacao: false,
     solicitacao: false,
@@ -45,7 +44,6 @@ export const MsgMkt: React.FC = () => {
 
   const sairFicha = () => window.history.back();
 
-  // função genérica para envio de mensagem
   const enviarMensagem = async (
     tipo: "apresentacao" | "solicitacao" | "qr",
     message: string
@@ -86,7 +84,6 @@ export const MsgMkt: React.FC = () => {
             <FontAwesomeIcon icon={faLeftLong} />
           </button>
 
-          {/* Info Cliente */}
           <div className="col-md-4">
             <div className="card mb-4 p-4">
               <h2 className="text-center">Informações do Cliente</h2>
@@ -100,7 +97,6 @@ export const MsgMkt: React.FC = () => {
               <p><strong>Vencimento:</strong> {clientData.dataVencimento}</p>
               <p><strong>Observações:</strong> {clientData.observacoes}</p>
 
-              {/* Botões */}
               <button
                 className="btn btn-primary mt-3 d-flex justify-content-between align-items-center"
                 onClick={() =>
@@ -153,7 +149,6 @@ Quanto mais avaliações ⭐⭐⭐⭐⭐, mais destaque sua empresa ganha no Goo
             </div>
           </div>
 
-          {/* Certificado */}
           <div className="col-md-7">
             <Certificado />
           </div>

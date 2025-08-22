@@ -14,11 +14,9 @@ export default function SendEmailBrevo({
 }: SendEmailBrevoProps) {
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
-  const [htmlContent, setHtmlContent] = React.useState<string>("Carregando...");
 
-  React.useEffect(() => {
-    
-const html = `
+
+  const htmlContent  = `
   <div style="font-family: 'Segoe UI', Arial, sans-serif; color: #333; background: #f9f9f9; border: 1px solid #ddd; border-radius: 12px; padding: 25px; max-width: 600px; margin: auto;">
     
     <h2 style="color: #2c3e50; text-align: center; margin-bottom: 20px;">📄 Contrato dos Serviços</h2>
@@ -72,9 +70,6 @@ const html = `
     </p>
   </div>
 `;
-;
-    setHtmlContent(html);
-  }, [clientData]);
 
   const sendEmail = async () => {
     setLoading(true);
@@ -83,10 +78,7 @@ const html = `
     try {
       const response = await axios.post(
         "https://crm-plataform-app-6t3u.vercel.app/send-email-brevo",
-        {
-          to,
-          htmlContent,
-        }
+        { to, htmlContent }
       );
 
       if (response.status === 200) {
@@ -102,35 +94,20 @@ const html = `
   };
 
   return (
-    <div className=" card shadow-lg border-0 my-4">
-      <div className="card-body">
-        <h5 className="card-title text-primary mb-3">
-          📧 Pré-visualização do Email
-        </h5>
-        <div className="mb-3">
-          <h6 className="text-muted">Conteúdo:</h6>
-          <div
-            className="border rounded bg-light"
-            style={{ minHeight: "100px" }}
-            dangerouslySetInnerHTML={{ __html: htmlContent }}
-          />
-        </div>
+    <div className="">
+      <button
+        className="btn btn-primary m-2"
+        onClick={sendEmail}
+        disabled={loading}
+      >
+        {loading ? "Enviando..." : "Enviar Email"}
+      </button>
 
-        <button
-          className="btn btn-success w-100"
-          onClick={sendEmail}
-          disabled={loading}
-        >
-          {loading ? "Enviando..." : "Enviar Email"}
-        </button>
+      {error && (
+        <p className="text-danger mt-2">❌ {error}</p>
+      )}
 
-        {error && (
-          <div className="alert alert-danger mt-3" role="alert">
-            ❌ {error}
-          </div>
-        )}
-      </div>
-      <ToastContainer />
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
     </div>
   );
 }

@@ -79,20 +79,6 @@ Criação de cartão digital interativo (mediante solicitação da contratante)
 📑 Protocolo do atendimento: 2025150717
 📞 Central de atendimento: 0800 580 2766^\n\n`,
     },
-    // {
-    //   titulo: "MENSAGEM 2",
-    //   texto: `Perfeito, *${
-    //     clientData?.responsavel || "[NOME DO RESPONSÁVEL]"
-    //   }*! ✅ \n\nRecebemos sua autorização para o uso das imagens e vídeos da sua empresa e prestação dos nossos serviços.\n\nJá vamos dar início 🚀`,
-    // },
-    // {
-    //   titulo: "MENSAGEM 3",
-    //   texto: `Agora vou enviar o seu QR-CODE. Você pode:\n- Imprimir e colar no balcão da loja\n- Usar no cartão digital\n- Mandar por WhatsApp para clientes após o atendimento\n\nQuanto mais avaliações ⭐⭐⭐⭐⭐ e positivas, mais destaque sua empresa ganha no Google!`,
-    // },
-    // {
-    //   titulo: "MENSAGEM 4",
-    //   texto: `Pronto, segue seu QR-CODE!\n\nAproveite e baixe ele agora ou encaminhe para seus amigos, clientes e parentes.\n\nQuanto mais avaliações ⭐⭐⭐⭐⭐, mais destaque sua empresa ganha no Google!\n\n`,
-    // },
   ];
 
   const celularComCodigo = `55${clientData?.celular.replace(/^55/, "") || ""}`;
