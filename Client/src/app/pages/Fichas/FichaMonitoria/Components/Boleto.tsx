@@ -5,6 +5,8 @@ import { db } from "../../../../global/Config/firebase/firebaseConfig";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../Styles/fichamonitoria.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFileInvoiceDollar } from "@fortawesome/free-solid-svg-icons";
 
 interface BoletoData {
   barcode: string;
@@ -23,7 +25,7 @@ export const Boleto: React.FC = () => {
   const [, setBoletoDataList] = useState<BoletoData[]>([]);
   const [loading, setLoading] = useState(true);
   const [generatingBoleto, setGeneratingBoleto] = useState(false);
-  const [boletoGerado, setBoletoGerado] = useState(false); // ✅ estado de validação
+  const [boletoGerado, setBoletoGerado] = useState(false);
 
   const fetchClientData = useCallback(async () => {
     if (!id) return;
@@ -31,12 +33,9 @@ export const Boleto: React.FC = () => {
     try {
       const docRef = doc(db, "vendas", id);
       const docSnap = await getDoc(docRef);
-
       if (docSnap.exists()) {
         const data = docSnap.data();
         setClientData(data);
-
-        // ✅ Verifica se já tem boleto salvo
         if (Array.isArray(data.boleto) && data.boleto.length > 0) {
           setBoletoGerado(true);
           setBoletoDataList(data.boleto);
@@ -160,12 +159,11 @@ export const Boleto: React.FC = () => {
         });
       }
 
-      // ✅ Salva no Firestore
       const docRef = doc(db, "vendas", id!);
       await updateDoc(docRef, { boleto: boletosGerados });
 
       setBoletoDataList(boletosGerados);
-      setBoletoGerado(true); // ✅ Marca como gerado
+      setBoletoGerado(true);
       toast.success("Boletos gerados com sucesso!");
     } catch (error) {
       console.error("Erro ao gerar boletos:", error);
@@ -181,43 +179,54 @@ export const Boleto: React.FC = () => {
 
   return (
     clientData && (
-      <div className="mt-5 text-center">
+      <div className="">
         {boletoGerado ? (
           <p className="text-black fw-bold">✅ Boleto já foi gerado!</p>
         ) : (
           <>
             {clientData?.cpf && (
-              <button
-                className="btn btn-primary m-2"
-                onClick={() =>
-                  generateBoletos(
-                    "https://crm-plataform-app-6t3u.vercel.app/generate-boleto-cpf",
-                    true
-                  )
-                }
-                disabled={generatingBoleto || boletoGerado}
-              >
-                {generatingBoleto
-                  ? "Gerando Boletos..."
-                  : "Gerar Boletos com CPF"}
-              </button>
-            )}
-            {clientData?.cnpj && (
-              <button
-                className="btn btn-primary m-2"
-                onClick={() =>
-                  generateBoletos(
-                    "https://crm-plataform-app-6t3u.vercel.app/generate-boleto-cnpj",
-                    false
-                  )
-                }
-                disabled={generatingBoleto || boletoGerado}
-              >
-                {generatingBoleto
-                  ? "Gerando Boletos..."
-                  : "Gerar Boletos com CNPJ"}
-              </button>
-            )}
+  <button
+    className="btn-boleto-auditoria"
+    onClick={() =>
+      generateBoletos(
+        "https://crm-plataform-app-6t3u.vercel.app/generate-boleto-cpf",
+        true
+      )
+    }
+    disabled={generatingBoleto || boletoGerado}
+  >
+    {generatingBoleto ? (
+      "Emitindo Boletos..."
+    ) : (
+      <>
+        Emitir Boletos com CPF
+        <FontAwesomeIcon icon={faFileInvoiceDollar} size='lg' />
+      </>
+    )}
+  </button>
+)}
+
+{clientData?.cnpj && (
+  <button
+    className="btn-boleto-auditoria"
+    onClick={() =>
+      generateBoletos(
+        "https://crm-plataform-app-6t3u.vercel.app/generate-boleto-cnpj",
+        false
+      )
+    }
+    disabled={generatingBoleto || boletoGerado}
+  >
+    {generatingBoleto ? (
+      "Emitindo Boletos..."
+    ) : (
+      <>
+        Emitir Boletos com CNPJ
+        <FontAwesomeIcon icon={faFileInvoiceDollar} size='lg' />
+      </>
+    )}
+  </button>
+)}
           </>
         )}
         <ToastContainer position="top-right" autoClose={3000} hideProgressBar />

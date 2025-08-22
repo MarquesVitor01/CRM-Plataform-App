@@ -10,7 +10,7 @@ import {
 } from "../../../global/Config/firebase/firebaseConfig";
 import ConfirmModal from "../components/ConfirmModal";
 import { See } from "../../Contrato/See/See";
-import { Boleto } from "./Components/Boleto";
+
 interface ClientData {
   googleInfoYes: boolean;
   googleInfoNo: boolean;
@@ -41,6 +41,7 @@ interface ClientData {
   nomeMonitor: string;
   linkGravacao: string;
   operadorMkt: string;
+  linkParaAssinatura: string;
   // qrcodeText: string;
 }
 
@@ -51,7 +52,6 @@ export const FichaMonitoria: React.FC = () => {
   const [, setPendingMarketingCopy] = useState(false);
 
   const navigate = useNavigate();
-  const [step, setStep] = useState(0);
 
   const getProximoOperadorMarketing = async (): Promise<string | null> => {
     try {
@@ -263,6 +263,18 @@ export const FichaMonitoria: React.FC = () => {
       <form onSubmit={handleSubmit}>
         <div>
           <div className="row">
+            <div className="mt-4 d-flex gap-4 justify-content-center">
+            <button
+              type="button"
+              className="btn btn-danger"
+              onClick={() => window.history.back()}
+            >
+              Sair
+            </button>
+            <button type="submit" className="btn btn-success">
+              Salvar
+            </button>
+          </div>
             <div className="col-md-6">
               <See />
             </div>
@@ -275,19 +287,7 @@ export const FichaMonitoria: React.FC = () => {
               
             </div>
           </div>
-
-          <div className="mt-4 d-flex gap-4 justify-content-center">
-            <button
-              type="button"
-              className="btn btn-danger"
-              onClick={() => window.history.back()}
-            >
-              Sair
-            </button>
-            <button type="submit" className="btn btn-success">
-              Salvar
-            </button>
-          </div>
+          
         </div>
       </form>
       <ConfirmModal

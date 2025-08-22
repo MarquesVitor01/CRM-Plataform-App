@@ -125,7 +125,7 @@ export const ListDashboard: React.FC<ListDashboardProps> = ({
     };
 
     fetchvendas();
-  }, [setTotalVendas, setTotalRealizados, userId, cargo, nome]);
+  }, [setTotalVendas, setTotalRealizados, userId, cargo, nome, adminUserId]);
 
   const applyFilters = () => {
     let filteredClients = vendas.filter((venda) => {

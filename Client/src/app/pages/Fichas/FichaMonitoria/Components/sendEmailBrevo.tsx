@@ -1,7 +1,13 @@
 import axios from "axios";
 import React from "react";
 import { toast, ToastContainer } from "react-toastify";
-import { formatarCentavosParaReais, formatarDataParaBR, formatarNomeOperador, formatValor } from "../../../../global/utils/formatters";
+import {
+  formatarCentavosParaReais,
+  formatarDataParaBR,
+  formatarNomeOperador,
+} from "../../../../global/utils/formatters";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faMailBulk } from "@fortawesome/free-solid-svg-icons";
 
 interface SendEmailBrevoProps {
   to: string;
@@ -15,22 +21,33 @@ export default function SendEmailBrevo({
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
-
-  const htmlContent  = `
+  const htmlContent = `
   <div style="font-family: 'Segoe UI', Arial, sans-serif; color: #333; background: #f9f9f9; border: 1px solid #ddd; border-radius: 12px; padding: 25px; max-width: 600px; margin: auto;">
     
     <h2 style="color: #2c3e50; text-align: center; margin-bottom: 20px;">📄 Contrato dos Serviços</h2>
     
     <p style="font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
-      Olá <strong>${clientData?.responsavel || "[NOME DO RESPONSÁVEL]"}</strong>,<br><br>
-      Eu me chamo <strong>${formatarNomeOperador(clientData?.operador) || "[NOME OPERADOR]"}</strong> e será um prazer ajudar a melhorar a sua página no Google Maps! 🚀
+      Olá <strong>${
+        clientData?.responsavel || "[NOME DO RESPONSÁVEL]"
+      }</strong>,<br><br>
+      Eu me chamo <strong>${
+        formatarNomeOperador(clientData?.operador) || "[NOME OPERADOR]"
+      }</strong> e será um prazer ajudar a melhorar a sua página no Google Maps! 🚀
     </p>
 
     <div style="background: #fff; border-radius: 8px; padding: 15px; border: 1px solid #eee; margin-bottom: 20px;">
       <p style="margin: 0; font-size: 15px;">
-        ✅ Plano escolhido: <strong>${clientData?.validade || "[TIPO DE PLANO]"}</strong><br>
-        💰 Valor: <strong>R$ ${formatarCentavosParaReais(clientData?.valorVenda) || "[VALOR DA VENDA]"}</strong><br>
-        📅 Vencimento: <strong>${formatarDataParaBR(clientData?.dataVencimento) || "[DATA DE VENCIMENTO]"}</strong>
+        ✅ Plano escolhido: <strong>${
+          clientData?.validade || "[TIPO DE PLANO]"
+        }</strong><br>
+        💰 Valor: <strong>R$ ${
+          formatarCentavosParaReais(clientData?.valorVenda) ||
+          "[VALOR DA VENDA]"
+        }</strong><br>
+        📅 Vencimento: <strong>${
+          formatarDataParaBR(clientData?.dataVencimento) ||
+          "[DATA DE VENCIMENTO]"
+        }</strong>
       </p>
     </div>
 
@@ -49,7 +66,9 @@ export default function SendEmailBrevo({
 
     <p style="text-align: center; margin-bottom: 20px; font-size: 15px;">
       📥 Baixe seu contrato através do link abaixo:<br><br>
-      <a href=${clientData.linkParaAssinatura} target="_blank" style="color: #25bfb2; font-weight: bold; text-decoration: none;">
+      <a href=${
+        clientData.linkParaAssinatura
+      } target="_blank" style="color: #25bfb2; font-weight: bold; text-decoration: none;">
         🔗 ${clientData.linkParaAssinatura}
       </a>
     </p>
@@ -96,16 +115,21 @@ export default function SendEmailBrevo({
   return (
     <div className="">
       <button
-        className="btn btn-primary m-2"
+        className="btn-email-auditoria w-100"
         onClick={sendEmail}
         disabled={loading}
       >
-        {loading ? "Enviando..." : "Enviar Email"}
+        {loading ? (
+          "Enviando..."
+        ) : (
+          <>
+            <span>Enviar e-mail do contrato</span>
+            <FontAwesomeIcon icon={faMailBulk} size="lg"  />
+          </>
+        )}
       </button>
 
-      {error && (
-        <p className="text-danger mt-2">❌ {error}</p>
-      )}
+      {error && <p className="text-danger mt-2">❌ {error}</p>}
 
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
     </div>
