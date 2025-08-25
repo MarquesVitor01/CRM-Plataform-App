@@ -38,6 +38,10 @@
       {
         "src": "/buscar_cnpj(.*)",
         "dest": "/index.js"
+      },
+      {
+        "src": "/send-email-brevo(.*)",
+        "dest": "/index.js"
       }
     ]
   }
