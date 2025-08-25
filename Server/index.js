@@ -23,6 +23,10 @@ app.use(cors({
 app.use(bodyParser.json());
 app.use(express.json());
 
+app.get("/", (req, res) => {
+  res.send("🚀 Servidor rodando na porta 5000 e rota raiz funcionando!");
+});
+
 app.use("/upload", uploadRoutes);
 app.use("/generate-boleto-cnpj", boletoCnpj);
 app.use("/generate-boleto-cpf", boletoCpf);
