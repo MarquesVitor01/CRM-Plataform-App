@@ -189,7 +189,7 @@ export const FichaMonitoriaConfirmacao: React.FC<InfoConfirmacaoProps> = ({
             name="linkParaAssinatura"
             value={form.linkParaAssinatura}
             onChange={handleInputChange}
-            placeholder="Insira o link da gravação"
+            placeholder="Insira o link do contrato"
           />
         </div>
         <div className="row gap-3">
