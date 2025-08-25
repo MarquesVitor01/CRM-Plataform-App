@@ -9,6 +9,7 @@ import {
 import { Boleto } from "./Boleto";
 import SendEmailBrevo from "./sendEmailBrevo";
 import { useClientData } from "../../../../global/hooks/useClientData";
+import { useUserData } from "../../../../global/hooks/useUserData";
 
 interface InfoConfirmacao {
   monitoriaConcluidaYes: boolean;
@@ -50,6 +51,7 @@ export const FichaMonitoriaConfirmacao: React.FC<InfoConfirmacaoProps> = ({
 }) => {
   const { id } = useParams<{ id: string }>();
   const { clientData, loading } = useClientData(id);
+  const { userData } = useUserData()
 
   const [sentStatus, setSentStatus] = useState({
     apresentacao: false,
@@ -57,6 +59,7 @@ export const FichaMonitoriaConfirmacao: React.FC<InfoConfirmacaoProps> = ({
     qr: false,
   });
 
+  
   const enviarMensagem = async (tipo: "apresentacao", message: string) => {
     try {
       const celularComCodigo = `55${clientData.celular.replace(/^55/, "")}`;
@@ -66,8 +69,16 @@ export const FichaMonitoriaConfirmacao: React.FC<InfoConfirmacaoProps> = ({
         {
           phone: celularComCodigo,
           message,
+          equipeMsg: userData.equipe_msg
         }
       );
+      // const response = await axios.post(
+      //   "https://crm-plataform-app-6t3u.vercel.app/api/enviar-texto",
+      //   {
+      //     phone: celularComCodigo,
+      //     message,
+      //   }
+      // );
 
       if (response.data.success) {
         alert("Mensagem enviada com sucesso!");
