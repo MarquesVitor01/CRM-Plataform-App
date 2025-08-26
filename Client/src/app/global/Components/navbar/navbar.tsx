@@ -175,6 +175,7 @@ export const Navbar = () => {
             )}
 
             {(cargo === "marketing" ||
+            cargo === "vendas" ||
               cargo === "supervisor" ||
               userId === adminId ||
               userId === supervisorId) && (

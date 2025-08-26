@@ -33,7 +33,6 @@ export const InfoqrMkt: React.FC = () => {
     clientData && (
       <div className="bonus text-center">
         <br />
-        {/* <img src="/img/estrelas.png" alt="Logo" width={200} /> */}
         <div className="qrcode-container p-5 mt-1">
           {clientData.linkGoogle && (
             <div className="qrcode-mktservice">

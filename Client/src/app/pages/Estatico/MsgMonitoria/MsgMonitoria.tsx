@@ -3,14 +3,21 @@ import "../styles.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLeftLong } from "@fortawesome/free-solid-svg-icons";
 import { useParams } from "react-router-dom";
-import { doc, getDoc} from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { db } from "../../../global/Config/firebase/firebaseConfig";
 import axios from "axios";
+import { useUserData } from "../../../global/hooks/useUserData";
+import {
+  gerarMsgParcela,
+  gerarMsgRecorrencia,
+  gerarMsgValorCheio,
+} from "./msgMonitoriaApi";
 
 export const MsgMonitoria: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [clientData, setClientData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const { userData } = useUserData();
 
   useEffect(() => {
     const fetchClientData = async () => {
@@ -39,82 +46,19 @@ export const MsgMonitoria: React.FC = () => {
     window.history.back();
   };
 
-  const formatValor = (value: string | number | undefined): string => {
-    if (!value) return "0,00"; // Retorna um valor padrão caso seja undefined ou null
-    const num =
-      typeof value === "number" ? value.toFixed(2) : value.replace(/\D/g, "");
-    return num.replace(/(\d)(\d{2})$/, "$1,$2");
-  };
-
-  const formatDateToBrazilian = (dateString: string) => {
-    const date = new Date(dateString);
-    date.setHours(date.getHours() + 3); 
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0"); 
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
-  };
   const MsgParcela = async () => {
     try {
       const celularComCodigo = `55${clientData.celular.replace(/^55/, "")}`;
 
       const response = await axios.post(
-        "https://crm-plataform-app-6t3u.vercel.app/api/enviar-texto-vendas",
+        "https://crm-plataform-app-6t3u.vercel.app/api/enviar-texto",
         {
           phone: celularComCodigo,
-          message: `Olá,  ${clientData.responsavel}
-
-Seja bem vindo, ao Grupo Maps! 
-
-Conforme conversamos via ligação, já iniciamos o processo de atualização de sua página na plataforma de buscas do Google Maps e seu plano conosco já está ATIVO.
-
-Seu plano ${clientData.validade} de R$ ${formatValor(
-            clientData.valorVenda
-          )} a ser pago em ${
-            clientData.parcelas
-          } parcela(s) de R$ ${formatValor(
-            clientData.valorParcelado
-          )}, via boleto, ficou com o vencimento para o dia ${formatDateToBrazilian(
-            clientData.dataVencimento
-          )}.
-
-O protocolo de seu atendimento é:
-402462535
-
-Abaixo, o termo de uso/autorização para assessoria em divulgação no site Google Maps e prestação dos nossos serviços. 
-
-Os serviços a serem prestados serão; 
-
-1- Criação ou Atualização da página na Plataforma de buscas do Google Maps.
-
-2- Criação do Qr-Code Direcionador 
-
-3 - PACK com 3 artes para divulgação nas redes sociais.
-
-4 - Suporte para Criação de anúncios Patrocinados no Google Ads.
-
-5 - Adição de 5 bairros para ampliar a visibilidade da página.
-
-6 - Correção do pino localizador do estabelecimento.
-
-7 - Inclusão de 30 fotos e 5 vídeos mensalmente.
-
-8 - Alteração de endereço 
-
-9 - Alteração no horário de funcionamento.
-
-10 - Logotipo personalizada 
-
-Todos os serviços mencionados acima ⬆ estão inclusos no plano contratado.
-
-Importante ressaltar que para um trabalho bem elaborado é de extrema importância a comunicação com nosso departamento de marketing.
-
-
-Em caso de desistência será cobrado o valor proporcional dos serviços executados, conforme descrito em cláusula do contrato.
-
-Em caso de dúvidas, estou a disposição ou entre em contato com a central de atendimento 0800 580 2766`,
+          message: gerarMsgParcela(clientData),
+          equipeMsg: userData.equipe_msg,
         }
       );
+
       if (response.data.success) {
         alert("Mensagem enviada com sucesso!");
       } else {
@@ -131,56 +75,11 @@ Em caso de dúvidas, estou a disposição ou entre em contato com a central de a
       const celularComCodigo = `55${clientData.celular.replace(/^55/, "")}`;
 
       const response = await axios.post(
-        "https://crm-plataform-app-6t3u.vercel.app/api/enviar-texto-vendas",
+        "https://crm-plataform-app-6t3u.vercel.app/api/enviar-texto",
         {
           phone: celularComCodigo,
-          message: `Olá,  ${clientData.responsavel}
-
-Seja bem vindo, ao Grupo Maps! 
-
-Conforme conversamos via ligação, já iniciamos o processo de atualização de sua página na plataforma de buscas do Google Maps e seu plano conosco já está ATIVO.
-
-Seu plano *${clientData.validade}* de R$ ${formatValor(
-            clientData.valorVenda
-          )} a ser pago via boleto, ficou com o vencimento para o dia ${formatDateToBrazilian(
-            clientData.dataVencimento
-          )}.
-
-O protocolo de seu atendimento é:
-402462535
-
-Abaixo, o termo de uso/autorização para assessoria em divulgação no site Google Maps e prestação dos nossos serviços. 
-
-Os serviços a serem prestados serão; 
-
-1- Criação ou Atualização da página na Plataforma de buscas do Google Maps.
-
-2- Criação do Qr-Code Direcionador 
-
-3 - PACK com 3 artes para divulgação nas redes sociais.
-
-4 - Suporte para Criação de anúncios Patrocinados no Google Ads.
-
-5 - Adição de 5 bairros para ampliar a visibilidade da página.
-
-6 - Correção do pino localizador do estabelecimento.
-
-7 - Inclusão de 30 fotos e 5 vídeos mensalmente.
-
-8 - Alteração de endereço 
-
-9 - Alteração no horário de funcionamento.
-
-10 - Logotipo personalizada 
-
-Todos os serviços mencionados acima ⬆ estão inclusos no plano contratado.
-
-Importante ressaltar que para um trabalho bem elaborado é de extrema importância a comunicação com nosso departamento de marketing.
-
-
-Em caso de desistência será cobrado o valor proporcional dos serviços executados, conforme descrito em cláusula do contrato.
-
-Em caso de dúvidas, estou a disposição ou entre em contato com a central de atendimento 0800 580 2766`,
+          message: gerarMsgValorCheio(clientData),
+          equipeMsg: userData.equipe_msg,
         }
       );
 
@@ -200,64 +99,14 @@ Em caso de dúvidas, estou a disposição ou entre em contato com a central de a
       const celularComCodigo = `55${clientData.celular.replace(/^55/, "")}`;
 
       const response = await axios.post(
-        "https://crm-plataform-app-6t3u.vercel.app/api/enviar-texto-vendas",
+        "https://crm-plataform-app-6t3u.vercel.app/api/enviar-texto",
         {
           phone: celularComCodigo,
-          message: `Olá,  ${clientData.responsavel}
-
-Seja bem vindo, ao Grupo Maps! 
-
-Conforme conversamos via ligação, já iniciamos o processo de atualização de sua página na plataforma de buscas do Google Maps seu plano conosco já está ATIVO.
-
-Apenas reforçando que a adesão do seu plano *${
-            clientData.validade
-          }*  ficou no valor de R$ ${formatValor(
-            clientData.valorVenda
-          )} a ser pago via boleto, ficou com o vencimento para o dia ${formatDateToBrazilian(
-            clientData.dataVencimento
-          )}.
-
-Lembrando que as demais 11 parcelas de R$ 19,90 ficou com vencimento para todo dia ${
-            clientData.diaData
-          } de cada mês 
-
-O protocolo de seu atendimento é:
-402462535
-
-Abaixo, o termo de uso/autorização para assessoria em divulgação no site Google Maps e prestação dos nossos serviços. 
-
-Os serviços a serem prestados serão; 
-
-1- Criação ou Atualização da página na Plataforma de buscas do Google Maps.
-
-2- Criação do Qr-Code Direcionador 
-
-3 - PACK com 3 artes para divulgação nas redes sociais.
-
-4 - Suporte para Criação de anúncios Patrocinados no Google Ads.
-
-5 - Adição de 5 bairros para ampliar a visibilidade da página.
-
-6 - Correção do pino localizador do estabelecimento.
-
-7 - Inclusão de 30 fotos e 5 vídeos mensalmente.
-
-8 - Alteração de endereço 
-
-9 - Alteração no horário de funcionamento.
-
-10 - Logotipo personalizada 
-
-Todos os serviços mencionados acima ⬆ estão inclusos no plano contratado.
-
-Importante ressaltar que para um trabalho bem elaborado é de extrema importância a comunicação com nosso departamento de marketing.
-
-
-Em caso de desistência será cobrado o valor proporcional dos serviços executados, conforme descrito em cláusula do contrato.
-
-Em caso de dúvidas, estou a disposição ou entre em contato com a central de atendimento 0800 580 2766`,
+          message: gerarMsgRecorrencia(clientData),
+          equipeMsg: userData.equipe_msg,
         }
       );
+
       if (response.data.success) {
         alert("Mensagem enviada com sucesso!");
       } else {
@@ -274,7 +123,7 @@ Em caso de dúvidas, estou a disposição ou entre em contato com a central de a
   //     const celularComCodigo = `55${clientData.celular.replace(/^55/, "")}`;
 
   //     const response = await axios.post(
-  //       "https://crm-plataform-app-6t3u.vercel.app/api/enviar-texto-vendas",
+  //       "https://crm-plataform-app-6t3u.vercel.app/api/enviar-texto",
   //       {
   //         phone: celularComCodigo,
   //         message: `https://youtube.com/shorts/_EgS6OVUgEA`,
@@ -339,27 +188,63 @@ Em caso de dúvidas, estou a disposição ou entre em contato com a central de a
                   <strong>Observações:</strong> {clientData.observacoes}
                 </p>
                 {clientData.parcelas >= 2 && (
-                  <button className="btn btn-primary mt-3" onClick={MsgParcela}>
-                    Enviar Mensagem De Apresentação de Vendas Parceladas
-                  </button>
+                  <div className="mt-3 d-flex gap-2">
+                    <button className="btn btn-primary" onClick={MsgParcela}>
+                      Enviar Mensagem De Apresentação de Vendas Parceladas
+                    </button>
+                    <button
+                      className="btn btn-outline-secondary"
+                      onClick={() =>
+                        navigator.clipboard.writeText(
+                          gerarMsgParcela(clientData)
+                        )
+                      }
+                    >
+                      Copiar Mensagem
+                    </button>
+                  </div>
                 )}
                 {clientData.contrato !== "Recorencia" &&
                   clientData.parcelas <= 1 && (
-                    <button
-                      className="btn btn-primary mt-3"
-                      onClick={MsgValorCheio}
-                    >
-                      Enviar Mensagem De Apresentação de Vendas Sem Parcelas
-                    </button>
+                    <div className="mt-3 d-flex gap-2">
+                      <button
+                        className="btn btn-primary"
+                        onClick={MsgValorCheio}
+                      >
+                        Enviar Mensagem De Apresentação de Vendas Sem Parcelas
+                      </button>
+                      <button
+                        className="btn btn-outline-secondary"
+                        onClick={() =>
+                          navigator.clipboard.writeText(
+                            gerarMsgValorCheio(clientData)
+                          )
+                        }
+                      >
+                        Copiar Mensagem
+                      </button>
+                    </div>
                   )}
                 {clientData.contrato === "Recorencia" &&
                   clientData.parcelas <= 1 && (
-                    <button
-                      className="btn btn-primary mt-3"
-                      onClick={MsgRecorrencia}
-                    >
-                      Enviar Mensagem De Apresentação de Vendas com Recorrência
-                    </button>
+                    <>
+                      <button
+                        className="btn btn-primary mt-3"
+                        onClick={MsgRecorrencia}
+                      >
+                        Enviar Mensagem Recorrência
+                      </button>
+                      <button
+                        className="btn btn-outline-secondary mt-3 ms-2"
+                        onClick={() =>
+                          navigator.clipboard.writeText(
+                            gerarMsgRecorrencia(clientData)
+                          )
+                        }
+                      >
+                        Copiar Mensagem
+                      </button>
+                    </>
                   )}
               </div>
             </div>

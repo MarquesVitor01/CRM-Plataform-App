@@ -1,12 +1,21 @@
 import React, { useEffect, useState } from "react";
 import "../styles.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLeftLong } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCopy,
+  faLeftLong,
+  faPaperPlane,
+} from "@fortawesome/free-solid-svg-icons";
 import { useParams } from "react-router-dom";
 import { doc, getDoc } from "firebase/firestore";
 import axios from "axios";
 import { db } from "../../../global/Config/firebase/firebaseConfig";
 import { Certificado } from "../../../global/Components/Certificado/Certificado";
+import {
+  gerarMsgApresentacao,
+  gerarMsgQr,
+  gerarMsgSolicitacao,
+} from "./msgMktApi";
 
 export const MsgMkt: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -87,65 +96,112 @@ export const MsgMkt: React.FC = () => {
           <div className="col-md-4">
             <div className="card mb-4 p-4">
               <h2 className="text-center">Informações do Cliente</h2>
-              <p><strong>CNPJ:</strong> {clientData.cnpj}</p>
-              <p><strong>Razão Social:</strong> {clientData.razaoSocial}</p>
-              <p><strong>Nome Fantasia:</strong> {clientData.nomeFantasia}</p>
-              <p><strong>Operador:</strong> {clientData.operador}</p>
-              <p><strong>Telefone:</strong> {clientData.telefone || clientData.celular}</p>
-              <p><strong>Whatsapp:</strong> {clientData.whatsapp}</p>
-              <p><strong>Valor da Venda:</strong> {clientData.valorVenda}</p>
-              <p><strong>Vencimento:</strong> {clientData.dataVencimento}</p>
-              <p><strong>Observações:</strong> {clientData.observacoes}</p>
+              <p>
+                <strong>CNPJ:</strong> {clientData.cnpj}
+              </p>
+              <p>
+                <strong>Razão Social:</strong> {clientData.razaoSocial}
+              </p>
+              <p>
+                <strong>Nome Fantasia:</strong> {clientData.nomeFantasia}
+              </p>
+              <p>
+                <strong>Operador:</strong> {clientData.operador}
+              </p>
+              <p>
+                <strong>Telefone:</strong>{" "}
+                {clientData.telefone || clientData.celular}
+              </p>
+              <p>
+                <strong>Whatsapp:</strong> {clientData.whatsapp}
+              </p>
+              <p>
+                <strong>Valor da Venda:</strong> {clientData.valorVenda}
+              </p>
+              <p>
+                <strong>Vencimento:</strong> {clientData.dataVencimento}
+              </p>
+              <p>
+                <strong>Observações:</strong> {clientData.observacoes}
+              </p>
 
-              <button
-                className="btn btn-primary mt-3 d-flex justify-content-between align-items-center"
-                onClick={() =>
-                  enviarMensagem(
-                    "apresentacao",
-                    `Olá, ${clientData?.responsavel} EU me chamo (NOME DO ATENDENTE DO MARKETING)
-Vou seguir com seu atendimento ok!`
-                  )
-                }
-              >
-                Enviar Apresentação
-                <span className="ms-2">
-                  {sentStatus.apresentacao ? "✅" : "❌"}
-                </span>
-              </button>
+              <div className="btn-group mt-3">
+                <button
+                  className="btn btn-primary"
+                  onClick={() =>
+                    enviarMensagem(
+                      "apresentacao",
+                      gerarMsgApresentacao(clientData)
+                    )
+                  }
+                >
+                  <FontAwesomeIcon icon={faPaperPlane} className="me-2" />
+                  Enviar Apresentação
+                  <span className="ms-2">
+                    {sentStatus.apresentacao ? "✅" : "❌"}
+                  </span>
+                </button>
+                <button
+                  className="btn btn-outline-secondary"
+                  onClick={() =>
+                    navigator.clipboard.writeText(
+                      gerarMsgApresentacao(clientData)
+                    )
+                  }
+                >
+                  <FontAwesomeIcon icon={faCopy} className="me-2" />
+                  Copiar
+                </button>
+              </div>
 
-              <button
-                className="btn btn-primary mt-3 d-flex justify-content-between align-items-center"
-                onClick={() =>
-                  enviarMensagem(
-                    "solicitacao",
-                    `Lembre-se: durante todo o seu plano ${clientData?.validade}, você pode solicitar as atualizações em sua página! 
-Nos envie até 30 fotos e 5 vídeos (máx. 30s) por mês para adicionarmos ao seu perfil. Isso ajuda a aumentar seu desempenho e visibilidade no Google!`
-                  )
-                }
-              >
-                Enviar Solicitação
-                <span className="ms-2">
-                  {sentStatus.solicitacao ? "✅" : "❌"}
-                </span>
-              </button>
+              {/* Solicitação */}
+              <div className="btn-group mt-3">
+                <button
+                  className="btn btn-primary"
+                  onClick={() =>
+                    enviarMensagem(
+                      "solicitacao",
+                      gerarMsgSolicitacao(clientData)
+                    )
+                  }
+                >
+                  <FontAwesomeIcon icon={faPaperPlane} className="me-2" />
+                  Enviar Solicitação
+                  <span className="ms-2">
+                    {sentStatus.solicitacao ? "✅" : "❌"}
+                  </span>
+                </button>
+                <button
+                  className="btn btn-outline-secondary"
+                  onClick={() =>
+                    navigator.clipboard.writeText(
+                      gerarMsgSolicitacao(clientData)
+                    )
+                  }
+                >
+                  <FontAwesomeIcon icon={faCopy} className="me-2" />
+                  Copiar
+                </button>
+              </div>
 
-              <button
-                className="btn btn-primary mt-3 d-flex justify-content-between align-items-center"
-                onClick={() =>
-                  enviarMensagem(
-                    "qr",
-                    `Agora vou enviar o seu QR-CODE. Você pode:
-- Imprimir e colar no balcão da loja
-- Usar no cartão digital
-- Mandar por WhatsApp para clientes após o atendimento  
-
-Quanto mais avaliações ⭐⭐⭐⭐⭐, mais destaque sua empresa ganha no Google!`
-                  )
-                }
-              >
-                Enviar QR Code
-                <span className="ms-2">{sentStatus.qr ? "✅" : "❌"}</span>
-              </button>
+              {/* QR Code */}
+              <div className="btn-group mt-3">
+                <button
+                  className="btn btn-primary"
+                  onClick={() => enviarMensagem("qr", gerarMsgQr())}
+                >
+                  <FontAwesomeIcon icon={faPaperPlane} className="me-2" />
+                  Enviar QR Code
+                  <span className="ms-2">{sentStatus.qr ? "✅" : "❌"}</span>
+                </button>
+                <button
+                  className="btn btn-outline-secondary"
+                  onClick={() => navigator.clipboard.writeText(gerarMsgQr())}
+                >
+                  <FontAwesomeIcon icon={faCopy} className="me-2" />
+                  Copiar
+                </button>
+              </div>
             </div>
           </div>
 
