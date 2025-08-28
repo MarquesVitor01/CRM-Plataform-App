@@ -18,7 +18,6 @@ router.post("/", async (req, res) => {
     if (!to || !htmlContent) {
       return res.status(400).json({ error: "Campos obrigatórios: to htmlContent" });
     }
-
     const sendSmtpEmail = {
       sender: {
         email: 'comercialgmaps@grupomapsempresas.com.br',

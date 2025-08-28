@@ -8,6 +8,7 @@ const API_KEYS = {
   equipe_2535: "1749054839108-6374ad027a51b301e3aa920fe57ac497",
   equipe_9272: "1749054775632-0c626b56257e2a6f22c8aad15406fc81",
   equipe_nova: "1756131270601-6547f589401a99bc38122a3c83a45a40",
+  equipe_supervisao: "1756131270601-6547f589401a99bc38122a3c83a45a40",
 };
 
 router.post("/enviar-texto", async (req, res) => {

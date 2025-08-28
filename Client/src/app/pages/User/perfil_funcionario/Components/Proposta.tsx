@@ -35,7 +35,7 @@ const Proposta = ({ isOpen, onClose, onSave }: ModalPropostaProps) => {
 
     try {
       if (phone) {
-        await axios.post("http://crm-plataform-app-6t3u.vercel.app/api/enviar-texto", {
+        await axios.post("https://crm-plataform-app-6t3u.vercel.app/api/enviar-texto", {
           phone: `55${phone.replace(/\D/g, "")}`,
           message: gerarMsgWppProposta(
             nomeCliente,
@@ -46,7 +46,7 @@ const Proposta = ({ isOpen, onClose, onSave }: ModalPropostaProps) => {
       }
 
       if (email) {
-        await axios.post("http://crm-plataform-app-6t3u.vercel.app/send-email-brevo-proposta", {
+        await axios.post("https://crm-plataform-app-6t3u.vercel.app/send-email-brevo-proposta", {
           to: email,
           htmlContent: gerarEmailProposta(
             nomeCliente,
