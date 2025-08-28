@@ -42,7 +42,7 @@
       {
         "src": "/send-email-brevo(.*)",
         "dest": "/index.js"
-      }
+      },
       {
         "src": "/send-email-brevo-proposta(.*)",
         "dest": "/index.js"
