@@ -64,21 +64,22 @@ export const FichaMonitoriaConfirmacao: React.FC<InfoConfirmacaoProps> = ({
     try {
       const celularComCodigo = `55${clientData.celular.replace(/^55/, "")}`;
 
+      // const response = await axios.post(
+      //   "http://localhost:5000/api/enviar-texto",
+      //   {
+      //     phone: celularComCodigo,
+      //     message,
+      //     equipeMsg: userData.equipe_msg,
+      //   }
+      // );
       const response = await axios.post(
-        "http://localhost:5000/api/enviar-texto",
+        "https://crm-plataform-app-6t3u.vercel.app/api/enviar-texto",
         {
           phone: celularComCodigo,
           message,
           equipeMsg: userData.equipe_msg,
         }
       );
-      // const response = await axios.post(
-      //   "https://crm-plataform-app-6t3u.vercel.app/api/enviar-texto",
-      //   {
-      //     phone: celularComCodigo,
-      //     message,
-      //   }
-      // );
 
       if (response.data.success) {
         alert("Mensagem enviada com sucesso!");

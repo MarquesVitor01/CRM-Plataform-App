@@ -29,7 +29,7 @@ const getEfiPayInstance = (account) => {
       efipayOptions = {
         client_id: process.env.EFI_ACCOUNT4_CLIENT_ID,
         client_secret: process.env.EFI_ACCOUNT4_CLIENT_SECRET,
-        sandbox: process.env.EFI_SANDBOX === "true",
+        sandbox: process.env.EFI_SANDBOX === "false",
       };
       break;
     default:

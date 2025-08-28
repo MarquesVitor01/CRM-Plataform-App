@@ -8,7 +8,7 @@ interface OperadorProps {
     dataVencimento: string;
     operador: string;
     equipeMsg: string;
-    equipeSupervisor:string;
+    equipeSupervisor: string;
     equipe: string;
     validade: string;
     parcelas: string;
@@ -68,13 +68,13 @@ export const Operador: React.FC<OperadorProps> = ({
       }
     }
 
-    handleInputChange(e); 
+    handleInputChange(e);
   };
 
   const extractDayFromDate = (dataVencimento: string): string => {
     if (!dataVencimento) return "";
-    const [day] = dataVencimento.split("-");
-    return day || "";
+    const parts = dataVencimento.split("-");
+    return parts[2] || "";
   };
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
@@ -288,6 +288,9 @@ export const Operador: React.FC<OperadorProps> = ({
             <option value="Cento e Quarenta e Nove Reais e Noventa Centavos">
               Cento e Quarenta e Nove Reais e Noventa Centavos
             </option>
+            <option value="Noventa e Nove Reais e Noventa Centavos">
+              Noventa e Nove Reais e Noventa Centavos
+            </option>
           </select>
         </div>
       )}
@@ -334,7 +337,7 @@ export const Operador: React.FC<OperadorProps> = ({
           readOnly
         />
       </div>
-            <div className="form-group mb-3 col-md-4">
+      <div className="form-group mb-3 col-md-4">
         <label htmlFor="equipeSupervisor">equipeSupervisor</label>
         <input
           type="text"

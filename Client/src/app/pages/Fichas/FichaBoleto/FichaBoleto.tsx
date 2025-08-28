@@ -54,8 +54,8 @@ export const FichaBoleto: React.FC = () => {
   }, [fetchClientData]);
 
   const NomeRecorrente = clientData?.responsavel
-  ? `R - ${clientData.responsavel}`
-  : "Nome Padrão";
+    ? `R - ${clientData.responsavel}`
+    : "Nome Padrão";
 
   const generateBoletos = async (url: string, isCpf: boolean) => {
     setGeneratingBoleto(true);
@@ -77,24 +77,18 @@ export const FichaBoleto: React.FC = () => {
         console.error("Erro ao processar data de vencimento:", error);
         throw new Error("Erro no formato da data de vencimento.");
       }
-
-      // Extrai o dia do vencimento base
       const diaVencimento = vencimentoBase.getDate();
 
-      // Geração dos boletos principais
       for (let i = 0; i < clientData.parcelas; i++) {
         try {
           const vencimento = new Date(vencimentoBase);
           vencimento.setMonth(vencimento.getMonth() + i);
 
-          // Ajusta o dia de vencimento
           vencimento.setDate(diaVencimento);
 
-          // Verifica se o dia de vencimento existe no mês
           if (vencimento.getDate() !== diaVencimento) {
-            // Se não existir, ajusta para o próximo dia útil
-            vencimento.setDate(0); // Último dia do mês anterior
-            vencimento.setDate(diaVencimento); // Tenta novamente
+            vencimento.setDate(0); 
+            vencimento.setDate(diaVencimento); 
           }
 
           const response = await fetch(url, {
@@ -128,16 +122,18 @@ export const FichaBoleto: React.FC = () => {
                 zipcode: clientData.cep,
                 city: clientData.cidade,
                 complement: "",
-                state: clientData.estado
+                state: clientData.estado,
               },
               items: [
                 {
                   name: clientData.validade,
                   value: Number(
-                    clientData.parcelas === 1
-                      ? clientData.valorVenda
-                      : clientData.valorParcelado
-                  ),
+  clientData.contrato === "Recorencia"
+    ? i === 0
+      ? clientData.valorVenda     
+      : clientData.valorParcelado 
+    : clientData.valorParcelado     
+),
                   amount: 1,
                 },
               ],
@@ -147,14 +143,25 @@ export const FichaBoleto: React.FC = () => {
           });
 
           if (!response.ok) {
-            const responseData = await response.json();
+            let errorText: string | null = null;
+
+            try {
+              // tenta como JSON
+              const responseData = await response.json();
+              errorText = JSON.stringify(responseData);
+            } catch {
+              try {
+                // se não for JSON, pega como texto
+                errorText = await response.text();
+              } catch {
+                errorText = "sem detalhes";
+              }
+            }
+
             throw new Error(
-              `Erro na API: ${response.status} - ${JSON.stringify(
-                responseData
-              )}`
+              `Erro na API (status ${response.status}): ${errorText}`
             );
           }
-
           const result = await response.json();
           const { data } = result;
 
@@ -176,7 +183,7 @@ export const FichaBoleto: React.FC = () => {
             pdfLink: data.pdf.charge,
             status: data.status,
             chargeId: data.charge_id,
-            link: data.link
+            link: data.link,
           });
         } catch (error) {
           console.error(`Erro ao gerar boleto da parcela ${i + 1}:`, error);
@@ -193,7 +200,7 @@ export const FichaBoleto: React.FC = () => {
       }
 
       setBoletoDataList(boletosGerados);
-      setShowRecorrencia(true); 
+      setShowRecorrencia(true);
       toast.success("Boletos gerados com sucesso!");
     } catch (error) {
       console.error("Erro ao gerar boletos:", error);
@@ -263,12 +270,12 @@ export const FichaBoleto: React.FC = () => {
                   zipcode: clientData.cep,
                   city: clientData.cidade,
                   complement: "",
-                  state: clientData.estado
+                  state: clientData.estado,
                 },
                 items: [
                   {
                     name: "Superte G Maps",
-                    value: 1990,
+                    value: 3990,
                     amount: 1,
                   },
                 ],
@@ -296,7 +303,7 @@ export const FichaBoleto: React.FC = () => {
               !data?.billet_link ||
               !data?.pdf?.charge ||
               !data?.expire_at ||
-              !data?.link 
+              !data?.link
             ) {
               throw new Error("Resposta da API incompleta (Recorrência).");
             }
@@ -309,7 +316,7 @@ export const FichaBoleto: React.FC = () => {
               pdfLink: data.pdf.charge,
               status: data.status,
               chargeId: data.charge_id,
-              link: data.link
+              link: data.link,
             });
           } catch (error) {
             console.error(

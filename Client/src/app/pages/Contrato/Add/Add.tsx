@@ -66,7 +66,7 @@ export const Add = () => {
     logotipo: "",
     anuncio: "",
     grupo: "",
-    parcelaRecorrente: "1990",
+    parcelaRecorrente: "3990",
     diaData: "",
     valorExtenso: "",
     monitoriaConcluidaYes: false,
@@ -239,8 +239,6 @@ export const Add = () => {
           setErroNomeAutorizado("O nome de quem autorizou é obrigatório.");
           return;
         }
-
-        // se for equipe_antiga seta monitoriaConcluidaYes true
         const dadosAtualizados = {
           ...form,
           nomeAutorizado,
@@ -254,8 +252,6 @@ export const Add = () => {
         try {
           const novoClienteRef = doc(db, "vendas", novoId);
           await setDoc(novoClienteRef, dadosAtualizados);
-
-          // também salva na coleção marketings se for equipe_antiga
           if (form.equipeSupervisor === "equipe_antiga") {
             const marketingRef = doc(db, "marketings", novoId);
             await setDoc(marketingRef, dadosAtualizados);

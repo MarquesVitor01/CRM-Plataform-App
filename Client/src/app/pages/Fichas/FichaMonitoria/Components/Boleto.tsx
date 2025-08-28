@@ -185,48 +185,48 @@ export const Boleto: React.FC = () => {
         ) : (
           <>
             {clientData?.cpf && (
-  <button
-    className="btn-boleto-auditoria"
-    onClick={() =>
-      generateBoletos(
-        "https://crm-plataform-app-6t3u.vercel.app/generate-boleto-cpf",
-        true
-      )
-    }
-    disabled={generatingBoleto || boletoGerado}
-  >
-    {generatingBoleto ? (
-      "Emitindo Boletos..."
-    ) : (
-      <>
-        Emitir Boletos com CPF
-        <FontAwesomeIcon icon={faFileInvoiceDollar} size='lg' />
-      </>
-    )}
-  </button>
-)}
+              <button
+                className="btn-boleto-auditoria"
+                onClick={() =>
+                  generateBoletos(
+                    "https://crm-plataform-app-6t3u.vercel.app/generate-boleto-cpf",
+                    true
+                  )
+                }
+                disabled={generatingBoleto || boletoGerado}
+              >
+                {generatingBoleto ? (
+                  "Emitindo Boletos..."
+                ) : (
+                  <>
+                    Emitir Boletos com CPF
+                    <FontAwesomeIcon icon={faFileInvoiceDollar} size="lg" />
+                  </>
+                )}
+              </button>
+            )}
 
-{clientData?.cnpj && (
-  <button
-    className="btn-boleto-auditoria"
-    onClick={() =>
-      generateBoletos(
-        "https://crm-plataform-app-6t3u.vercel.app/generate-boleto-cnpj",
-        false
-      )
-    }
-    disabled={generatingBoleto || boletoGerado}
-  >
-    {generatingBoleto ? (
-      "Emitindo Boletos..."
-    ) : (
-      <>
-        Emitir Boletos com CNPJ
-        <FontAwesomeIcon icon={faFileInvoiceDollar} size='lg' />
-      </>
-    )}
-  </button>
-)}
+            {clientData?.cnpj && (
+              <button
+                className="btn-boleto-auditoria"
+                onClick={() =>
+                  generateBoletos(
+                    "https://crm-plataform-app-6t3u.vercel.app/generate-boleto-cnpj",
+                    false
+                  )
+                }
+                disabled={generatingBoleto || boletoGerado}
+              >
+                {generatingBoleto ? (
+                  "Emitindo Boletos..."
+                ) : (
+                  <>
+                    Emitir Boletos com CNPJ
+                    <FontAwesomeIcon icon={faFileInvoiceDollar} size="lg" />
+                  </>
+                )}
+              </button>
+            )}
           </>
         )}
         <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
