@@ -10,6 +10,9 @@ import { Infoqr } from "./Components/Infoqr";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../../../global/Config/firebase/firebaseConfig";
 import { useParams } from "react-router-dom";
+import { Mensagens } from "../../../global/Components/Mensagens/Mensagens";
+import CampoLinkContrato from "./Components/LinkContrato";
+import { Certificado } from "../../../global/Components/Certificado/Certificado";
 
 export const See: FC = () => {
   const { id } = useParams<{ id: string }>();

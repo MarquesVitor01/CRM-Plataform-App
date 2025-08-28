@@ -17,6 +17,7 @@ import "./Components/perfil.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { Modal, Button } from "react-bootstrap";
+import Proposta from "./Components/Proposta";
 
 interface PerfilData {
   nome: string;
@@ -30,8 +31,6 @@ interface PerfilData {
 }
 
 const avatarOptions = ["https://grupomapscartaodigital.com.br/img/mps.jpg"];
-
-// Declarar fora do componente para evitar warning
 const ADMIN_USER_ID = process.env.REACT_APP_ADMIN_USER_ID;
 
 export const Perfil: React.FC = () => {
@@ -52,16 +51,12 @@ export const Perfil: React.FC = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState("");
-  const usersPerPage = 5;
+  const [modalProposta, setModalProposta] = useState(false);
 
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
-
-  // Carregar dados do perfil
   useEffect(() => {
     const loadPerfilData = async () => {
       if (!user) return;
@@ -98,7 +93,6 @@ export const Perfil: React.FC = () => {
     loadPerfilData();
   }, [user]);
 
-  // Carregar vendas e calcular métricas
   useEffect(() => {
     const fetchVendas = async () => {
       const vendasCollection = collection(db, "vendas");
@@ -170,7 +164,6 @@ export const Perfil: React.FC = () => {
     fetchVendas();
   }, [user]);
 
-  // Buscar usuários (admin)
   useEffect(() => {
     if (user?.uid === ADMIN_USER_ID && showUserList) {
       const fetchUsuarios = async () => {
@@ -183,16 +176,6 @@ export const Perfil: React.FC = () => {
       fetchUsuarios();
     }
   }, [user, showUserList]);
-
-  const handleCargoChange = async (id: string, novoCargo: string) => {
-    const userRef = doc(db, "usuarios", id);
-    await updateDoc(userRef, { cargo: novoCargo });
-    setUsuarios((prevUsuarios) =>
-      prevUsuarios.map((usuario) =>
-        usuario.id === id ? { ...usuario, cargo: novoCargo } : usuario
-      )
-    );
-  };
 
   const handleLogout = async () => {
     try {
@@ -218,16 +201,6 @@ export const Perfil: React.FC = () => {
       setPasswordError("Senha antiga incorreta.");
     }
   };
-
-  const filteredUsers = usuarios.filter((usuario) =>
-    usuario.nome.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
-  const displayedUsers = filteredUsers.slice(
-    (currentPage - 1) * usersPerPage,
-    currentPage * usersPerPage
-  );
 
   const backHome = () => {
     window.history.back();
@@ -259,85 +232,12 @@ export const Perfil: React.FC = () => {
       </div>
 
       <footer className="profile-footer mt-5">
-        {user?.uid === ADMIN_USER_ID && (
-          <>
-            <button
-              className="btn btn-secondary"
-              onClick={() => setShowUserList((prev) => !prev)}
-            >
-              {showUserList ? "Ocultar Usuários" : "Mostrar Usuários"}
-            </button>
-
-            {showUserList && (
-              <div className="mystic-veil">
-                <div className="command-center">
-                  <h3>Gestão de Usuários</h3>
-                  <button
-                    className="exit-button"
-                    onClick={() => setShowUserList(false)}
-                  >
-                    Fechar
-                  </button>
-
-                  <input
-                    type="text"
-                    placeholder="Pesquisar usuários..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="search-perfil"
-                  />
-
-                  {displayedUsers.map((usuario) => (
-                    <div key={usuario.id} className="user-profile">
-                      <span>{usuario.nome}</span>
-                      <select
-                        value={usuario.cargo}
-                        onChange={(e) =>
-                          handleCargoChange(usuario.id, e.target.value)
-                        }
-                        className="styled-select"
-                      >
-                        <option value="">Selecione</option>
-                        <option value="vendas">Vendas</option>
-                        <option value="monitoria">Monitoria</option>
-                        <option value="marketing">Marketing</option>
-                        <option value="financeiro">Financeiro</option>
-                        <option value="cobranca">Cobrança</option>
-                      </select>
-                    </div>
-                  ))}
-
-                  <div className="paginationn">
-                    <button
-                      className="arrow-button"
-                      onClick={() =>
-                        setCurrentPage((prev) => Math.max(prev - 1, 1))
-                      }
-                      disabled={currentPage === 1}
-                      aria-label="Página Anterior"
-                    >
-                      <span>&lt;</span>
-                    </button>
-
-                    <button
-                      className="arrow-button"
-                      onClick={() =>
-                        setCurrentPage((prev) =>
-                          Math.min(prev + 1, totalPages)
-                        )
-                      }
-                      disabled={currentPage === totalPages}
-                      aria-label="Próxima Página"
-                    >
-                      <span>&gt;</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-          </>
-        )}
-
+        <button
+          className="btn btn-secondary"
+          onClick={() => setModalProposta(true)}
+        >
+          Enviar Proposta
+        </button>
         <button
           className="btn btn-primary"
           onClick={() => setIsModalOpen(true)}
@@ -368,6 +268,14 @@ export const Perfil: React.FC = () => {
           }
         }}
       />
+
+      {modalProposta && (
+        <Proposta
+          isOpen={modalProposta}
+          onClose={() => setModalProposta(false)}
+          onSave={() => {}}
+        />
+      )}
 
       <Modal
         show={showChangePasswordModal}

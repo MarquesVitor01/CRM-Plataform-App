@@ -11,6 +11,7 @@ const syncPos = require("./routes/sync-posVenda")
 const sendMessageRoute = require("./routes/sendMessage");
 const buscarCnpj = require("./routes/buscarCnpj");
 const sendEmailBrevo = require("./routes/sendEmailBrevo");
+const sendEmailBrevoProposta = require("./routes/sendEmailBrevoProposta");
 
 
 const app = express();
@@ -36,6 +37,7 @@ app.use("/sync-posVenda", syncPos);
 app.use("/api", sendMessageRoute);
 app.use("/buscar_cnpj", buscarCnpj);
 app.use("/send-email-brevo", sendEmailBrevo);
+app.use("/send-email-brevo-proposta", sendEmailBrevoProposta);
 
 
 // const atualizarPlanilha = async () => {

@@ -10,6 +10,7 @@ import { Boleto } from "./Boleto";
 import SendEmailBrevo from "./sendEmailBrevo";
 import { useClientData } from "../../../../global/hooks/useClientData";
 import { useUserData } from "../../../../global/hooks/useUserData";
+import { gerarMsgApresentacao } from "../../../Estatico/MsgMkt/msgMktApi";
 
 interface InfoConfirmacao {
   monitoriaConcluidaYes: boolean;
@@ -51,7 +52,7 @@ export const FichaMonitoriaConfirmacao: React.FC<InfoConfirmacaoProps> = ({
 }) => {
   const { id } = useParams<{ id: string }>();
   const { clientData, loading } = useClientData(id);
-  const { userData } = useUserData()
+  const { userData } = useUserData();
 
   const [sentStatus, setSentStatus] = useState({
     apresentacao: false,
@@ -59,17 +60,16 @@ export const FichaMonitoriaConfirmacao: React.FC<InfoConfirmacaoProps> = ({
     qr: false,
   });
 
-  
   const enviarMensagem = async (tipo: "apresentacao", message: string) => {
     try {
       const celularComCodigo = `55${clientData.celular.replace(/^55/, "")}`;
 
       const response = await axios.post(
-        "https://crm-plataform-app-6t3u.vercel.app/api/enviar-texto",
+        "http://localhost:5000/api/enviar-texto",
         {
           phone: celularComCodigo,
           message,
-          equipeMsg: userData.equipe_msg
+          equipeMsg: userData.equipe_msg,
         }
       );
       // const response = await axios.post(
@@ -127,6 +127,9 @@ export const FichaMonitoriaConfirmacao: React.FC<InfoConfirmacaoProps> = ({
     Criação de logotipo (mediante solicitação da contratante)
     
     Criação de cartão digital interativo (mediante solicitação da contratante)
+
+    Baixe seu contrato através do link abaixo: \n
+    ${form?.linkParaAssinatura || "[LINK DO CONTRATO]"}
     
     ⚠️ Importante: Como se trata de prestação de serviços executados mediante aceite verbal, todos os serviços serão realizados antes da conclusão do pagamento. Ressaltamos que não é possível cancelar o serviço após sua execução, visto que os benefícios já terão sido entregues à empresa.
     
@@ -213,6 +216,22 @@ export const FichaMonitoriaConfirmacao: React.FC<InfoConfirmacaoProps> = ({
               )}
             </button>
           </div>
+
+          {userData?.cargo === "vendas" && (
+            <div className="col-md-12">
+              <button
+                className="btn btn-secondary w-100"
+                onClick={() =>
+                  navigator.clipboard.writeText(
+                    gerarMsgApresentacao(clientData)
+                  )
+                }
+              >
+                Copiar Mensagem de Apresentação
+              </button>
+            </div>
+          )}
+
           <div className="col-md-12">
             <SendEmailBrevo to={clientData.email1} clientData={clientData} />
           </div>
