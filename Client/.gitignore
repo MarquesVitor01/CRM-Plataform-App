@@ -12,6 +12,7 @@
 
 # production
 /build
+Server/.env_local
 
 
 # misc
