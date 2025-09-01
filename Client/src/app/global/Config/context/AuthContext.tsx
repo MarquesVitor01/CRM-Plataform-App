@@ -16,6 +16,7 @@ interface AuthContextType {
   cargo: string;
   equipe_msg: string;
   equipe_supervisor: string;
+  equipe_boleto: string;
   userId: string;
   loading: boolean;
   logout: () => Promise<void>;
@@ -34,6 +35,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const [cargo, setCargo] = useState<string>("");
   const [equipe_msg, setEquipe_msg] = useState<string>("");
   const [equipe_supervisor, setEquipe_supervisor] = useState<string>("");
+  const [equipe_boleto, setEquipe_boleto] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState<any>(null);
 
@@ -61,6 +63,7 @@ useEffect(() => {
         setCargo(data?.cargo || "");
         setEquipe_msg(data?.equipe_msg || "");
         setEquipe_supervisor(data?.equipe_supervisor || "");
+        setEquipe_boleto(data?.equipe_boleto || "");
       } else {
         await setDoc(docRef, {
           nome: nomeUsuario,
@@ -69,12 +72,14 @@ useEffect(() => {
           cargo: "",
           equipe_msg: "",
           equipe_supervisor: "",
+          equipe_boleto: "",
         });
         setNome(nomeUsuario);
         setAvatar("");
         setCargo("");
         setEquipe_msg("");
         setEquipe_supervisor("");
+        setEquipe_boleto("");
       }
     } else {
       setUser(null);
@@ -83,6 +88,7 @@ useEffect(() => {
       setCargo("");
       setEquipe_msg("");
       setEquipe_supervisor("");
+      setEquipe_boleto("");
       lastProcessedUser.current = null;
     }
 
@@ -102,6 +108,7 @@ useEffect(() => {
       setCargo("");
       setEquipe_msg("");
       setEquipe_supervisor("");
+      setEquipe_boleto("");
       setUserData(null); 
       lastProcessedUser.current = null;
     } catch (error) {
@@ -118,6 +125,7 @@ useEffect(() => {
         cargo,
         equipe_msg,
         equipe_supervisor,
+        equipe_boleto,
         userId: user?.uid || "",
         loading,
         logout,

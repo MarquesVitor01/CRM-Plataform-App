@@ -137,7 +137,7 @@ export const FichaBoleto: React.FC = () => {
                   amount: 1,
                 },
               ],
-              account: clientData.equipeMsg,
+              account: clientData.equipeBoleto,
               dataVencimento: vencimento.toISOString().split("T")[0],
             }),
           });
@@ -279,7 +279,7 @@ export const FichaBoleto: React.FC = () => {
                     amount: 1,
                   },
                 ],
-                account: clientData.equipeMsg,
+                account: clientData.equipeBoleto,
                 dataVencimento: vencimentoRecorrencia
                   .toISOString()
                   .split("T")[0],

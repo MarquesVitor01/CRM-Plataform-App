@@ -18,7 +18,7 @@ interface Parcela {
 
 export const Add = () => {
   const userId = auth.currentUser?.uid;
-  const { nome, cargo, equipe_msg, equipe_supervisor } = useAuth();
+  const { nome, cargo, equipe_msg, equipe_supervisor,equipe_boleto } = useAuth();
   const [form, setForm] = useState({
     numeroContrato: "",
     data: new Date().toISOString().split("T")[0],
@@ -28,6 +28,7 @@ export const Add = () => {
     setor: cargo,
     equipeMsg: equipe_msg,
     equipeSupervisor: equipe_supervisor,
+    equipeBoleto: equipe_boleto,
     equipe: "G MARKETING DIGITAL",
     account: "",
     razaoSocial: "",
@@ -359,8 +360,6 @@ export const Add = () => {
         handleModalShow();
       } else {
         await setDoc(clienteRef, dadosParaSalvar);
-
-        // também salva na coleção marketings se for equipe_antiga
         if (form.equipeSupervisor === "equipe_antiga") {
           const marketingRef = doc(db, "marketings", form.numeroContrato);
           await setDoc(marketingRef, dadosParaSalvar);
