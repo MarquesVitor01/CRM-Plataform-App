@@ -5,7 +5,7 @@ export const gerarMsgWppProposta = (
   nomeOperador: string,
 ) => {
   return `Oi ${nomeCliente}! Tudo bem? 🙂
-Aqui é o ${formatarNomeOperador(nomeOperador)}, do Grupo Maps.
+Me chamo ${formatarNomeOperador(nomeOperador)}, do Grupo Maps.
 
 Preparei sua proposta e já deixei disponível neste link:
 👉 https://drive.google.com/file/d/1itHhGgOo0MkSqDLejb0cv3rjI0_NNUZ5/view?usp=sharing

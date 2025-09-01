@@ -23,6 +23,10 @@ const getHttpsAgent = (account) => {
       certPath = process.env.GN_CERT4;
       passphrase = process.env.GN_CERT_PASSPHRASE || "";
       break;
+    case "equipe_supervisao":
+      certPath = process.env.GN_CERT4;
+      passphrase = process.env.GN_CERT_PASSPHRASE || "";
+      break;
     default:
       certPath = process.env.GN_CERT;
       passphrase = process.env.GN_CERT_PASSPHRASE || "";

@@ -32,6 +32,13 @@ const getEfiPayInstance = (account) => {
         sandbox: process.env.EFI_SANDBOX === "true",
       };
       break;
+      case "equipe_supervisao":
+      efipayOptions = {
+        client_id: process.env.EFI_ACCOUNT4_CLIENT_ID,
+        client_secret: process.env.EFI_ACCOUNT4_CLIENT_SECRET,
+        sandbox: process.env.EFI_SANDBOX === "true",
+      };
+      break;
     default:
       efipayOptions = {
         client_id: process.env.EFI_DEFAULT_CLIENT_ID,
