@@ -2,7 +2,12 @@ import { doc, getDoc } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { db } from "../../../../global/Config/firebase/firebaseConfig";
 import { useParams } from "react-router-dom";
-import { formatCelular, formatCNPJ, formatCPF, formatFixo } from "../../../../global/utils/formatters";
+import {
+  formatCelular,
+  formatCNPJ,
+  formatCPF,
+  formatFixo,
+} from "../../../../global/utils/formatters";
 
 export const DadosEmpresa: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -91,6 +96,15 @@ export const DadosEmpresa: React.FC = () => {
               <p>
                 <strong>HORÁRIO DE FUNCIONAMENTO:</strong>{" "}
                 {clientData.horarioFuncionamento}
+              </p>
+              <p>
+                <strong>LINK DA PÁGINA:</strong>{" "}
+                <a href={clientData?.linkGoogle}>
+                  {clientData.linkGoogle
+                    ? clientData.linkGoogle.slice(0, 20) +
+                      (clientData.linkGoogle.length > 20 ? "..." : "")
+                    : "—"}
+                </a>
               </p>
             </div>
           </div>

@@ -1,11 +1,10 @@
-import {
-  faCheckCircle,
-} from "@fortawesome/free-solid-svg-icons";
+import { faCheckCircle, faPlayCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { doc, getDoc } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { db } from "../../../../global/Config/firebase/firebaseConfig";
+import { QRCodeSVG } from "qrcode.react";
 
 export const Condicoes: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -68,33 +67,35 @@ export const Condicoes: React.FC = () => {
             pagamento deverá ser efetuado na data de vencimento conforme
             combinado no momento da adesão, O Boleto para pagamento será enviado
             através das opções existentes no e-mail e whatsapp, que será enviado
-            ao CLIENTE pela {clientData.equipeSupervisor === "equipe_antiga"
+            ao CLIENTE pela{" "}
+            {clientData.equipeSupervisor === "equipe_antiga"
               ? "G.MAPS CONTACT CENTER LTDA"
-              : "G MAPS MARKETING DIGITAL LTDA"}, nominado como “LEMBRETE
-            DE VENCIMENTO ”. Este e-mail/mensagem será disparado aos e-mails de
-            cadastro do CLIENTE em no mínimo 3 dias antes da data do vencimento,
-            o valor do plano refere-se somente para a gestão e otimização da
-            página, a responsabiliade dos envios de informações são
-            exclusivamente do CONTRATANTE. 4.2 O atraso no pagamento de qualquer
-            parcela implicará, no vencimento antecipado do saldo devedor e o
-            envio aos Orgãos de Proteção ao Crédito(SPC/SERASA)e ( Protesto em
-            Cartório) em casos de atraso no pagamento por 7 dias ou mais. Os
-            serviços contratados serão suspensos até que haja a devida
-            regularização por parte do CLIENTE ,não havendo regularização do
-            debito, estará suspensos todos os serviços.partes. O não pagamento
-            poderá acarretar a suspensão imediata dos serviços. 5. PRAZO DE
-            EXECUÇÃO E RENOVAÇÃO Os serviços serão prestados pelo prazo
-            contratado, podendo ser renovados automaticamente se não houver
-            manifestação expressa em contrário por qualquer das partes, com
-            antecedência mínima de 30 (Trinta) dias do término do contrato. 6.
-            LIMITAÇÕES DE RESPONSABILIDADE A {clientData.equipeSupervisor === "equipe_antiga"
+              : "G MAPS MARKETING DIGITAL LTDA"}
+            , nominado como “LEMBRETE DE VENCIMENTO ”. Este e-mail/mensagem será
+            disparado aos e-mails de cadastro do CLIENTE em no mínimo 3 dias
+            antes da data do vencimento, o valor do plano refere-se somente para
+            a gestão e otimização da página, a responsabiliade dos envios de
+            informações são exclusivamente do CONTRATANTE. 4.2 O atraso no
+            pagamento de qualquer parcela implicará, no vencimento antecipado do
+            saldo devedor e o envio aos Orgãos de Proteção ao
+            Crédito(SPC/SERASA)e ( Protesto em Cartório) em casos de atraso no
+            pagamento por 7 dias ou mais. Os serviços contratados serão
+            suspensos até que haja a devida regularização por parte do CLIENTE
+            ,não havendo regularização do debito, estará suspensos todos os
+            serviços.partes. O não pagamento poderá acarretar a suspensão
+            imediata dos serviços. 5. PRAZO DE EXECUÇÃO E RENOVAÇÃO Os serviços
+            serão prestados pelo prazo contratado, podendo ser renovados
+            automaticamente se não houver manifestação expressa em contrário por
+            qualquer das partes, com antecedência mínima de 30 (Trinta) dias do
+            término do contrato. 6. LIMITAÇÕES DE RESPONSABILIDADE A{" "}
+            {clientData.equipeSupervisor === "equipe_antiga"
               ? "G.MAPS CONTACT CENTER LTDA"
-              : "G MAPS MARKETING DIGITAL LTDA"} não se
-            responsabiliza por alterações, suspensões ou bloqueios realizados
-            diretamente pelo Google em perfis de empresas, tampouco por
-            políticas ou critérios de indexação e ranqueamento definidos pela
-            plataforma. O serviço contratado é de meio e não de resultado, ou
-            seja, não há garantia de posicionamento específico na busca do
+              : "G MAPS MARKETING DIGITAL LTDA"}{" "}
+            não se responsabiliza por alterações, suspensões ou bloqueios
+            realizados diretamente pelo Google em perfis de empresas, tampouco
+            por políticas ou critérios de indexação e ranqueamento definidos
+            pela plataforma. O serviço contratado é de meio e não de resultado,
+            ou seja, não há garantia de posicionamento específico na busca do
             Google Maps. 7. CONFIDENCIALIDADE E DADOS Todas as informações
             trocadas entre as partes serão tratadas com confidencialidade. Os
             dados fornecidos pelo CONTRATANTE serão utilizados apenas para fins
@@ -122,10 +123,29 @@ export const Condicoes: React.FC = () => {
                   size="lg"
                 />
                 {"  "}
-                CONCORDO COM OS TERMOS DE SERVIÇOS;
+                CONCORDO COM OS TERMOS DE SERVIÇOS,<br /> ACEITE REALIZADO DE FORMA VERBAL CONFORME GRAVAÇÃO DO ATENDIMENTO ABAIXO
               </p>
             </div>
-            <div className="linha-assinatura mt-5"></div>
+            <div className="assinatura-section justify-content-center d-flex flex-column mt-2">
+              <div className="assinatura-section justify-content-center d-flex flex-column">
+                <div className="d-flex flex-row justify-content-center align-items-center gap-5">
+                  {" "}
+                  <a href={clientData.linkGravacao} className="text-black">
+                    <FontAwesomeIcon
+                      icon={faPlayCircle}
+                      className="icon-play-gravacao"
+                    />
+                  </a>
+                  <QRCodeSVG
+                    value={clientData.linkGravacao}
+                    size={60}
+                    className="qr-image"
+                  />
+                </div>
+
+                <div className="linha-assinatura mt-4"></div>
+              </div>
+            </div>
           </div>
         </div>
         <h5 className="mt-2 text-center">CENTRAL DE ATENDIMENTO</h5>

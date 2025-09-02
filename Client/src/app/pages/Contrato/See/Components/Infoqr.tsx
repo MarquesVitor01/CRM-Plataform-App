@@ -38,7 +38,7 @@ export const Infoqr: React.FC = () => {
   return (
     clientData && (
       <div className="bonus  text-center gravacao">
-        <h5 className="text-center text-uppercase">
+        {/* <h5 className="text-center text-uppercase">
           Visualize sua página no Google
         </h5>
         <div className="img-google">
@@ -66,7 +66,7 @@ export const Infoqr: React.FC = () => {
               </p>
             </div>
           )}
-        </div>
+        </div> */}
         <h5 className="text-white cond-pagamento">CONDIÇÕES DE PAGAMENTO</h5>
         <div className="d-flex align-items-center check-termos">
           <p className="mb-0 ms-1 ">
@@ -200,26 +200,50 @@ export const Infoqr: React.FC = () => {
               )}
           </p>
         </div>
-        <div className="assinatura-section justify-content-center d-flex flex-column">
-          <div className="assinatura-section justify-content-center d-flex flex-column">
-            <div className="d-flex flex-row justify-content-center align-items-center gap-5">
-              {" "}
-              <a href={clientData.linkGravacao} className="text-black">
-                <FontAwesomeIcon
-                  icon={faPlayCircle}
-                  className="icon-play-gravacao"
-                />
-              </a>
-              <QRCodeSVG
-                value={clientData.linkGravacao}
-                size={60}
-                className="qr-image"
-              />
-            </div>
-
-            <div className="linha-assinatura mt-4"></div>
+        <div className="boleto-container">
+          <div className="boleto-logo">
+            <img src={require("../../../../Assets/logo-efi.png")} alt="EFI Pay" />
           </div>
-        </div>
+          <div className="boleto-header">
+            <div className="boleto-info">
+              <div className="header-boleto">
+                <p className="">
+                  Código do boleto: <br />
+                  {clientData.boleto?.[0]?.barcode}
+                </p>
+                <p className="">
+                  Link do boleto: <br />
+                  <a href={clientData.boleto?.[0]?.billetLink}>
+                    {clientData.boleto?.[0]?.billetLink}
+                  </a>
+                </p>
+              </div>
+              <div className="code-boleto">
+                <p className="">
+                  QrCode para pagamento:
+                  {clientData.boleto?.[0]?.pix && (
+                    <div className="">
+                      <QRCodeSVG
+                        value={clientData.boleto?.[0]?.pix}
+                        size={70}
+                      />
+                    </div>
+                  )}
+                </p>
+              </div>
+              <p className="">
+                <a href={clientData.boleto?.[0]?.link}>
+                  {clientData.boleto?.[0]?.link}
+                </a>
+              </p>
+              <p className="">
+                Data de vencimento:{" "}
+                {formatDateToBrazilian(clientData.dataVencimento)}
+              </p>
+            </div>
+          </div>
+        </div>
+
       </div>
     )
   );

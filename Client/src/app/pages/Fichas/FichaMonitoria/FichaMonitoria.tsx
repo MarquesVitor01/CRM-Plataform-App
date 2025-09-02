@@ -260,36 +260,40 @@ export const FichaMonitoria: React.FC = () => {
 
   return (
     <div className="ficha-monitoria row">
-      <form onSubmit={handleSubmit}>
-        <div>
-          <div className="row">
-            <div className="mt-4 d-flex gap-4 justify-content-center">
-            <button
-              type="button"
-              className="btn btn-danger"
-              onClick={() => window.history.back()}
-            >
-              Sair
-            </button>
-            <button type="submit" className="btn btn-success">
-              Salvar
-            </button>
-          </div>
-            <div className="col-md-6">
-              <See />
-            </div>
-            <div className="col-md-6">
-              <FichaMonitoriaConfirmacao
-                form={clientData}
-                handleInputChange={handleInputChange}
-                handleImageUpload={handleImageUpload}
-              />
-              
-            </div>
-          </div>
-          
-        </div>
+      <div>
+  <div className="row">
+    {/* Botões */}
+    <div className="mt-4 d-flex gap-4 justify-content-center">
+      <button
+        type="button"
+        className="btn btn-danger"
+        onClick={() => window.history.back()}
+      >
+        Sair
+      </button>
+      <button type="submit" form="form-confirmacao" className="btn btn-success">
+        Salvar
+      </button>
+    </div>
+
+    {/* Coluna com See (fora do form) */}
+    <div className="col-md-6">
+      <See />
+    </div>
+
+    {/* Coluna com form */}
+    <div className="col-md-6">
+      <form id="form-confirmacao" onSubmit={handleSubmit}>
+        <FichaMonitoriaConfirmacao
+          form={clientData}
+          handleInputChange={handleInputChange}
+          handleImageUpload={handleImageUpload}
+        />
       </form>
+    </div>
+  </div>
+</div>
+
       <ConfirmModal
         show={showModalConfirmAdd}
         title="Duplicar cliente"
