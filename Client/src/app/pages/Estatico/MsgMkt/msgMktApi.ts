@@ -9,6 +9,8 @@ Lembre-se: durante todo o seu plano ${clientData?.validade}, você pode solicita
 
 Nos envie até 30 fotos e 5 vídeos (máx. 30s) por mês para adicionarmos ao seu perfil. 
 Isso ajuda a aumentar seu desempenho e visibilidade no Google!
+
+Segue o link da sua página: ${clientData?.linkGoogle}
 `;
 
 export const gerarMsgQr = () => `
