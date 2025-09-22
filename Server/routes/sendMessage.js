@@ -4,8 +4,8 @@ const axios = require("axios");
 const router = express.Router();
 
 const API_KEYS = {
-  equipe_nova: "1757002495125-6ca9eb169caec4c3eecb21d6e40898f8",
-  equipe_supervisao: "1757002495125-6ca9eb169caec4c3eecb21d6e40898f8",
+  equipe_nova: "1756497610288-3d2008f2d8e257964e379c5fbf5239bf",
+  equipe_supervisao: "1756497610288-3d2008f2d8e257964e379c5fbf5239bf",
 };
 
 router.post("/enviar-texto", async (req, res) => {
